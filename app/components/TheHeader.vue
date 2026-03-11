@@ -9,14 +9,11 @@
                 />
                 <BrandName />
             </NuxtLink>
-        </div>
-        <div class="header__divider"></div>
-        <div class="header__nav-row">
             <button
                 type="button"
                 class="header__burger"
                 :class="{ 'header__burger--open': menuOpen }"
-                aria-label="Меню"
+                :aria-label="menuOpen ? 'Закрыть меню' : 'Меню'"
                 :aria-expanded="menuOpen"
                 @click="menuOpen = !menuOpen"
             >
@@ -24,6 +21,9 @@
                 <span class="header__burger-line"></span>
                 <span class="header__burger-line"></span>
             </button>
+        </div>
+        <div class="header__divider"></div>
+        <div class="header__nav-row">
             <nav class="header__nav" :class="{ 'header__nav--open': menuOpen }">
                 <NuxtLink
                     to="/hokkeynaya-shkola"
@@ -57,6 +57,12 @@
                 >
             </nav>
         </div>
+        <div
+            class="header__backdrop"
+            :class="{ 'header__backdrop--open': menuOpen }"
+            aria-hidden="true"
+            @click="menuOpen = false"
+        ></div>
     </header>
 </template>
 
@@ -95,7 +101,7 @@ onUnmounted(() => {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 102;
     width: 100%;
     transition: background-color 0.2s ease;
 }
@@ -182,6 +188,21 @@ onUnmounted(() => {
     transform: translateY(-7px) rotate(-45deg);
 }
 
+.header__backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.header__backdrop--open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .header__nav {
     display: flex;
     gap: 1.5rem;
@@ -206,31 +227,50 @@ onUnmounted(() => {
         padding: 0.75rem 1rem 0.5rem 1rem;
     }
 
-    .header__nav-row {
-        padding: 0.5rem 1rem 0.75rem 1rem;
-        gap: 0.5rem;
-        justify-content: flex-end;
-    }
-
     .header__burger {
         display: flex;
     }
 
+    .header__nav-row {
+        padding: 0;
+        min-height: 0;
+    }
+
+    .header__backdrop {
+        display: block;
+    }
+
     .header__nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
+        position: fixed;
+        top: 0;
         right: 0;
+        width: min(320px, 85vw);
+        height: 100vh;
         background: #1a1a2e;
         flex-direction: column;
-        padding: 1rem;
-        gap: 0.5rem;
+        align-items: stretch;
+        justify-content: flex-start;
+        padding: 5rem 1.25rem 1.5rem;
+        gap: 0;
         flex: none;
+        z-index: 101;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+        transform: translateX(100%);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .header__nav--open {
-        display: flex;
+        transform: translateX(0);
+    }
+
+    .header__link {
+        padding: 0.85rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 1rem;
+    }
+
+    .header__link:last-child {
+        border-bottom: none;
     }
 }
 </style>

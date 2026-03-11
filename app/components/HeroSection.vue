@@ -1,10 +1,10 @@
 <template>
-    <video class="hero__video" autoplay muted loop playsinline>
-        <source src="/IMG_5223.mp4" type="video/mp4" />
-        Ваш браузер не поддерживает видео
-    </video>
-    <div class="hero__overlay" aria-hidden="true"></div>
     <section class="hero">
+        <video class="hero__video" autoplay muted loop playsinline>
+            <source src="/IMG_5223.mp4" type="video/mp4" />
+            Ваш браузер не поддерживает видео
+        </video>
+        <div class="hero__overlay" aria-hidden="true"></div>
 
         <div class="hero__inner container">
             <h1 class="hero__title">Стань частью нашей команды!</h1>
@@ -45,6 +45,7 @@
     </section>
 </template>
 
+
 <script setup lang="ts">
 const mobilePhone = ref('')
 const mobileFormSubmitted = ref(false)
@@ -58,13 +59,13 @@ function onMobileFormSubmit() {
 .hero {
     position: relative;
     padding: 4rem 0;
+    padding-top: calc(70px + 4rem);
     text-align: center;
     overflow: hidden;
     min-height: 700px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 70px;
 }
 
 .hero__video {

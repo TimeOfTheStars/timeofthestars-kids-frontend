@@ -1,9 +1,9 @@
 <template>
   <section class="news section">
     <div class="container">
-      <h2 class="section-title">Новости</h2>
+      <h2 v-reveal class="section-title">Новости</h2>
       <ClientOnly>
-        <div class="news__slider-wrap">
+        <div v-reveal="{ delay: 150 }" class="news__slider-wrap">
           <Swiper
             :modules="modules"
             :navigation="{ nextEl: '.news__next', prevEl: '.news__prev' }"
@@ -80,6 +80,18 @@ const newsItems = [
 </script>
 
 <style scoped>
+.news {
+  background: var(--color-bg-alt);
+  position: relative;
+  overflow: hidden;
+}
+.news::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 500px 350px at 80% 50%, rgba(111, 60, 200, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
 .news__slider-wrap {
   position: relative;
 }
@@ -94,6 +106,11 @@ const newsItems = [
   display: flex;
   flex-direction: column;
   min-height: 320px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.news-card:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
 }
 .news-card__media {
   aspect-ratio: 16/10;

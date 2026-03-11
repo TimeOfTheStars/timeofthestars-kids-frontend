@@ -1,9 +1,10 @@
 <template>
   <section class="arena section">
     <div class="container">
-      <h2 class="section-title">Арена ГУОР</h2>
+      <h2 v-reveal class="section-title">Арена ГУОР</h2>
       <ClientOnly>
         <Swiper
+          v-reveal="{ delay: 150 }"
           :effect="'cards'"
           :grab-cursor="true"
           :modules="modules"

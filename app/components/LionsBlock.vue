@@ -1,22 +1,22 @@
 <template>
     <section class="lions section">
         <div class="container lions__inner">
-            <div class="lions__title-wrap">
+            <div v-reveal class="lions__title-wrap">
                 <h2 class="lions__title">
                     <BrandName /> приглашает на просмотр!
                 </h2>
             </div>
-            <div class="lions__media">
+            <div v-reveal="{ delay: 100 }" class="lions__media">
                 <img
                     src="/logo-star-kids.webp"
                     alt="Время Звезд-Kids"
                     class="lions__logo"
                 />
             </div>
-            <div class="lions__content">
+            <div v-reveal="{ delay: 200 }" class="lions__content">
                 <p class="lions__text">Продолжается набор детей с 3-х лет и старше </p>
             </div>
-            <div class="lions__action">
+            <div v-reveal="{ delay: 300 }" class="lions__action">
                 <NuxtLink to="/abonementy" class="btn">Подробнее</NuxtLink>
             </div>
         </div>
@@ -28,6 +28,18 @@
 <style scoped>
 .section {
     padding: 3rem 0;
+    background: linear-gradient(135deg, #111126 0%, #0f0f1a 60%, #12112a 100%);
+    border-top: 1px solid rgba(37, 99, 235, 0.2);
+    border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+.section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 500px 300px at 50% 100%, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+    pointer-events: none;
 }
 .lions__inner {
     display: grid;

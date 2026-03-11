@@ -1,11 +1,12 @@
 <template>
   <section class="faq section">
     <div class="container">
-      <h2 class="section-title">Ответы на вопросы родителей</h2>
+      <h2 v-reveal class="section-title">Ответы на вопросы родителей</h2>
       <div class="faq__list">
         <div
           v-for="(item, i) in items"
           :key="i"
+          v-reveal="{ delay: i * 80 }"
           class="faq__item"
           :class="{ 'faq__item--open': openIndex === i }"
         >
@@ -16,10 +17,16 @@
             @click="toggle(i)"
           >
             {{ item.question }}
-            <span class="faq__arrow">{{ openIndex === i ? '▲' : '▼' }}</span>
+            <span class="faq__arrow" :class="{ 'faq__arrow--open': openIndex === i }">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
           </button>
-          <div v-show="openIndex === i" class="faq__answer">
-            <p>{{ item.answer }}</p>
+          <div class="faq__answer-wrap">
+            <div class="faq__answer">
+              <p>{{ item.answer }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -45,6 +52,12 @@ function toggle(i: number) {
 </script>
 
 <style scoped>
+.faq {
+  background:
+    radial-gradient(ellipse 600px 400px at 50% 0%, rgba(37, 99, 235, 0.07) 0%, transparent 70%),
+    var(--color-bg-alt);
+  position: relative;
+}
 .faq__list {
   max-width: 700px;
   margin: 0 auto;
@@ -55,6 +68,15 @@ function toggle(i: number) {
   margin-bottom: 0.5rem;
   overflow: hidden;
   background: var(--color-surface);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.faq__item:hover {
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+}
+.faq__item--open {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.12);
 }
 .faq__question {
   width: 100%;
@@ -69,23 +91,38 @@ function toggle(i: number) {
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  transition: background 0.2s;
 }
 .faq__question:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 .faq__arrow {
   flex-shrink: 0;
-  font-size: 0.75rem;
   color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s;
+}
+.faq__arrow--open {
+  transform: rotate(180deg);
+  color: var(--color-accent);
+}
+.faq__answer-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.faq__item--open .faq__answer-wrap {
+  grid-template-rows: 1fr;
 }
 .faq__answer {
-  padding: 0 1.25rem 1rem;
-  border-top: 1px solid var(--color-border);
+  overflow: hidden;
 }
 .faq__answer p {
   margin: 0;
-  padding-top: 0.75rem;
+  padding: 0.75rem 1.25rem 1.25rem;
   color: var(--color-text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
+  border-top: 1px solid var(--color-border);
 }
 </style>
