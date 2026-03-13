@@ -111,7 +111,7 @@ function onMobileFormSubmit() {
 
 .hero__league-icon {
     display: block;
-    width: 140px;
+    width: 260px;
     height: auto;
     margin: 1rem auto 0;
 }
@@ -227,7 +227,7 @@ function onMobileFormSubmit() {
 @media (max-width: 600px) {
     .hero__league-icon {
         order: -1;
-        width: 200px;
+        width: 240px;
         margin: 0 auto 1.25rem;
     }
 

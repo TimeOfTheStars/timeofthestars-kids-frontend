@@ -91,6 +91,8 @@ function toggle(i: number) {
   padding: 1rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
 .benefit-card:hover {
@@ -102,6 +104,7 @@ function toggle(i: number) {
   display: flex;
   align-items: center;
   justify-content: center;
+  align-self: center;
   width: 64px;
   height: 64px;
   border-radius: 16px;
@@ -126,6 +129,7 @@ function toggle(i: number) {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  align-self: center;
 }
 .benefit-card__toggle-icon {
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -138,6 +142,7 @@ function toggle(i: number) {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 .benefit-card__expand-wrap:has(.benefit-card__expand--open) {
   grid-template-rows: 1fr;
@@ -155,6 +160,7 @@ function toggle(i: number) {
   font-size: 0.9rem;
   color: var(--color-text-muted);
   line-height: 1.5;
+  text-align: center;
 }
 .btn--small {
   padding: 0.5rem 1rem;

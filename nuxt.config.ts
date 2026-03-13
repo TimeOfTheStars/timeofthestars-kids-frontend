@@ -7,4 +7,11 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'static',
   },
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/webp', href: '/logo-star-kids.webp' },
+      ],
+    },
+  },
 })
