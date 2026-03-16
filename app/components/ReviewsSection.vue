@@ -89,7 +89,7 @@ const newsItems = [
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 500px 350px at 80% 50%, rgba(111, 60, 200, 0.05) 0%, transparent 70%);
+  background: radial-gradient(ellipse 500px 350px at 80% 50%, rgba(147, 197, 253, 0.15) 0%, transparent 70%);
   pointer-events: none;
 }
 .news__slider-wrap {
@@ -114,7 +114,7 @@ const newsItems = [
 }
 .news-card__media {
   aspect-ratio: 16/10;
-  background: #252540;
+  background: var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;

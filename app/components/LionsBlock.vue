@@ -28,9 +28,9 @@
 <style scoped>
 .section {
     padding: 3rem 0;
-    background: linear-gradient(135deg, #111126 0%, #0f0f1a 60%, #12112a 100%);
-    border-top: 1px solid rgba(37, 99, 235, 0.2);
-    border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+    background: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-bg) 60%, #e8eef5 100%);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
     position: relative;
     overflow: hidden;
 }
@@ -40,16 +40,17 @@
     inset: 0;
     background-image: url('/about-bg.png');
     background-position: center;
-    background-size: auto 72%;
+    background-size: auto 90%;
     background-repeat: no-repeat;
     z-index: 0;
     pointer-events: none;
+    opacity: 1;
 }
 .section::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 500px 300px at 50% 100%, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse 500px 300px at 50% 100%, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
     z-index: 1;
     pointer-events: none;
 }
@@ -70,6 +71,7 @@
 .lions__title {
     font-size: 1.75rem;
     margin: 0;
+    color:#e8eef5;
 }
 .lions__media {
     width: 200px;
@@ -89,13 +91,14 @@
 .lions__content {
     min-width: 0;
     text-align: left;
+
 }
 .lions__text {
     margin: 0;
     font-size: 1.75rem;
     line-height: 1.2;
     font-weight: 700;
-    color: var(--color-text);
+    color:#e8eef5;
 }
 .lions__action {
     grid-column: 1 / -1;

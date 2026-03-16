@@ -49,12 +49,12 @@ const isHomePage = computed(() => route.path === '/')
     position: absolute;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.08;
+    opacity: 0.05;
 }
 .bg-orb--1 {
     width: 650px;
     height: 650px;
-    background: #2563eb;
+    background: #93c5fd;
     top: -15%;
     left: -8%;
     animation: drift-1 22s ease-in-out infinite alternate;
@@ -62,7 +62,7 @@ const isHomePage = computed(() => route.path === '/')
 .bg-orb--2 {
     width: 550px;
     height: 550px;
-    background: #7c3aed;
+    background: #c4b5fd;
     bottom: 0%;
     right: -8%;
     animation: drift-2 28s ease-in-out infinite alternate;
@@ -71,12 +71,12 @@ const isHomePage = computed(() => route.path === '/')
 .bg-orb--3 {
     width: 400px;
     height: 400px;
-    background: #1d4ed8;
+    background: #bfdbfe;
     top: 45%;
     left: 40%;
     animation: drift-3 35s ease-in-out infinite alternate;
     animation-delay: -18s;
-    opacity: 0.05;
+    opacity: 0.035;
 }
 
 @keyframes drift-1 {

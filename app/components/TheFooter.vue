@@ -35,10 +35,11 @@ const email = 'Time-of-the-stars@mail.ru'
 
 <style scoped>
 .footer {
-    background: #1a1a2e;
-    color: #aaa;
+    background: var(--color-bg-alt);
+    color: var(--color-text-muted);
     padding: 2rem 1rem 1rem;
     margin-top: auto;
+    border-top: 1px solid var(--color-border);
 }
 .footer__inner {
     max-width: 1200px;
@@ -50,12 +51,12 @@ const email = 'Time-of-the-stars@mail.ru'
     gap: 2rem;
     align-items: start;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border);
 }
 .footer__logo {
     font-weight: 700;
     font-size: 1.5rem;
-    color: #fff;
+    color: var(--color-text);
     text-decoration: none;
 }
 .footer__contacts {
@@ -64,7 +65,7 @@ const email = 'Time-of-the-stars@mail.ru'
     gap: 0.5rem;
 }
 .footer__email {
-    color: #fff;
+    color: var(--color-accent);
     text-decoration: none;
 }
 .footer__email:hover {
@@ -76,11 +77,11 @@ const email = 'Time-of-the-stars@mail.ru'
     gap: 0.5rem;
 }
 .footer__nav a {
-    color: #aaa;
+    color: var(--color-text-muted);
     text-decoration: none;
 }
 .footer__nav a:hover {
-    color: #fff;
+    color: var(--color-accent);
 }
 .footer__bottom {
     display: flex;
@@ -90,6 +91,7 @@ const email = 'Time-of-the-stars@mail.ru'
     gap: 1rem;
     padding-top: 1rem;
     font-size: 0.875rem;
+    color: var(--color-text-muted);
 }
 @media (max-width: 768px) {
     .footer__top {
