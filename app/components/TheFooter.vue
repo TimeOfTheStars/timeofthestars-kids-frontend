@@ -5,9 +5,28 @@
                 <NuxtLink to="/" class="footer__logo"><BrandName /></NuxtLink>
                 <div class="footer__contacts">
                     <span class="footer__address">{{ address }}</span>
-                    <a :href="`mailto:${email}`" class="footer__email">{{
-                        email
-                    }}</a>
+                    <a :href="`tel:${CONTACT_PHONE_TEL}`" class="footer__phone">{{ CONTACT_PHONE_DISPLAY }}</a>
+                    <span class="footer__hours">{{ hours }}</span>
+                    <span class="footer__feedback">
+                        Обратная связь:
+                        <a :href="`mailto:${feedbackEmail}`" class="footer__feedback-link">{{ feedbackEmail }}</a>
+                    </span>
+                    <a
+                        :href="vkGroupUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="footer__vk"
+                        aria-label="Группа ВКонтакте"
+                    >
+                        <img
+                            src="/icons8-vk.svg"
+                            alt=""
+                            class="footer__vk-icon"
+                            width="32"
+                            height="32"
+                            decoding="async"
+                        />
+                    </a>
                 </div>
                 <nav class="footer__nav">
                     <NuxtLink to="/hokkeynaya-shkola"
@@ -22,15 +41,19 @@
                 </nav>
             </div>
             <div class="footer__bottom">
-                <span class="footer__copy">© 2026, <BrandName /></span>
+                <span class="footer__copy">© 2026 Время Звёзд Kids</span>
             </div>
         </div>
     </footer>
 </template>
 
 <script setup lang="ts">
+import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '~/constants/contacts'
+
 const address = 'Дядьковская улица, 7, Ярославль, 150006'
-const email = 'Time-of-the-stars@mail.ru'
+const hours = 'Работаем ежедневно с 6:00 до 24:00'
+const feedbackEmail = 'Time_of_the_stars@mail.ru'
+const vkGroupUrl = 'https://vk.com/club125696800'
 </script>
 
 <style scoped>
@@ -64,12 +87,42 @@ const email = 'Time-of-the-stars@mail.ru'
     flex-direction: column;
     gap: 0.5rem;
 }
-.footer__email {
+.footer__phone {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+}
+.footer__phone:hover {
+    text-decoration: underline;
+}
+.footer__hours {
+    font-size: 0.9rem;
+}
+.footer__feedback {
+    font-size: 0.9rem;
+}
+.footer__feedback-link {
     color: var(--color-accent);
     text-decoration: none;
 }
-.footer__email:hover {
+.footer__feedback-link:hover {
     text-decoration: underline;
+}
+.footer__vk {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.25rem;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.footer__vk:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+.footer__vk-icon {
+    display: block;
+    width: 32px;
+    height: 32px;
 }
 .footer__nav {
     display: flex;
@@ -91,6 +144,9 @@ const email = 'Time-of-the-stars@mail.ru'
     gap: 1rem;
     padding-top: 1rem;
     font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+.footer__copy {
     color: var(--color-text-muted);
 }
 @media (max-width: 768px) {

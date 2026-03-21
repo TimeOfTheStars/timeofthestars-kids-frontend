@@ -96,8 +96,8 @@ function toggle(i: number) {
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
 .benefit-card:hover {
-  border-color: rgba(37, 99, 235, 0.35);
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.15), 0 8px 24px rgba(37, 99, 235, 0.1);
+  border-color: rgba(220, 38, 38, 0.35);
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.12), 0 8px 24px rgba(220, 38, 38, 0.1);
   transform: translateY(-3px);
 }
 .benefit-card__icon {
@@ -108,13 +108,13 @@ function toggle(i: number) {
   width: 64px;
   height: 64px;
   border-radius: 16px;
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--color-accent);
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-accent-red);
   margin-bottom: 1rem;
   transition: background 0.25s, transform 0.25s;
 }
 .benefit-card:hover .benefit-card__icon {
-  background: rgba(37, 99, 235, 0.18);
+  background: rgba(220, 38, 38, 0.18);
   transform: scale(1.08);
 }
 .benefit-card__title {

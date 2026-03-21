@@ -17,7 +17,7 @@
                 <p class="lions__text">Продолжается набор детей с 3-х лет и старше </p>
             </div>
             <div v-reveal="{ delay: 300 }" class="lions__action">
-                <NuxtLink to="/abonementy" class="btn">Подробнее</NuxtLink>
+                <NuxtLink to="/abonementy" class="btn btn--red">Подробнее</NuxtLink>
             </div>
         </div>
     </section>
@@ -26,15 +26,14 @@
 <script setup lang="ts"></script>
 
 <style scoped>
-.section {
-    padding: 3rem 0;
+.lions.section {
     background: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-bg) 60%, #e8eef5 100%);
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
     position: relative;
     overflow: hidden;
 }
-.section::before {
+.lions.section::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -46,7 +45,7 @@
     pointer-events: none;
     opacity: 1;
 }
-.section::after {
+.lions.section::after {
     content: '';
     position: absolute;
     inset: 0;

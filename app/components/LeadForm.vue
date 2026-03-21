@@ -1,6 +1,10 @@
 <template>
-    <form v-if="!submitted" class="lead-form" @submit.prevent="onSubmit">
-        <p class="lead-form__hint">Стань частью нашей команды</p>
+    <form
+        v-if="!submitted"
+        :class="['lead-form', { 'lead-form--surface': variant === 'surface' }]"
+        @submit.prevent="onSubmit"
+    >
+        <p v-if="showHint" class="lead-form__hint">{{ hint }}</p>
         <div class="lead-form__fields">
             <input
                 v-model="name"
@@ -17,7 +21,7 @@
                 required
             />
             <button type="submit" class="lead-form__submit-btn">
-                Записаться
+                {{ submitLabel }}
             </button>
         </div>
         <label class="lead-form__agree">
@@ -35,6 +39,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 const emit = defineEmits<{ (e: 'success'): void }>()
+
+withDefaults(
+    defineProps<{
+        variant?: 'default' | 'surface'
+        submitLabel?: string
+        showHint?: boolean
+        hint?: string
+    }>(),
+    {
+        variant: 'default',
+        submitLabel: 'Записаться',
+        showHint: true,
+        hint: 'Стань частью нашей команды',
+    }
+)
 
 const name = ref('')
 const phone = ref('')
@@ -132,5 +151,30 @@ function onSubmit() {
 .lead-form__disclaimer-link {
     color: var(--color-accent);
     text-decoration: underline;
+}
+
+.lead-form--surface .lead-form__fields {
+    margin: 0 0 0.5rem;
+}
+.lead-form--surface .lead-form__input {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+.lead-form--surface .lead-form__input::placeholder {
+    color: var(--color-text-muted);
+}
+.lead-form--surface .lead-form__input:focus {
+    background: var(--color-bg);
+    border-color: var(--color-accent);
+}
+.lead-form--surface .lead-form__agree {
+    color: var(--color-text-muted);
+}
+.lead-form--surface .lead-form__disclaimer {
+    color: var(--color-text-muted);
+}
+.lead-form--surface .lead-form__disclaimer-link {
+    color: var(--color-accent);
 }
 </style>

@@ -5,6 +5,10 @@
       <h1 class="page__title">Контакты</h1>
       <div class="kontakty__content">
         <p><strong>Адрес:</strong> {{ address }}</p>
+        <p>
+          <strong>Телефон:</strong>
+          <a :href="`tel:${CONTACT_PHONE_TEL}`" class="kontakty__phone">{{ CONTACT_PHONE_DISPLAY }}</a>
+        </p>
         <p><strong>E-mail:</strong> <a :href="`mailto:${email}`">{{ email }}</a></p>
       </div>
       <div class="kontakty__map">
@@ -22,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '~/constants/contacts'
+
 const address = 'Дядьковская улица, 7, Ярославль, 150006'
 const email = 'Time-of-the-stars@mail.ru'
 </script>
@@ -44,6 +50,10 @@ const email = 'Time-of-the-stars@mail.ru'
 }
 .kontakty__content a:hover {
   text-decoration: underline;
+}
+.kontakty__phone {
+  margin-left: 0.35rem;
+  font-weight: 600;
 }
 .kontakty__map {
   margin-top: 2rem;

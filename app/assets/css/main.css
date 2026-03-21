@@ -9,6 +9,8 @@
   --color-text: #1e293b;
   --color-text-muted: #64748b;
   --color-accent: #2563eb;
+  --color-accent-red: #dc2626;
+  --color-accent-red-hover: #b91c1c;
   --color-border: #e2e8f0;
   --max-width: 1200px;
   --spacing: 1rem;
@@ -52,9 +54,15 @@ a {
   padding: 0 var(--spacing);
 }
 
+/* Vertical rhythm between major page sections */
+section.section {
+  padding-top: clamp(2rem, 3.25vw, 3rem);
+  padding-bottom: clamp(2rem, 3.25vw, 3rem);
+}
+
 .section-title {
   font-size: 1.75rem;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.625rem;
   text-align: center;
   position: relative;
   display: inline-block;
@@ -87,6 +95,15 @@ a {
   opacity: 0.92;
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(37, 99, 235, 0.35);
+}
+
+.btn--red {
+  background: var(--color-accent-red);
+  box-shadow: 0 2px 12px rgba(220, 38, 38, 0.35);
+}
+.btn--red:hover {
+  background: var(--color-accent-red-hover);
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.45);
 }
 
 /* Scroll-reveal */
