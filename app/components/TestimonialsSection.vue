@@ -2,18 +2,30 @@
   <section class="testimonials section">
     <div class="container">
       <h2 v-reveal class="section-title">Отзывы о нас</h2>
-      <div class="testimonials__grid">
-        <article
-          v-for="(item, i) in items"
-          :key="i"
-          v-reveal="{ delay: i * 100 }"
-          class="testimonial-card"
-        >
-          <p class="testimonial-card__text">{{ item.text }}</p>
-          <p class="testimonial-card__author">{{ item.author }}</p>
-          <p class="testimonial-card__role">{{ item.role }}</p>
-        </article>
-      </div>
+      <ClientOnly>
+        <div v-reveal="{ delay: 150 }" class="testimonials__slider-wrap">
+          <Swiper
+            :modules="modules"
+            :navigation="{ nextEl: '.testimonials__next', prevEl: '.testimonials__prev' }"
+            :loop="true"
+            :slides-per-view="1"
+            :space-between="16"
+            class="testimonials-swiper"
+          >
+            <SwiperSlide v-for="(item, i) in items" :key="i">
+              <article class="testimonial-card">
+                <p class="testimonial-card__text">{{ item.text }}</p>
+                <p class="testimonial-card__author">{{ item.author }}</p>
+                <p class="testimonial-card__role">{{ item.role }}</p>
+              </article>
+            </SwiperSlide>
+          </Swiper>
+          <div class="testimonials__nav" aria-hidden="true">
+            <button type="button" class="testimonials__btn testimonials__prev" aria-label="Назад">‹</button>
+            <button type="button" class="testimonials__btn testimonials__next" aria-label="Вперед">›</button>
+          </div>
+        </div>
+      </ClientOnly>
       <div v-reveal="{ delay: 350 }" class="testimonials__action">
         <a
           :href="reviewsTopicUrl"
@@ -27,6 +39,13 @@
 </template>
 
 <script setup lang="ts">
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Navigation } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+
+const modules = [Navigation]
+
 const reviewsTopicUrl = 'https://vk.com/topic-125696800_56616420'
 
 const items = [
@@ -61,12 +80,14 @@ const items = [
   background: radial-gradient(ellipse 600px 380px at 20% 40%, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
   pointer-events: none;
 }
-.testimonials__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+.testimonials__slider-wrap {
   position: relative;
   z-index: 1;
+}
+.testimonials-swiper {
+  max-width: 840px;
+  margin: 0 auto;
+  padding-bottom: 0.5rem;
 }
 .testimonial-card {
   background: var(--color-surface);
@@ -77,6 +98,7 @@ const items = [
   flex-direction: column;
   gap: 0.75rem;
   transition: border-color 0.25s, box-shadow 0.25s;
+  height: 100%;
 }
 .testimonial-card:hover {
   border-color: rgba(37, 99, 235, 0.25);
@@ -99,6 +121,33 @@ const items = [
   margin: 0;
   font-size: 0.875rem;
   color: var(--color-text-muted);
+}
+.testimonials__nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.testimonials__btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.testimonials__btn:hover:not(:disabled) {
+  background: var(--color-border);
+}
+.testimonials__btn.swiper-button-disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 .testimonials__action {
   display: flex;
