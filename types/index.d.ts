@@ -1,7 +1,7 @@
 export interface Review {
   author: string
-  meta: string
   text: string
+  pic: string
 }
 
 export interface FaqItem {

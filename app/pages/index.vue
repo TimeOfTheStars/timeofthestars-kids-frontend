@@ -7,7 +7,6 @@
     <TestimonialsSection />
     <FaqSection />
     <NewsSection />
-    <CoachBlock />
     <MapSection />
     <ContactQuestionsSection />
   </div>
