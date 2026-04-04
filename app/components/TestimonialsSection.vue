@@ -9,6 +9,7 @@
             :navigation="{ nextEl: '.testimonials__next', prevEl: '.testimonials__prev' }"
             :loop="items.length > 1"
             :auto-height="false"
+            :allow-touch-move="false"
             :touch-start-prevent-default="false"
             :no-swiping="true"
             :nested="true"
@@ -151,8 +152,8 @@ const toggleExpanded = (index: number) => {
   min-height: 22rem;
 }
 .testimonial-card__avatar {
-  width: 132px;
-  height: 132px;
+  width: 120px;
+  height: 120px;
   border-radius: 999px;
   object-fit: cover;
   object-position: center;
@@ -217,6 +218,7 @@ const toggleExpanded = (index: number) => {
   inset: 50% 0 auto;
   transform: translateY(-50%);
   pointer-events: none;
+  z-index: 5;
 }
 .testimonials__btn {
   position: absolute;
@@ -235,6 +237,7 @@ const toggleExpanded = (index: number) => {
   font-size: 2.8rem;
   line-height: 1;
   pointer-events: auto;
+  z-index: 6;
 }
 .testimonials__prev {
   left: -104px;
@@ -258,8 +261,8 @@ const toggleExpanded = (index: number) => {
   }
 
   .testimonial-card__avatar {
-    width: 124px;
-    height: 124px;
+    width: 108px;
+    height: 108px;
     border-width: 3px;
   }
 
@@ -283,8 +286,21 @@ const toggleExpanded = (index: number) => {
     font-size: 0.96rem;
   }
 
-  .testimonials__nav {
-    display: none;
+  .testimonials__prev {
+    left: -16px;
+  }
+
+  .testimonials__next {
+    right: -16px;
+  }
+
+  .testimonials__btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.7rem;
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.18);
   }
 }
 .testimonials__btn.swiper-button-disabled {
