@@ -30,12 +30,10 @@
                 </div>
                 <nav class="footer__nav">
                     <NuxtLink to="/hokkeynaya-shkola"
-                        >Сведения об образовательной организации</NuxtLink
+                        >Сведения</NuxtLink
                     >
                     <NuxtLink to="/abonementy">Услуги</NuxtLink>
-                    <NuxtLink to="/individualnye-trenirovki"
-                        >Индивидуальные тренировки</NuxtLink
-                    >
+                    <NuxtLink to="/sbory">Сборы</NuxtLink>
                     <NuxtLink to="/trenery">Тренеры</NuxtLink>
                     <NuxtLink to="/kontakty">Контакты</NuxtLink>
                 </nav>

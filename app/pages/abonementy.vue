@@ -57,9 +57,6 @@ const description1 = `🤗Открыт набор детей с 3-х лет дл
 
 📍Адрес катка: ФГБУ ПОО ГУОР по хоккею, ул. Дядьковская 7, Фрунзенский район
 
-📱Телефон для связи: Татьяна
-☝️Официальная группа ВКонтакте: https://vk.com/club125696800
-
 🏒Тренируйтесь с лучшими - становитесь лучшими вместе с физкультурно-спортивной организацией "ВРЕМЯ ЗВЕЗД"`
 
 const description2 = `✅SKATING ZONE
@@ -228,7 +225,8 @@ const selectedService = ref<typeof services[0] | null>(null)
 .abonementy-card__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
 }
 .abonementy-card__body {
@@ -238,8 +236,11 @@ const selectedService = ref<typeof services[0] | null>(null)
   flex-direction: column;
 }
 .abonementy-card__type {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.1rem);
   margin: 0 0 0.5rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 .abonementy-card__price {
   font-size: 1.5rem;

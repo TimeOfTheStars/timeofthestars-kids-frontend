@@ -25,11 +25,25 @@
         <div class="header__divider"></div>
         <div class="header__nav-row">
             <nav class="header__nav" :class="{ 'header__nav--open': menuOpen }">
+                <div v-if="menuOpen" class="header__nav-top">
+                    <NuxtLink to="/" class="header__nav-brand" @click="menuOpen = false">
+                        <img src="/logo-star-kids.webp" alt="" class="header__nav-brand-img" />
+                        <BrandName />
+                    </NuxtLink>
+                    <button
+                        type="button"
+                        class="header__nav-close"
+                        aria-label="Закрыть меню"
+                        @click="menuOpen = false"
+                    >
+                        ×
+                    </button>
+                </div>
                 <NuxtLink
                     to="/hokkeynaya-shkola"
                     class="header__link"
                     @click="menuOpen = false"
-                    >Сведения об образовательной организации</NuxtLink
+                    >Сведения</NuxtLink
                 >
                 <NuxtLink
                     to="/abonementy"
@@ -38,10 +52,10 @@
                     >Услуги</NuxtLink
                 >
                 <NuxtLink
-                    to="/individualnye-trenirovki"
+                    to="/sbory"
                     class="header__link"
                     @click="menuOpen = false"
-                    >Индивидуальные тренировки</NuxtLink
+                    >Сборы</NuxtLink
                 >
                 <NuxtLink
                     to="/trenery"
@@ -215,7 +229,7 @@ onUnmounted(() => {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.35);
     z-index: 99;
     opacity: 0;
     pointer-events: none;
@@ -266,19 +280,22 @@ onUnmounted(() => {
     .header__nav {
         position: fixed;
         top: 0;
+        left: 0;
         right: 0;
-        width: min(320px, 85vw);
+        width: 100vw;
         height: 100vh;
-        background: var(--color-surface);
-        color: var(--color-text);
+        background: rgba(9, 18, 28, 0.6);
+        color: #fff;
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
         flex-direction: column;
         align-items: stretch;
         justify-content: flex-start;
-        padding: 5rem 1.25rem 1.5rem;
+        padding: 6.25rem 1.25rem 1.5rem;
         gap: 0;
         flex: none;
         z-index: 101;
-        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+        box-shadow: -12px 0 32px rgba(0, 0, 0, 0.22);
         transform: translateX(100%);
         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -287,16 +304,67 @@ onUnmounted(() => {
         transform: translateX(0);
     }
 
+    .header__nav-top {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+    }
+    .header__nav-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.25rem;
+        line-height: 1.1;
+    }
+    .header__nav-brand-img {
+        height: 36px;
+        width: auto;
+        display: block;
+        flex-shrink: 0;
+    }
+    .header__nav-close {
+        width: 44px;
+        height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        font-size: 32px;
+        line-height: 1;
+        padding: 0;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .header__nav-close:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
     .header__link {
         padding: 0.85rem 0;
-        border-bottom: 1px solid var(--color-border);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         font-size: 1rem;
-        color: var(--color-text);
+        color: #fff;
+        letter-spacing: 0.02em;
+    }
+
+    .header.header--scrolled .header__nav .header__link {
+        color: #fff;
     }
 
     .header__link:hover,
     .header__link.router-link-active {
-        color: var(--color-accent);
+        color: #fff;
     }
 
     .header__link:last-child {

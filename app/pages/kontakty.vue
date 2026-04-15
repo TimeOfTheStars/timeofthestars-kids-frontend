@@ -29,7 +29,7 @@
 import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '~/constants/contacts'
 
 const address = 'Дядьковская улица, 7, Ярославль, 150006'
-const email = 'Time-of-the-stars@mail.ru'
+const email = 'Time_of_the_stars@mail.ru'
 </script>
 
 <style scoped>

@@ -21,13 +21,6 @@
                     </div>
                     <div class="trenery-card__body">
                         <h3 class="trenery-card__name">{{ coach.name }}</h3>
-                        <a
-                            :href="coachTopicUrl"
-                            target="_blank"
-                            rel="noopener"
-                            class="btn"
-                            >Подробнее</a
-                        >
                     </div>
                 </article>
             </div>
@@ -85,23 +78,29 @@ const coaches = [
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    padding: 1.25rem;
+    gap: 1rem;
+    text-align: center;
 }
 .trenery-card__media {
-    aspect-ratio: 3/4;
-    background: var(--color-surface);
+    width: clamp(104px, 22vw, 140px);
+    height: clamp(104px, 22vw, 140px);
+    margin: 0 auto;
+    border-radius: 9999px;
     overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
 }
 .trenery-card__img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 50% 20%;
     display: block;
 }
 .trenery-card__body {
-    padding: 1.25rem;
     flex: 1;
     display: flex;
     flex-direction: column;
