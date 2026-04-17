@@ -249,7 +249,7 @@ async function submitServiceRequest() {
       parent_name: serviceParentName.value.trim(),
       child_name: serviceChildName.value.trim(),
       child_age: serviceChildAge.value,
-      service: selectedService.value.code,
+      service: selectedService.value.title,
     })
     serviceRequestSent.value = true
   } catch (e) {
