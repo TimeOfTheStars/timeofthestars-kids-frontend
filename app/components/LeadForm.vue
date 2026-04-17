@@ -20,10 +20,11 @@
                 class="lead-form__input lead-form__phone-input"
                 required
             />
-            <button type="submit" class="lead-form__submit-btn">
+            <button type="submit" class="lead-form__submit-btn" :disabled="loading">
                 {{ submitLabel }}
             </button>
         </div>
+        <p v-if="errorText" class="lead-form__error" role="alert">{{ errorText }}</p>
         <label class="lead-form__agree">
             <input v-model="agree" type="checkbox" required />
             <span>Согласие на обработку персональных данных</span>
@@ -38,20 +39,23 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { postJson } from '~/utils/api'
 const emit = defineEmits<{ (e: 'success'): void }>()
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         variant?: 'default' | 'surface'
         submitLabel?: string
         showHint?: boolean
         hint?: string
+        mode?: 'none' | 'questions'
     }>(),
     {
         variant: 'default',
         submitLabel: 'Записаться',
         showHint: true,
         hint: 'Стань частью нашей команды',
+        mode: 'none',
     }
 )
 
@@ -59,10 +63,29 @@ const name = ref('')
 const phone = ref('')
 const agree = ref(false)
 const submitted = ref(false)
+const loading = ref(false)
+const errorText = ref<string | null>(null)
 
-function onSubmit() {
-    submitted.value = true
-    emit('success')
+async function onSubmit() {
+    if (loading.value) return
+    errorText.value = null
+    loading.value = true
+
+    try {
+        if (props.mode === 'questions') {
+            await postJson('/questions', {
+                full_name: name.value.trim(),
+                phone: phone.value.trim(),
+            })
+        }
+
+        submitted.value = true
+        emit('success')
+    } catch (e) {
+        errorText.value = 'Не удалось отправить. Попробуйте ещё раз.'
+    } finally {
+        loading.value = false
+    }
 }
 </script>
 
@@ -127,6 +150,11 @@ function onSubmit() {
     background: #1d4ed8;
     transform: translateY(-2px);
 }
+.lead-form__submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
 .lead-form__agree {
     display: flex;
     align-items: flex-start;
@@ -142,6 +170,12 @@ function onSubmit() {
     color: #22c55e;
     font-weight: 600;
     margin: 0;
+}
+.lead-form__error {
+    margin: -0.25rem 0 0;
+    color: #fecaca;
+    font-size: 0.9rem;
+    line-height: 1.35;
 }
 .lead-form__disclaimer {
     margin: 0.5rem 0 0;

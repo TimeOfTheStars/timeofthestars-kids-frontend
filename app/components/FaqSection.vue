@@ -57,6 +57,7 @@
           variant="surface"
           submit-label="Отправить"
           :show-hint="false"
+          mode="questions"
           @success="onFormSuccess"
         />
         <button type="button" class="faq__modal-close btn" @click="showQuestionForm = false">Закрыть</button>

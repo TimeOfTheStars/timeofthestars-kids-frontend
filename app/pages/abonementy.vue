@@ -24,6 +24,28 @@
         <div class="abonementy-modal__inner">
           <h3 class="abonementy-modal__title">{{ selectedService.title }}</h3>
           <p class="abonementy-modal__description">{{ selectedService.description }}</p>
+          <div class="abonementy-modal__form">
+            <h4 class="abonementy-modal__form-title">Оставить заявку</h4>
+            <form v-if="!serviceRequestSent" class="service-request" @submit.prevent="submitServiceRequest">
+              <div class="service-request__fields">
+                <input v-model="servicePhone" type="tel" class="service-request__input" placeholder="+7 (___) ___-__-__" required />
+                <input v-model="serviceParentName" type="text" class="service-request__input" placeholder="ФИО родителя" required />
+                <input v-model="serviceChildName" type="text" class="service-request__input" placeholder="ФИО ребёнка" required />
+                <input v-model.number="serviceChildAge" type="number" min="1" max="18" inputmode="numeric" class="service-request__input" placeholder="Возраст ребёнка" required />
+              </div>
+              <p v-if="serviceRequestError" class="service-request__error" role="alert">{{ serviceRequestError }}</p>
+              <label class="service-request__agree">
+                <input v-model="serviceAgree" type="checkbox" required />
+                <span>Согласие на обработку персональных данных</span>
+              </label>
+              <p class="service-request__disclaimer">
+                Заполняя и отправляя форму, Вы даете
+                <NuxtLink to="/politika-konfidencialnosti" class="service-request__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
+              </p>
+              <button type="submit" class="btn" :disabled="serviceRequestLoading">Отправить</button>
+            </form>
+            <p v-else class="service-request__thanks">Спасибо! Ожидайте звонка менеджера.</p>
+          </div>
           <button type="button" class="btn btn--secondary" @click="selectedService = null">Закрыть</button>
         </div>
       </div>
@@ -32,6 +54,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { postJson } from '~/utils/api'
+
 definePageMeta({
   layout: 'default'
 })
@@ -184,15 +209,55 @@ const description6 = `✅кепка красная/синяя - 1400₽
 ✅хоккейная Джерси - 2100₽ (до 42 размера), 2500₽ (после 42 размера)`
 
 const services = [
-  { title: 'Абонемент на тренировочные занятия', price: '9 200 ₽', image: shopImages[3], description: description1 },
-  { title: 'Индивидуально/групповые занятия на хоккейном тренажере HST', price: '4 200 ₽', image: shopImages[4], description: description2 },
-  { title: 'Бросковая тренировка', price: 'от 600 ₽', desc: 'В зависимости от количества человек', image: shopImages[1], description: description3 },
-  { title: 'Сборы', price: '40 000 ₽', image: shopImages[2], description: description4 },
-  { title: 'Летний спортивный лагерь', price: '46 000 ₽', image: shopImages[0], description: description5 },
-  { title: 'Командная атрибутика', price: '1 400 ₽', image: shopImages[5], description: description6 }
+  { code: 'abonement', title: 'Абонемент на тренировочные занятия', price: '9 200 ₽', image: shopImages[3], description: description1 },
+  { code: 'hst', title: 'Индивидуально/групповые занятия на хоккейном тренажере HST', price: '4 200 ₽', image: shopImages[4], description: description2 },
+  { code: 'broskovaya', title: 'Бросковая тренировка', price: 'от 600 ₽', desc: 'В зависимости от количества человек', image: shopImages[1], description: description3 },
+  { code: 'sbory', title: 'Сборы', price: '40 000 ₽', image: shopImages[2], description: description4 },
+  { code: 'lager', title: 'Летний спортивный лагерь', price: '46 000 ₽', image: shopImages[0], description: description5 },
+  { code: 'atributika', title: 'Командная атрибутика', price: '1 400 ₽', image: shopImages[5], description: description6 }
 ]
 
-const selectedService = ref<typeof services[0] | null>(null)
+const selectedService = ref<(typeof services)[number] | null>(null)
+
+const servicePhone = ref('')
+const serviceParentName = ref('')
+const serviceChildName = ref('')
+const serviceChildAge = ref<number | null>(null)
+const serviceAgree = ref(false)
+const serviceRequestLoading = ref(false)
+const serviceRequestError = ref<string | null>(null)
+const serviceRequestSent = ref(false)
+
+watch(selectedService, (v) => {
+  if (!v) return
+  serviceRequestLoading.value = false
+  serviceRequestError.value = null
+  serviceRequestSent.value = false
+  serviceParentName.value = ''
+  serviceChildName.value = ''
+  serviceChildAge.value = null
+  serviceAgree.value = false
+})
+
+async function submitServiceRequest() {
+  if (!selectedService.value || serviceRequestLoading.value) return
+  serviceRequestError.value = null
+  serviceRequestLoading.value = true
+  try {
+    await postJson('/service-requests', {
+      phone: servicePhone.value.trim(),
+      parent_name: serviceParentName.value.trim(),
+      child_name: serviceChildName.value.trim(),
+      child_age: serviceChildAge.value,
+      service: selectedService.value.code,
+    })
+    serviceRequestSent.value = true
+  } catch (e) {
+    serviceRequestError.value = 'Не удалось отправить. Попробуйте ещё раз.'
+  } finally {
+    serviceRequestLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -286,5 +351,68 @@ const selectedService = ref<typeof services[0] | null>(null)
   color: var(--color-text-muted);
   line-height: 1.6;
   white-space: pre-line;
+}
+.abonementy-modal__form {
+  margin: 0 0 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+.abonementy-modal__form-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+.service-request {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.service-request__fields {
+  display: grid;
+  gap: 0.75rem;
+}
+.service-request__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.service-request__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.service-request__agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.service-request__agree input {
+  margin-top: 0.2rem;
+}
+.service-request__disclaimer {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+.service-request__disclaimer-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.service-request__error {
+  margin: 0;
+  color: #ef4444;
+  font-size: 0.9rem;
+}
+.service-request__thanks {
+  margin: 0;
+  color: #22c55e;
+  font-weight: 600;
+  line-height: 1.5;
 }
 </style>

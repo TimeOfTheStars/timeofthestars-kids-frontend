@@ -15,16 +15,7 @@
             />
             <div class="hero__cta-block">
                 <template v-if="!mobileFormSubmitted">
-                    <form class="hero__form" @submit.prevent="onMobileFormSubmit">
-                        <input
-                            v-model="mobilePhone"
-                            type="tel"
-                            placeholder="+7 (___) ___-__-__"
-                            class="hero__form-input"
-                            required
-                        />
-                        <button type="submit" class="btn hero__form-btn">Записаться</button>
-                    </form>
+                    <button type="button" class="btn hero__form-btn" @click="openModal">Записаться</button>
                     <p class="hero__form-disclaimer">
                         Заполняя и отправляя форму, Вы даете
                         <NuxtLink to="/politika-konfidencialnosti" class="hero__form-link">Согласие на обработку персональных данных</NuxtLink>.
@@ -42,15 +33,29 @@
                 <p v-else class="hero__form-thanks">Спасибо! Ожидайте звонка менеджера.</p>
             </div>
         </div>
+
+        <AppointmentModal
+            v-if="modalOpen"
+            @close="modalOpen = false"
+            @success="onAppointmentSuccess"
+        />
     </section>
 </template>
 
 
 <script setup lang="ts">
-const mobilePhone = ref('')
-const mobileFormSubmitted = ref(false)
+import { ref } from 'vue'
+import AppointmentModal from '~/components/AppointmentModal.vue'
 
-function onMobileFormSubmit() {
+const mobileFormSubmitted = ref(false)
+const modalOpen = ref(false)
+
+function openModal() {
+    modalOpen.value = true
+}
+
+function onAppointmentSuccess() {
+    modalOpen.value = false
     mobileFormSubmitted.value = true
 }
 </script>
@@ -121,33 +126,10 @@ function onMobileFormSubmit() {
     margin-top: 1.5rem;
 }
 
-.hero__form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+.hero__form-btn {
     width: 100%;
     max-width: 340px;
     margin: 0 auto;
-}
-.hero__form-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border-radius: var(--radius);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-.hero__form-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-.hero__form-input:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.15);
-}
-.hero__form-btn {
-    width: 100%;
 }
 .hero__form-disclaimer {
     margin: 0.75rem 0 0;
@@ -239,7 +221,7 @@ function onMobileFormSubmit() {
         margin-top: 1.25rem;
     }
 
-    .hero__form {
+    .hero__form-btn {
         max-width: 280px;
     }
 

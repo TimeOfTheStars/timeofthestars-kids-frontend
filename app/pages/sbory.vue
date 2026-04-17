@@ -1,144 +1,852 @@
 <template>
-    <div class="page sbory-page">
-        <div class="container">
-            <Breadcrumbs
-                :items="[{ title: 'Главная', to: '/' }, { title: 'Сборы' }]"
-            />
-            <h1 class="page__title">Сборы</h1>
+  <div class="page sbory-page">
+    <div class="container">
+      <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Сборы' }]" />
 
-            <div class="sbory__card">
-                <div class="sbory__head">
-                    <p class="sbory__price">40 000 ₽</p>
-                    <p class="sbory__note">Стоимость зависит от формата участия.</p>
-                </div>
-                <div class="sbory__content">
-                    {{ sboryDescription }}
-                </div>
+      <!-- Hero -->
+      <section class="sbory-hero">
+        <div class="sbory-hero__inner">
+          <div class="sbory-hero__left">
+            <h1 class="sbory-hero__title">Летние сборы<br />в Ярославле</h1>
+            <p class="sbory-hero__subtitle">для полевых игроков и вратарей с 4 до 16 лет!</p>
+
+            <div class="sbory-hero__stats">
+              <div class="stat-badge stat-badge--hero">
+                <span class="stat-badge__value">12 часов</span>
+                <span class="stat-badge__label">льда</span>
+              </div>
+              <div class="stat-badge stat-badge--hero">
+                <span class="stat-badge__value">12 часов</span>
+                <span class="stat-badge__label">«Земли»</span>
+              </div>
+              <div class="stat-badge stat-badge--hero">
+                <span class="stat-badge__value">6 дней</span>
+                <span class="stat-badge__label">смена</span>
+              </div>
+              <div class="stat-badge stat-badge--hero">
+                <span class="stat-badge__value">5 тренеров</span>
+                <span class="stat-badge__label">на льду</span>
+              </div>
             </div>
+
+            <div class="sbory-hero__actions">
+              <a
+                href="https://forms.gle/8zcE1px3hvrEKjbd6"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn"
+              >Принять участие</a>
+              <button type="button" class="btn btn--secondary" @click="openQrModal">
+                Оплатить онлайн
+              </button>
+            </div>
+          </div>
+
+          <div class="sbory-hero__right">
+            <img
+              src="/logo-star-kids.webp"
+              alt="Время Звезд"
+              class="sbory-hero__logo"
+              width="220"
+              height="220"
+            />
+          </div>
         </div>
+      </section>
+
+      <!-- Shifts -->
+      <section class="sbory-shifts">
+        <h2 class="sbory-shifts__title">Три смены</h2>
+        <div class="sbory-shifts__grid">
+          <div v-for="shift in shifts" :key="shift.num" class="shift-card">
+            <span class="shift-card__num">{{ shift.num }} смена</span>
+            <span class="shift-card__dates">{{ shift.dates }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="sbory-cta" aria-hidden="true" />
+
+      <!-- Photo + text -->
+      <section class="sbory-promo">
+        <h2 class="sbory-section-title">Готовим профессионалов</h2>
+
+        <div class="sbory-promo__layout">
+          <div class="sbory-promo__left">
+            <div class="sbory-promo__media">
+              <img src="/sbory/boy.jpg" alt="Юный хоккеист на льду" class="sbory-promo__img" />
+            </div>
+            <div class="sbory-promo__prices">
+              <div class="price-row">
+                <span class="price-row__label">Без проживания и питания</span>
+                <span class="price-row__value">40 000 ₽</span>
+              </div>
+              <div class="price-row">
+                <span class="price-row__label">С проживанием и питанием</span>
+                <span class="price-row__value">60 000 ₽</span>
+              </div>
+            </div>
+            <a
+              href="https://forms.gle/8zcE1px3hvrEKjbd6"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn sbory-promo__cta"
+            >Принять участие</a>
+          </div>
+
+          <div class="sbory-promo__right">
+            <div class="sbory-promo__cards">
+              <article v-for="c in promoCards" :key="c.title" class="promo-card">
+                <img :src="c.icon" alt="" class="promo-card__icon" aria-hidden="true" />
+                <h3 class="promo-card__title">{{ c.title }}</h3>
+                <p class="promo-card__text">{{ c.text }}</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Coaches -->
+      <section class="sbory-coaches">
+        <h2 class="sbory-section-title">Тренерский состав</h2>
+        <div class="sbory-coaches__grid">
+          <article v-for="coach in coaches" :key="coach.name" class="coach-card">
+            <div class="coach-card__media">
+              <img :src="coach.image" :alt="coach.name" class="coach-card__img" />
+            </div>
+            <p class="coach-card__name">{{ coach.name }}</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Schedule -->
+      <section class="sbory-schedule">
+        <h2 class="sbory-section-title">Примерное расписание</h2>
+        <div class="sbory-schedule__grid">
+          <article class="schedule-card">
+            <header class="schedule-card__head">
+              <span class="schedule-card__day">1</span>
+              <img src="/sbory/icon-2.png" alt="" class="schedule-card__icon" aria-hidden="true" />
+              <span class="schedule-card__day-label">День</span>
+            </header>
+            <div class="schedule-card__body">
+              <div v-for="item in scheduleDay1" :key="item.time + item.label" class="schedule-item">
+                <div class="schedule-item__time">{{ item.time }}</div>
+                <div class="schedule-item__divider" aria-hidden="true"></div>
+                <div class="schedule-item__label">{{ item.label }}</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="schedule-card">
+            <header class="schedule-card__head">
+              <span class="schedule-card__day">2–4, 6–8</span>
+              <img src="/sbory/icon-2.png" alt="" class="schedule-card__icon" aria-hidden="true" />
+              <span class="schedule-card__day-label">День</span>
+            </header>
+            <div class="schedule-card__body">
+              <div v-for="item in scheduleDay2to8" :key="item.time + item.label" class="schedule-item">
+                <div class="schedule-item__time">{{ item.time }}</div>
+                <div class="schedule-item__divider" aria-hidden="true"></div>
+                <div class="schedule-item__label">{{ item.label }}</div>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="sbory-schedule__footer">
+          <p class="sbory-schedule__note">
+            Мы сделали расписание максимально лёгким и комфортным, чтобы у вас было больше времени насладиться культурной столицей нашей страны. Прогуляйтесь по Таврическому саду, загляните в музеи, которые находятся рядом с нашей локацией, или просто откройте для себя гастрономическое разнообразие Санкт-Петербурга. Кафе и ресторанов здесь огромное количество — каждый найдёт место по вкусу.
+          </p>
+          <p class="sbory-schedule__warning">
+            ВНИМАНИЕ! РАСПИСАНИЕ ТРЕНИРОВОК МОЖЕТ НЕЗНАЧИТЕЛЬНО МЕНЯТЬСЯ. КОЛИЧЕСТВО ТРЕНИРОВОК ОСТАНЕТСЯ НЕИЗМЕННЫМ.
+          </p>
+        </div>
+      </section>
+
+      <!-- Venue -->
+      <section class="sbory-venue">
+        <h2 class="sbory-section-title">Место проведения и проживание</h2>
+        <div class="sbory-venue__info">
+          <p class="sbory-venue__name">ФГБУ ПОО «ГУОР по хоккею»</p>
+          <p class="sbory-venue__address">ул. Дядьковская 7, Фрунзенский район, Ярославль</p>
+          <p class="sbory-venue__desc">Тренировки на льду и проживание участников — на одной базе. Современный ледовый комплекс, оборудованные залы ОФП, бросковая зона.</p>
+        </div>
+        <ArenaSlider />
+      </section>
     </div>
+  </div>
+
+  <div
+    v-if="showQrModal"
+    class="qr-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Оплата онлайн"
+    @click.self="closeQrModal"
+  >
+    <div class="qr-modal__inner">
+      <button type="button" class="qr-modal__close" aria-label="Закрыть" @click="closeQrModal">
+        ×
+      </button>
+      <h3 class="qr-modal__title">Оплата онлайн</h3>
+      <img src="/sbory/qr.jpg" alt="QR-код для оплаты" class="qr-modal__img" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
 definePageMeta({
-    layout: 'default',
+  layout: 'default',
 })
 
-const sboryDescription = `🍃ЛЕТНИЕ ХОККЕЙНЫЕ СБОРЫ "ВРЕМЯ ЗВЕЗД"
-для полевых игроков и вратарей
+const showQrModal = ref(false)
 
-ТОЛЬКО 30 мест к бронированию❗❗❗
+function openQrModal() {
+  showQrModal.value = true
+}
 
-Дата проведения:
-✅1 смена 15-20 июня 2026
-✅2 смена 22-27 июня 2026
-✅3 смена 29-04 июля 2026
+function closeQrModal() {
+  showQrModal.value = false
+}
 
-📍Место проведения: ФГБУ ПОО ГУОР по хоккею, ул. Дядьковская 7, Фрунзенский район
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && showQrModal.value) closeQrModal()
+}
 
-✏️Возраст участников: с 4 до 16 лет
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
-💪В рамках сборов просмотр игроков в хоккейный клуб "ЛОКОМОТИВ" г. Ярославль
+const shifts = [
+  { num: '1', dates: '15 – 20 июня 2026' },
+  { num: '2', dates: '22 – 27 июня 2026' },
+  { num: '3', dates: '29 июня – 04 июля 2026' },
+]
 
-✔️В программе :
-12 часов тренировок на льду
-12 часов ОФП/акробатики/бросковая зона
+const coaches = [
+  {
+    name: 'Максим Олегович Вершинин',
+    image: '/coaches/pqX2_np_3mOp0DE-fu_sYOAlcJRkcBs-qfaSF0qnz-btSlDAzuOuNSWVc5OKMzJtaU6Aa6YJVv8lc0zYWO0cBBZ6.jpg',
+  },
+  {
+    name: 'Дмитрий Олегович Вершинин',
+    image: '/coaches/oh_4JtnGs2Dswjo1hZfXbK3kA-dmAEGfsFVZ396wnqzBId1RkzrIKI9pLCY-Hn-SQ1Qu2rkrC9s7wM-LkKwGd1lD.jpg',
+  },
+  {
+    name: 'Семён Антонович Майков',
+    image: '/coaches/u-7gF0Ca8dfisqbMa47rX3uDMTBTH0OID5VEbum5qaNINZUZShGkz0PaxTpJV4y8Vze32iE-N5UdRpgIGNDByXmd.jpg',
+  },
+  {
+    name: 'Роман Анатольевич Желтов',
+    image: '/coaches/photo_2026-02-05_13-35-28.jpg',
+  },
+  {
+    name: 'Антон Вячеславович Коленкин',
+    image: '/coaches/photo_2026-02-05_13-35-29.jpg',
+  },
+]
 
-➡ 4 тренера на льду
-➡ Тренер по ОФП
-➡ Тренер по акробатике и растяжке
+const schedule = [
+  { time: '8:00 – 8:30', label: 'Завтрак', residentsOnly: true },
+  { time: '9:00 – 10:00', label: 'Лёд', residentsOnly: false },
+  { time: '10:30 – 11:30', label: 'Зал (ОФП / акробатика)', residentsOnly: false },
+  { time: '12:00 – 13:00', label: 'Обед', residentsOnly: true },
+  { time: '14:00 – 15:00', label: 'Зал (ОФП / акробатика)', residentsOnly: false },
+  { time: '15:30 – 16:30', label: 'Лёд', residentsOnly: false },
+  { time: '18:00 – 18:30', label: 'Ужин', residentsOnly: true },
+  { time: '19:00 – 21:30', label: 'Свободное время (под контролем воспитателя)', residentsOnly: true },
+  { time: '22:00', label: 'Отбой', residentsOnly: true },
+]
 
-🥋Именная джерси АНФСО "ВРЕМЯ ЗВЕЗД"
-🎁Фирменный подарок каждому участнику
-📷Фото и видео отчёты тренировочного процесса
-🏅Ежедневно выделяем лучших игроков в группах
-📈 Система поощрения для детей (собственная валюта сборов).
-🏒Рекомендации по развитию,по итогам сборов
+const scheduleDay1 = [
+  { time: '14:00', label: 'Заселение' },
+  { time: '15:00', label: 'Обед' },
+  { time: '18:00 – 19:00', label: 'Тренировка на льду' },
+  { time: '20:45', label: 'Ужин' },
+]
 
-💰Стоимость сборов :
-- 40000 рублей - без проживания и питания
-- 60000 рублей - с проживанием и питанием на территории базы
+const scheduleDay2to8 = [
+  { time: '7:30', label: 'Завтрак' },
+  { time: '9:00 – 10:00', label: 'Тренировка «на земле»' },
+  { time: '10:30 – 11:30', label: 'Тренировка на льду' },
+  { time: '13:00', label: 'Обед' },
+  { time: '16:00 – 17:00', label: 'Тренировка на льду' },
+  { time: '17:30 – 18:30', label: 'Тренировка «на земле»' },
+]
 
-☝️При раннем бронировании (до 1 марта 2026 г.) скидка 🏷️5% (38000 рублей)
-☝️Для групп от 3-х человек скидка🏷️10% (36000 рублей)
-
-*скидки не суммируются и не распространяются на проживание и питание.
-
-📅Расписание тренировок (предварительно):
-8:00 - 8:30 завтрак (для проживающих на базе)
-9:00 -10:00 лед
-10:30 -11:30 зал
-12:00-13:00 обед
-14:00 -15:00 зал
-15:30 -16:30 лед
-18:00-18:30 ужин (для проживающих на базе)
-19:00-21:30 свободное время (для проживающих на базе, под контролем воспитателя)
-22:00 - отбой (для проживающих на базе)
-
-📣Основная направленность:
-➡️"Эффективное катание"
--стартовая скорость
--скоростно-силовая работа
--маневренность
-➡️Бросковая подготовка в бросковой зоне и на льду (кистевые броски с удобной и неудобной с различных положений, щелчки)
-➡️Улучшение техники владения клюшкой
--скоростное ведение
-- дриблинг
-- приём и передача (культура паса)
-➡️Технико-тактическая подготовка по амплуа защитники, нападающие (моделирование игровых ситуаций и доведение до автоматизма)
-➡️Реализация голевых моментов
-Работа с отягощениями
-➡️Единоборства 1х1,2х2,3х3 (развитие чувства и контроля дистанции)
-➡️Развитие функциональных качеств, выносливости, гибкости и координации, crossfit
-
-‼️Для участия в тренировочных сборах необходимы:
-1. Заполненная анкета спортсмена
-2. Справка о допуске к занятиям хоккеем (спортивная справка установленного образца)
-3. Согласие на обработку персональных данных
-4. Свидетельства о рождении/паспорта
-5. Копия паспорта родителя
-6. Договор на проживание
-7. Договор на участие в тренировочных сборах
-8. В случае, если юниор приезжает на сборы без родителей, необходима доверенность на сопровождающего.
-
-Готовим профессионалов 🔝`
+const promoCards = [
+  {
+    icon: '/sbory/konek.png',
+    title: 'Техника катания',
+    text: 'Прокачаем баланс, стартовую скорость, манёвренность и эффективность катания.',
+  },
+  {
+    icon: '/sbory/ice-hokkei-1.png',
+    title: 'Техника паса',
+    text: 'Культура паса: приём и передача в движении, точность и темп.',
+  },
+  {
+    icon: '/sbory/klushki.png',
+    title: 'Владение клюшкой',
+    text: 'Дриблинг, контроль шайбы, скоростное ведение и работа с неудобной.',
+  },
+  {
+    icon: '/sbory/goal.png',
+    title: 'Техника броска',
+    text: 'Кистевые и щелчки: сила, точность, броски с разных положений.',
+  },
+  {
+    icon: '/sbory/vrata.png',
+    title: 'Тренировки для вратарей',
+    text: 'Спецподготовка: стойка, перемещения, реакция и игра на выходе.',
+  },
+  {
+    icon: '/sbory/futbolka.png',
+    title: 'Физическая подготовка',
+    text: 'Координация, растяжка, функционал и силовая работа «на земле».',
+  },
+]
 </script>
 
 <style scoped>
 .page {
-    padding: 2rem 0 3rem;
+  padding: 2rem 0 4rem;
 }
-.page__title {
-    font-size: 2rem;
-    margin: 0 0 1.5rem;
+
+/* Hero */
+.sbory-hero {
+  padding: clamp(1.5rem, 3.25vw, 2.5rem) 0;
 }
-.sbory__card {
-    max-width: 900px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    padding: 1.25rem;
+.sbory-hero__inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--radius) + 6px);
+  border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+  background:
+    radial-gradient(ellipse 720px 420px at 15% 10%, rgba(37, 99, 235, 0.26) 0%, transparent 60%),
+    radial-gradient(ellipse 560px 420px at 85% 35%, rgba(147, 197, 253, 0.16) 0%, transparent 62%),
+    linear-gradient(135deg, #0b1220 0%, #0b1a34 45%, #071123 100%);
+  padding: clamp(1.25rem, 3.25vw, 2.25rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
-.sbory__head {
-    display: grid;
+.sbory-hero__inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse 900px 520px at 50% 100%, rgba(255, 255, 255, 0.07) 0%, transparent 55%);
+  pointer-events: none;
+}
+.sbory-hero__left,
+.sbory-hero__right {
+  position: relative;
+  z-index: 1;
+}
+.sbory-hero__left {
+  text-align: center;
+}
+.sbory-hero__right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 900px) {
+  .sbory-hero__inner {
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: center;
+    gap: 2rem;
+  }
+  .sbory-hero__right {
+    justify-content: flex-end;
+  }
+}
+.sbory-hero__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  margin: 0 0 0.75rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+.sbory-hero__subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 1.25rem;
+}
+.sbory-hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.stat-badge {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  padding: 0.65rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+.stat-badge__value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.2;
+}
+.stat-badge__label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.66);
+  margin-top: 0.2rem;
+}
+.sbory-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.sbory-hero__actions .btn {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+.sbory-hero__actions .btn--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow: none;
+}
+.sbory-hero__actions .btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+.sbory-hero__logo {
+  height: clamp(120px, 20vw, 220px);
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 16px 44px rgba(0, 0, 0, 0.35));
+}
+
+/* Shifts */
+.sbory-shifts {
+  padding: 2rem 0;
+  text-align: center;
+}
+.sbory-shifts__title {
+  font-size: 1.75rem;
+  margin: 0 0 1.25rem;
+}
+.sbory-shifts__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.shift-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.shift-card__num {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.shift-card__dates {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* CTA */
+.sbory-cta {
+  display: none;
+}
+
+/* Promo */
+.sbory-promo {
+  padding: 3.25rem 0;
+}
+.sbory-promo__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: stretch;
+}
+@media (min-width: 900px) {
+  .sbory-promo__layout {
+    grid-template-columns: 0.95fr 1.55fr;
+    gap: 2rem;
+  }
+}
+.sbory-promo__left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  height: 100%;
+}
+.sbory-promo__cta {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+.sbory-promo__media {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 520px;
+  background: var(--color-surface);
+  flex: 1;
+  min-height: clamp(320px, 45vh, 560px);
+}
+.sbory-promo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sbory-promo__right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+.sbory-promo__cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 600px) {
+  .sbory-promo__cards {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+}
+.promo-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: 1.5rem;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+  text-align: left;
+  min-height: 190px;
+}
+.promo-card__icon {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 0.9rem;
+}
+.promo-card__title {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.promo-card__text {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  font-size: 1.02rem;
+}
+.sbory-promo__prices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  max-width: 520px;
+  width: 100%;
+}
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.price-row__label {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+.price-row__value {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--color-text);
+}
+
+/* Section title */
+.sbory-section-title {
+  font-size: 1.75rem;
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+/* Coaches */
+.sbory-coaches {
+  padding: 2rem 0;
+}
+.sbory-coaches__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+.coach-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+.coach-card__media {
+  width: 110px;
+  height: 110px;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  flex-shrink: 0;
+}
+.coach-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  display: block;
+}
+.coach-card__name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+/* Schedule */
+.sbory-schedule {
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sbory-schedule__grid {
+  width: 100%;
+  max-width: 920px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 840px) {
+  .sbory-schedule__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+.schedule-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: 1.5rem 1.25rem;
+}
+.schedule-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.schedule-card__day {
+  font-weight: 900;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+}
+.schedule-card__day-label {
+  font-weight: 800;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  color: var(--color-text);
+}
+.schedule-card__icon {
+  width: clamp(40px, 6vw, 56px);
+  height: auto;
+  display: block;
+  object-fit: contain;
+  opacity: 0.9;
+}
+.schedule-card__body {
+  display: grid;
+  gap: 0.65rem;
+}
+.schedule-item {
+  display: grid;
+  grid-template-columns: 140px 18px 1fr;
+  align-items: start;
+  gap: 0.75rem;
+}
+.schedule-item__time {
+  text-align: right;
+  font-weight: 900;
+  color: var(--color-accent);
+  white-space: nowrap;
+  line-height: 1.25;
+  font-size: 1.05rem;
+}
+.schedule-item__divider {
+  position: relative;
+  width: 2px;
+  height: 100%;
+  background: var(--color-text);
+  opacity: 0.2;
+  justify-self: center;
+  border-radius: 2px;
+}
+.schedule-item__label {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+@media (max-width: 520px) {
+  .schedule-item {
+    grid-template-columns: 1fr;
     gap: 0.25rem;
-    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .schedule-item__time {
+    text-align: center;
+  }
+  .schedule-item__divider {
+    display: none;
+  }
 }
-.sbory__price {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--color-text);
+.sbory-schedule__footer {
+  margin-top: 1.5rem;
+  max-width: 640px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
-.sbory__note {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-size: 0.95rem;
+.sbory-schedule__note {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  font-size: 1.05rem;
 }
-.sbory__content {
-    color: var(--color-text-muted);
-    line-height: 1.65;
-    white-space: pre-line;
+.sbory-schedule__warning {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+/* Venue */
+.sbory-venue {
+  padding: 2rem 0;
+}
+.sbory-venue__info {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.sbory-venue__name {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.sbory-venue__address {
+  margin: 0 0 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+.sbory-venue__desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* QR modal */
+.qr-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 220;
+  padding: 1rem;
+}
+.qr-modal__inner {
+  position: relative;
+  width: min(420px, 100%);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: 1.5rem;
+  text-align: center;
+}
+.qr-modal__title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+.qr-modal__img {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+.qr-modal__close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 1.35rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.qr-modal__close:hover {
+  background: var(--color-border);
 }
 </style>
-
