@@ -18,8 +18,11 @@
                     <input
                         v-model="phone"
                         type="tel"
+                        inputmode="tel"
+                        autocomplete="tel"
                         placeholder="+7 (___) ___-__-__"
                         class="appointment-modal__input"
+                        @input="onPhoneInput"
                         required
                     />
                     <input
@@ -101,6 +104,16 @@ const agree = ref(false)
 const loading = ref(false)
 const submitted = ref(false)
 const errorText = ref<string | null>(null)
+
+function normalizePhone(raw: string) {
+    const digitsOnly = raw.replace(/\D/g, '')
+    const hasPlus = raw.trim().startsWith('+')
+    return `${hasPlus ? '+' : ''}${digitsOnly}`
+}
+
+function onPhoneInput(e: Event) {
+    phone.value = normalizePhone((e.target as HTMLInputElement).value)
+}
 
 watch(
     () => props.initialPhone,

@@ -16,8 +16,11 @@
             <input
                 v-model="phone"
                 type="tel"
+                inputmode="tel"
+                autocomplete="tel"
                 placeholder="+7 (___) ___-__-__"
                 class="lead-form__input lead-form__phone-input"
+                @input="onPhoneInput"
                 required
             />
             <button type="submit" class="lead-form__submit-btn" :disabled="loading">
@@ -65,6 +68,17 @@ const agree = ref(false)
 const submitted = ref(false)
 const loading = ref(false)
 const errorText = ref<string | null>(null)
+
+function normalizePhone(raw: string) {
+    const digitsOnly = raw.replace(/\D/g, '')
+    const hasPlus = raw.trim().startsWith('+')
+    return `${hasPlus ? '+' : ''}${digitsOnly}`
+}
+
+function onPhoneInput(e: Event) {
+    const next = normalizePhone((e.target as HTMLInputElement).value)
+    phone.value = next
+}
 
 async function onSubmit() {
     if (loading.value) return

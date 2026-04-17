@@ -28,7 +28,7 @@
             <h4 class="abonementy-modal__form-title">Оставить заявку</h4>
             <form v-if="!serviceRequestSent" class="service-request" @submit.prevent="submitServiceRequest">
               <div class="service-request__fields">
-                <input v-model="servicePhone" type="tel" class="service-request__input" placeholder="+7 (___) ___-__-__" required />
+                <input v-model="servicePhone" type="tel" inputmode="tel" autocomplete="tel" class="service-request__input" placeholder="+7 (___) ___-__-__" @input="onServicePhoneInput" required />
                 <input v-model="serviceParentName" type="text" class="service-request__input" placeholder="ФИО родителя" required />
                 <input v-model="serviceChildName" type="text" class="service-request__input" placeholder="ФИО ребёнка" required />
                 <input v-model.number="serviceChildAge" type="number" min="1" max="18" inputmode="numeric" class="service-request__input" placeholder="Возраст ребёнка" required />
@@ -227,6 +227,16 @@ const serviceAgree = ref(false)
 const serviceRequestLoading = ref(false)
 const serviceRequestError = ref<string | null>(null)
 const serviceRequestSent = ref(false)
+
+function normalizePhone(raw: string) {
+  const digitsOnly = raw.replace(/\D/g, '')
+  const hasPlus = raw.trim().startsWith('+')
+  return `${hasPlus ? '+' : ''}${digitsOnly}`
+}
+
+function onServicePhoneInput(e: Event) {
+  servicePhone.value = normalizePhone((e.target as HTMLInputElement).value)
+}
 
 watch(selectedService, (v) => {
   if (!v) return
