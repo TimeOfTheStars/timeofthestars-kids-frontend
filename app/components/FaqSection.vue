@@ -82,7 +82,7 @@ const showQuestionForm = ref(false)
 const questionSent = ref(false)
 
 const coachImage =
-  '/coaches/pqX2_np_3mOp0DE-fu_sYOAlcJRkcBs-qfaSF0qnz-btSlDAzuOuNSWVc5OKMzJtaU6Aa6YJVv8lc0zYWO0cBBZ6.jpg'
+  '/coaches/Vershinin_MO.jpg'
 
 function toggle(i: number) {
   openIndex.value = openIndex.value === i ? null : i
