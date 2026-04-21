@@ -54,6 +54,22 @@
         </div>
       </section>
 
+      <!-- Training tasks -->
+      <section class="sbory-tasks">
+        <h2 class="sbory-tasks__title">Задачи тренировок</h2>
+        <div class="sbory-tasks__card">
+          <h3 class="sbory-tasks__card-title">В программе сборов:</h3>
+          <ul class="sbory-tasks__list">
+            <li class="sbory-tasks__item">14 часов - тренировок на льду</li>
+            <li class="sbory-tasks__item">12 часов - функциональной подготовки в зале</li>
+          </ul>
+
+          <p class="sbory-tasks__text">
+            В зависимости от задач тренировок, полевые игроки делятся на 5 групп по 5-6 человек или по парам. Группы формируются по возрасту (5-6 лет, 7-8 лет, 9-10 лет, 11-12 лет, 13-14 лет) и по уровню подготовки. Вратари тренируются отдельно в группе до 6 человек.
+          </p>
+        </div>
+      </section>
+
       <!-- Shifts -->
       <section class="sbory-shifts">
         <h2 class="sbory-shifts__title">Три смены</h2>
@@ -110,13 +126,41 @@
       <!-- Coaches -->
       <section class="sbory-coaches">
         <h2 class="sbory-section-title">Тренерский состав</h2>
-        <div class="sbory-coaches__grid">
-          <article v-for="coach in coaches" :key="coach.name" class="coach-card">
-            <div class="coach-card__media">
-              <img :src="coach.image" :alt="coach.name" class="coach-card__img" />
+        <div class="sbory-coaches__layout">
+          <aside class="sbory-coaches__list" aria-label="Список тренеров">
+            <button
+              v-for="(coach, i) in summerCoachesResolved"
+              :key="coach.name"
+              type="button"
+              class="sbory-coaches__item"
+              :class="{ 'sbory-coaches__item--active': selectedCoachIndex === i }"
+              @click="selectedCoachIndex = i"
+            >
+              <span class="sbory-coaches__avatar">
+                <img v-if="coach.pic" :src="coach.pic" :alt="coach.name" class="sbory-coaches__avatar-img" />
+                <span v-else class="sbory-coaches__avatar-placeholder" aria-hidden="true">{{ coach.name.slice(0, 1) }}</span>
+              </span>
+              <span class="sbory-coaches__item-text">
+                <span class="sbory-coaches__item-name">{{ coach.name }}</span>
+              </span>
+            </button>
+          </aside>
+
+          <div v-if="selectedSummerCoach" class="sbory-coaches__details">
+            <div class="sbory-coaches__details-media">
+              <img
+                v-if="selectedSummerCoach.pic"
+                :src="selectedSummerCoach.pic"
+                :alt="selectedSummerCoach.name"
+                class="sbory-coaches__details-img"
+              />
+              <div v-else class="sbory-coaches__details-placeholder">Фото скоро</div>
             </div>
-            <p class="coach-card__name">{{ coach.name }}</p>
-          </article>
+            <div class="sbory-coaches__details-content">
+              <h3 class="sbory-coaches__details-name">{{ selectedSummerCoach.name }}</h3>
+              <p class="sbory-coaches__details-desc">{{ selectedSummerCoach.description }}</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -174,6 +218,33 @@
         </div>
         <ArenaSlider />
       </section>
+
+      <!-- Shift choice -->
+      <section class="sbory-shift-choice">
+        <h2 class="sbory-section-title">Выбор смены</h2>
+        <div class="sbory-shift-choice__grid">
+          <article v-for="card in shiftChoiceCards" :key="card.title" class="choice-card">
+            <div v-if="card.stickerSrc" class="choice-card__sticker">
+              <img :src="card.stickerSrc" :alt="card.stickerAlt || ''" class="choice-card__sticker-img" />
+            </div>
+            <h3 class="choice-card__title">{{ card.title }}</h3>
+
+            <ul v-if="card.items?.length" class="choice-card__list">
+              <li v-for="(it, i) in card.items" :key="i" class="choice-card__item">
+                {{ it }}
+              </li>
+            </ul>
+
+            <p v-else class="choice-card__text">
+              {{ card.text }}
+            </p>
+
+            <div v-if="card.price" class="choice-card__price">
+              {{ card.price }}
+            </div>
+          </article>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -196,11 +267,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-
-definePageMeta({
-  layout: 'default',
-})
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 const showQrModal = ref(false)
 
@@ -225,28 +292,45 @@ const shifts = [
   { num: '3', dates: '29 июня – 04 июля 2026' },
 ]
 
-const coaches = [
-  {
-    name: 'Максим Олегович Вершинин',
-    image: '/coaches/pqX2_np_3mOp0DE-fu_sYOAlcJRkcBs-qfaSF0qnz-btSlDAzuOuNSWVc5OKMzJtaU6Aa6YJVv8lc0zYWO0cBBZ6.jpg',
-  },
-  {
-    name: 'Дмитрий Олегович Вершинин',
-    image: '/coaches/oh_4JtnGs2Dswjo1hZfXbK3kA-dmAEGfsFVZ396wnqzBId1RkzrIKI9pLCY-Hn-SQ1Qu2rkrC9s7wM-LkKwGd1lD.jpg',
-  },
-  {
-    name: 'Семён Антонович Майков',
-    image: '/coaches/u-7gF0Ca8dfisqbMa47rX3uDMTBTH0OID5VEbum5qaNINZUZShGkz0PaxTpJV4y8Vze32iE-N5UdRpgIGNDByXmd.jpg',
-  },
-  {
-    name: 'Роман Анатольевич Желтов',
-    image: '/coaches/photo_2026-02-05_13-35-28.jpg',
-  },
-  {
-    name: 'Антон Вячеславович Коленкин',
-    image: '/coaches/photo_2026-02-05_13-35-29.jpg',
-  },
-]
+type CoachJson = {
+  name: string
+  pic: string
+  description: string
+}
+
+const summerCoaches = ref<CoachJson[]>([])
+const mainCoaches = ref<CoachJson[]>([])
+
+const mainPicByName = computed(() => {
+  const m = new Map<string, string>()
+  for (const c of mainCoaches.value) m.set(c.name, c.pic)
+  return m
+})
+
+const summerCoachesResolved = computed(() =>
+  summerCoaches.value.map((c) => ({
+    ...c,
+    pic: c.pic?.trim() ? c.pic : mainPicByName.value.get(c.name) || '',
+  }))
+)
+
+const selectedCoachIndex = ref(0)
+const selectedSummerCoach = computed(() => summerCoachesResolved.value[selectedCoachIndex.value] ?? null)
+
+onMounted(async () => {
+  try {
+    const [summerRes, mainRes] = await Promise.all([fetch('/summer_camp_coaches.json'), fetch('/main_coaches.json')])
+    const summerJson = (await summerRes.json()) as { summer_camp_coaches?: CoachJson[] }
+    const mainJson = (await mainRes.json()) as { main_coaches?: CoachJson[] }
+    summerCoaches.value = summerJson.summer_camp_coaches ?? []
+    mainCoaches.value = mainJson.main_coaches ?? []
+    selectedCoachIndex.value = 0
+  } catch {
+    summerCoaches.value = []
+    mainCoaches.value = []
+    selectedCoachIndex.value = 0
+  }
+})
 
 const schedule = [
   { time: '8:00 – 8:30', label: 'Завтрак', residentsOnly: true },
@@ -308,11 +392,69 @@ const promoCards = [
     text: 'Координация, растяжка, функционал и силовая работа «на земле».',
   },
 ]
+
+const shiftChoiceCommonItems = [
+  '12 часов тренировок на льду',
+  '12 часов ОФП / акробатики / бросковая зона',
+  'Именная джерси АНФСО «ВРЕМЯ ЗВЕЗД»',
+  'Фирменный подарок каждому участнику',
+  'Фото и видео отчёты тренировочного процесса',
+  'Ежедневно выделяем лучших игроков в группах',
+  'Система поощрения для детей (собственная валюта сборов)',
+  'Рекомендации по развитию по итогам сборов',
+]
+
+const shiftChoiceCards: Array<{
+  title: string
+  stickerSrc?: string
+  stickerAlt?: string
+  items?: string[]
+  text?: string
+  price?: string
+}> = [
+  {
+    title: 'В стоимость участия с проживанием входит:',
+    stickerSrc: '/stickers/otel.png',
+    stickerAlt: 'Проживание',
+    items: ['Проживание на территории базы', 'Питание на базе', ...shiftChoiceCommonItems],
+    price: '60 000 ₽',
+  },
+  {
+    title: 'В стоимость участия без проживания входят:',
+    stickerSrc: '/stickers/84-chasa-lda.png',
+    stickerAlt: 'Тренировки',
+    items: shiftChoiceCommonItems,
+    price: '40 000 ₽',
+  },
+  {
+    title: 'Стоимость проживания одного сопровождающего:',
+    stickerSrc: '/stickers/divan.png',
+    stickerAlt: 'Сопровождающий',
+    text: 'Уточняйте условия и стоимость у менеджера.',
+  },
+]
 </script>
 
 <style scoped>
 .page {
   padding: 2rem 0 4rem;
+}
+
+/* Breadcrumbs (on dark top background) */
+:deep(.breadcrumbs) {
+  color: rgba(255, 255, 255, 0.78);
+}
+:deep(.breadcrumbs__link) {
+  color: rgba(255, 255, 255, 0.78);
+}
+:deep(.breadcrumbs__link:hover) {
+  color: rgba(255, 255, 255, 0.92);
+}
+:deep(.breadcrumbs__sep) {
+  opacity: 0.8;
+}
+:deep(.breadcrumbs__current) {
+  color: rgba(255, 255, 255, 0.92);
 }
 
 /* Hero */
@@ -321,26 +463,17 @@ const promoCards = [
 }
 .sbory-hero__inner {
   position: relative;
-  overflow: hidden;
-  border-radius: calc(var(--radius) + 6px);
-  border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
-  background:
-    radial-gradient(ellipse 720px 420px at 15% 10%, rgba(37, 99, 235, 0.26) 0%, transparent 60%),
-    radial-gradient(ellipse 560px 420px at 85% 35%, rgba(147, 197, 253, 0.16) 0%, transparent 62%),
-    linear-gradient(135deg, #0b1220 0%, #0b1a34 45%, #071123 100%);
-  padding: clamp(1.25rem, 3.25vw, 2.25rem);
+  overflow: visible;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 .sbory-hero__inner::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
-    radial-gradient(ellipse 900px 520px at 50% 100%, rgba(255, 255, 255, 0.07) 0%, transparent 55%);
-  pointer-events: none;
+  content: none;
 }
 .sbory-hero__left,
 .sbory-hero__right {
@@ -437,11 +570,76 @@ const promoCards = [
 /* Shifts */
 .sbory-shifts {
   padding: 2rem 0;
+  margin-top: clamp(4rem, 10vh, 7rem);
   text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.sbory-shifts::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  background: var(--color-bg);
+  z-index: -1;
 }
 .sbory-shifts__title {
   font-size: 1.75rem;
   margin: 0 0 1.25rem;
+}
+
+/* Training tasks */
+.sbory-tasks {
+  padding: 2.5rem 0 1rem;
+  position: relative;
+  z-index: 2;
+}
+.sbory-tasks::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  background: var(--color-bg);
+  z-index: -1;
+}
+.sbory-tasks__title {
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  margin: 0 0 1.25rem;
+  color: var(--color-text);
+}
+.sbory-tasks__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: clamp(1.1rem, 2.5vw, 1.6rem);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+.sbory-tasks__card-title {
+  margin: 0 0 0.75rem;
+  font-weight: 800;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+.sbory-tasks__list {
+  margin: 0 0 0.9rem;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.sbory-tasks__item {
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  font-size: 0.98rem;
+}
+.sbory-tasks__text {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  font-size: 1rem;
 }
 .sbory-shifts__grid {
   display: grid;
@@ -607,44 +805,155 @@ const promoCards = [
 .sbory-coaches {
   padding: 2rem 0;
 }
-.sbory-coaches__grid {
+.sbory-coaches__layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
 }
-.coach-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 1.25rem 1rem;
+.sbory-coaches__list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  text-align: center;
+  justify-content: space-between;
+  gap: 0;
+  height: 520px;
+  overflow: auto;
+  padding-right: 0.25rem;
 }
-.coach-card__media {
-  width: 110px;
-  height: 110px;
-  border-radius: 9999px;
+.sbory-coaches__item {
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: 0.75rem;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.sbory-coaches__item:hover {
+  border-color: rgba(220, 38, 38, 0.35);
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.12), 0 8px 24px rgba(220, 38, 38, 0.1);
+  transform: translateY(-2px);
+}
+.sbory-coaches__item--active {
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+.sbory-coaches__item:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22);
+}
+.sbory-coaches__avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--color-border);
   background: var(--color-bg);
-  flex-shrink: 0;
+  display: block;
 }
-.coach-card__img {
+.sbory-coaches__avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 50% 20%;
   display: block;
 }
-.coach-card__name {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 600;
+.sbory-coaches__avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-weight: 900;
+  font-size: 1.25rem;
+}
+.sbory-coaches__item-name {
+  font-weight: 800;
   color: var(--color-text);
-  line-height: 1.3;
+  line-height: 1.25;
+  font-size: 0.95rem;
+}
+.sbory-coaches__details {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  height: 520px;
+}
+.sbory-coaches__details-media {
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.sbory-coaches__details-img {
+  width: 100%;
+  height: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+.sbory-coaches__details-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.sbory-coaches__details-content {
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.sbory-coaches__details-name {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--color-text);
+}
+.sbory-coaches__details-desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  white-space: pre-line;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+@media (max-width: 920px) {
+  .sbory-coaches__layout {
+    grid-template-columns: 1fr;
+  }
+  .sbory-coaches__list {
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
+  }
+  .sbory-coaches__details {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .sbory-coaches__details-media {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    height: 320px;
+  }
 }
 
 /* Schedule */
@@ -791,6 +1100,72 @@ const promoCards = [
   max-width: 640px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Shift choice */
+.sbory-shift-choice {
+  padding: 3rem 0 2rem;
+}
+.sbory-shift-choice__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+.choice-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 6px);
+  padding: 1.5rem;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.choice-card__sticker {
+  display: flex;
+  justify-content: center;
+  margin: -0.25rem 0 1rem;
+}
+.choice-card__sticker-img {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.12));
+}
+.choice-card__title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+.choice-card__list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.choice-card__item {
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  font-size: 0.98rem;
+}
+.choice-card__text {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+.choice-card__price {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  font-weight: 900;
+  font-size: 1.25rem;
+  color: var(--color-accent);
+  letter-spacing: 0.01em;
 }
 
 /* QR modal */

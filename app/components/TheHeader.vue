@@ -88,8 +88,7 @@ const route = useRoute()
 const menuOpen = ref(false)
 const isScrolled = ref(false)
 
-const isHomePage = computed(() => route.path === '/')
-const showScrolledStyle = computed(() => !isHomePage.value || isScrolled.value)
+const showScrolledStyle = computed(() => isScrolled.value)
 
 const scrollThreshold = 20
 
@@ -148,9 +147,9 @@ onUnmounted(() => {
 }
 
 .header__top {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem 1rem 0 1rem;
+    width: 100%;
+    margin: 0;
+    padding: 1rem clamp(1rem, 3vw, 2.25rem) 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -178,15 +177,15 @@ onUnmounted(() => {
 }
 
 .header__divider {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header__nav-row {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px 1rem 1rem 1rem;
+    width: 100%;
+    margin: 0;
+    padding: 24px clamp(1rem, 3vw, 2.25rem) 1rem;
     display: flex;
     align-items: center;
     gap: 1rem;

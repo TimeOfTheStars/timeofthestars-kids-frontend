@@ -4,21 +4,23 @@
       <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Услуги' }]" />
       <h1 class="page__title">Услуги</h1>
 
-      <div class="abonementy__grid">
-        <article v-for="(item, i) in services" :key="i" class="abonementy-card">
-          <div class="abonementy-card__media">
-            <img :src="item.image" :alt="item.title" class="abonementy-card__img" />
-          </div>
-          <div class="abonementy-card__body">
-            <h3 class="abonementy-card__type">{{ item.title }}</h3>
-            <p class="abonementy-card__price">{{ item.price }}</p>
-            <p v-if="item.desc" class="abonementy-card__period">{{ item.desc }}</p>
-            <div class="abonementy-card__actions">
-              <button type="button" class="btn btn--secondary" @click="selectedService = item">Подробнее</button>
+      <section class="page-surface">
+        <div class="abonementy__grid">
+          <article v-for="(item, i) in services" :key="i" class="abonementy-card">
+            <div class="abonementy-card__media">
+              <img :src="item.image" :alt="item.title" class="abonementy-card__img" />
             </div>
-          </div>
-        </article>
-      </div>
+            <div class="abonementy-card__body">
+              <h3 class="abonementy-card__type">{{ item.title }}</h3>
+              <p class="abonementy-card__price">{{ item.price }}</p>
+              <p v-if="item.desc" class="abonementy-card__period">{{ item.desc }}</p>
+              <div class="abonementy-card__actions">
+                <button type="button" class="btn btn--secondary" @click="selectedService = item">Подробнее</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
 
       <div v-if="selectedService" class="abonementy-modal" @click.self="selectedService = null">
         <div class="abonementy-modal__inner">
@@ -277,6 +279,26 @@ async function submitServiceRequest() {
 .page__title {
   font-size: 2rem;
   margin: 0 0 2rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.page-surface {
+  position: relative;
+  padding: 2rem 0 2.5rem;
+}
+.page-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  background: var(--color-bg);
+  z-index: 0;
+}
+.page-surface > * {
+  position: relative;
+  z-index: 1;
 }
 .abonementy__grid {
   display: grid;

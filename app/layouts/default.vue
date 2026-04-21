@@ -1,5 +1,6 @@
 <template>
     <div class="layout">
+        <div class="top-hero-bg" aria-hidden="true"></div>
         <div class="bg-orbs" aria-hidden="true">
             <span class="bg-orb bg-orb--1"></span>
             <span class="bg-orb bg-orb--2"></span>
@@ -28,11 +29,42 @@ const isHomePage = computed(() => route.path === '/')
     flex-direction: column;
     position: relative;
 }
+.top-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: min(720px, 100vh);
+    background-image: url('/bg-header.jpg');
+    background-size: cover;
+    background-position: 50% 40%;
+    background-repeat: no-repeat;
+    z-index: 0;
+    pointer-events: none;
+}
+.top-hero-bg {
+    min-height: 720px;
+}
+@media (max-width: 600px) {
+    .top-hero-bg {
+        height: min(1100px, 140vh);
+    }
+}
+.top-hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 720px 420px at 15% 10%, rgba(37, 99, 235, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 560px 420px at 85% 35%, rgba(147, 197, 253, 0.12) 0%, transparent 62%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.12) 100%);
+    pointer-events: none;
+}
 .main {
     flex: 1;
     padding-top: 0;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 .main.main--with-offset {
     padding-top: 120px;
@@ -43,7 +75,7 @@ const isHomePage = computed(() => route.path === '/')
     inset: 0;
     overflow: hidden;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 .bg-orb {
     position: absolute;

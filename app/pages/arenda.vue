@@ -3,14 +3,17 @@
     <div class="container">
       <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Аренда' }]" />
       <h1 class="page__title">Аренда</h1>
-      <div class="arenda__media">
-        <div class="media-placeholder">Тут может быть картинка</div>
-      </div>
-      <div class="arenda__content">
-        <p>Мы предлагаем к аренде две ледовые арены размером 30×60 метров. Стоимость составляет от 15 000 рублей в час.</p>
-        <p>В стоимость входит предоставление ледовой арены после заливки, раздевалка, хоккейные ворота, если требуются.</p>
-        <p>Если необходима дополнительная раздевалка, то доплата за нее составит 2000 руб.</p>
-      </div>
+
+      <section class="page-surface">
+        <div class="arenda__media">
+          <div class="media-placeholder">Тут может быть картинка</div>
+        </div>
+        <div class="arenda__content">
+          <p>Мы предлагаем к аренде две ледовые арены размером 30×60 метров. Стоимость составляет от 15 000 рублей в час.</p>
+          <p>В стоимость входит предоставление ледовой арены после заливки, раздевалка, хоккейные ворота, если требуются.</p>
+          <p>Если необходима дополнительная раздевалка, то доплата за нее составит 2000 руб.</p>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -28,6 +31,26 @@ definePageMeta({
 .page__title {
   font-size: 2rem;
   margin: 0 0 1.5rem;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.page-surface {
+  position: relative;
+  padding: 2rem 0 2.5rem;
+}
+.page-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  background: var(--color-bg);
+  z-index: 0;
+}
+.page-surface > * {
+  position: relative;
+  z-index: 1;
 }
 .arenda__media {
   aspect-ratio: 16/9;

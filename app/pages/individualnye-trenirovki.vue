@@ -8,55 +8,57 @@
                 ]"
             />
             <h1 class="page__title">Индивидуальные тренировки</h1>
-            <div class="individual__intro">
-                <p>
-                    В <BrandName /> работают профессиональные тренеры, есть вся
-                    необходимая инфраструктура и мы будем рады помочь Вам
-                    развить профессиональные навыки:
-                </p>
-                <ul>
-                    <li>техника катания,</li>
-                    <li>техника владения клюшкой/шайбой,</li>
-                    <li>постановка техники броска,</li>
-                    <li>прием и передача шайбы,</li>
-                    <li>функциональная подготовка и многое другое.</li>
-                </ul>
-                <p>
-                    Для многих спортсменов более комфортными являются групповые
-                    тренировки, это дополнительная мотивация быть быстрее и
-                    сильнее, а также легче переносить сам процесс тренировок,
-                    так как они проходят в кругу таких же как и Вы —
-                    трудолюбивых и жизнерадостных людей!
-                </p>
-            </div>
+            <section class="page-surface">
+                <div class="individual__intro">
+                    <p>
+                        В <BrandName /> работают профессиональные тренеры, есть вся
+                        необходимая инфраструктура и мы будем рады помочь Вам
+                        развить профессиональные навыки:
+                    </p>
+                    <ul>
+                        <li>техника катания,</li>
+                        <li>техника владения клюшкой/шайбой,</li>
+                        <li>постановка техники броска,</li>
+                        <li>прием и передача шайбы,</li>
+                        <li>функциональная подготовка и многое другое.</li>
+                    </ul>
+                    <p>
+                        Для многих спортсменов более комфортными являются групповые
+                        тренировки, это дополнительная мотивация быть быстрее и
+                        сильнее, а также легче переносить сам процесс тренировок,
+                        так как они проходят в кругу таких же как и Вы —
+                        трудолюбивых и жизнерадостных людей!
+                    </p>
+                </div>
 
-            <h2 class="individual__subtitle">Важно знать</h2>
-            <div class="individual__accordion">
-                <div
-                    v-for="(item, i) in accordionItems"
-                    :key="i"
-                    class="accordion-item"
-                    :class="{ 'accordion-item--open': openIndex === i }"
-                >
-                    <button
-                        type="button"
-                        class="accordion-item__trigger"
-                        :aria-expanded="openIndex === i"
-                        @click="toggle(i)"
-                    >
-                        {{ item.title }}
-                        <span class="accordion-item__arrow">{{
-                            openIndex === i ? '▲' : '▼'
-                        }}</span>
-                    </button>
+                <h2 class="individual__subtitle">Важно знать</h2>
+                <div class="individual__accordion">
                     <div
-                        v-show="openIndex === i"
-                        class="accordion-item__content"
+                        v-for="(item, i) in accordionItems"
+                        :key="i"
+                        class="accordion-item"
+                        :class="{ 'accordion-item--open': openIndex === i }"
                     >
-                        <p>{{ item.text }}</p>
+                        <button
+                            type="button"
+                            class="accordion-item__trigger"
+                            :aria-expanded="openIndex === i"
+                            @click="toggle(i)"
+                        >
+                            {{ item.title }}
+                            <span class="accordion-item__arrow">{{
+                                openIndex === i ? '▲' : '▼'
+                            }}</span>
+                        </button>
+                        <div
+                            v-show="openIndex === i"
+                            class="accordion-item__content"
+                        >
+                            <p>{{ item.text }}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 </template>
@@ -106,6 +108,26 @@ function toggle(i: number) {
 .page__title {
     font-size: 2rem;
     margin: 0 0 1.5rem;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.page-surface {
+    position: relative;
+    padding: 2rem 0 2.5rem;
+}
+.page-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    background: var(--color-bg);
+    z-index: 0;
+}
+.page-surface > * {
+    position: relative;
+    z-index: 1;
 }
 .individual__intro {
     margin-bottom: 2rem;

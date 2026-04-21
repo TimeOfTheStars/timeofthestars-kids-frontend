@@ -22,20 +22,20 @@ defineProps<{
 <style scoped>
 .breadcrumbs {
   font-size: 0.9rem;
-  color: var(--color-text-muted);
+  color: var(--breadcrumbs-color, rgba(255, 255, 255, 0.78));
   margin-bottom: 1rem;
 }
 .breadcrumbs__link {
   text-decoration: none;
-  color: var(--color-text-muted);
+  color: var(--breadcrumbs-color, rgba(255, 255, 255, 0.78));
 }
 .breadcrumbs__link:hover {
-  color: var(--color-text);
+  color: var(--breadcrumbs-hover-color, rgba(255, 255, 255, 0.92));
 }
 .breadcrumbs__sep {
   margin: 0 0.5rem;
 }
 .breadcrumbs__current {
-  color: var(--color-text);
+  color: var(--breadcrumbs-current-color, rgba(255, 255, 255, 0.92));
 }
 </style>

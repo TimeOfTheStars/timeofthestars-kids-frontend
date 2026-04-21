@@ -9,111 +9,113 @@
             />
             <h1 class="page__title">Сведения об образовательной организации</h1>
 
-            <section class="school__main-info">
-                <h2 class="school__subtitle">Основные сведения</h2>
-                <dl class="school__info-list">
-                    <dt>Полное и сокращенное наименование</dt>
-                    <dd>Автономная некоммерческая физкультурно - спортивная организация «ВРЕМЯ ЗВЕЗД» (АНФСО «ВРЕМЯ ЗВЕЗД»)</dd>
+            <section class="page-surface">
+                <section class="school__main-info">
+                    <h2 class="school__subtitle">Основные сведения</h2>
+                    <dl class="school__info-list">
+                        <dt>Полное и сокращенное наименование</dt>
+                        <dd>Автономная некоммерческая физкультурно - спортивная организация «ВРЕМЯ ЗВЕЗД» (АНФСО «ВРЕМЯ ЗВЕЗД»)</dd>
 
-                    <dt>Дата создания</dt>
-                    <dd>2024 г.</dd>
+                        <dt>Дата создания</dt>
+                        <dd>2024 г.</dd>
 
-                    <dt>Учредители / Члены организации</dt>
-                    <dd>
-                        <ul class="school__info-sublist">
-                            <li>Вершинина Татьяна Вадимовна</li>
-                        </ul>
-                    </dd>
+                        <dt>Учредители / Члены организации</dt>
+                        <dd>
+                            <ul class="school__info-sublist">
+                                <li>Вершинина Татьяна Вадимовна</li>
+                            </ul>
+                        </dd>
 
-                    <dt>Место нахождения</dt>
-                    <dd>
-                        Российская Федерация, Ярославская область, город
-                        Ярославль, Дядьковская улица, 7, 150006.
-                    </dd>
+                        <dt>Место нахождения</dt>
+                        <dd>
+                            Российская Федерация, Ярославская область, город
+                            Ярославль, Дядьковская улица, 7, 150006.
+                        </dd>
 
-                    <dt>Режим и график работы</dt>
-                    <dd>понедельник — воскресенье с 09:00 до 21:00</dd>
+                        <dt>Режим и график работы</dt>
+                        <dd>понедельник — воскресенье с 09:00 до 21:00</dd>
 
-                    <dt>Контактные телефоны</dt>
-                    <dd>8-920-119-13-15</dd>
+                        <dt>Контактные телефоны</dt>
+                        <dd>8-920-119-13-15</dd>
 
-                    <dt>Адрес электронной почты</dt>
-                    <dd>
-                        <a
-                            href="mailto:Time_of_the_stars@mail.ru"
-                            class="school__info-link"
-                            >Time_of_the_stars@mail.ru</a
-                        >
-                    </dd>
-                </dl>
+                        <dt>Адрес электронной почты</dt>
+                        <dd>
+                            <a
+                                href="mailto:Time_of_the_stars@mail.ru"
+                                class="school__info-link"
+                                >Time_of_the_stars@mail.ru</a
+                            >
+                        </dd>
+                    </dl>
+                </section>
+
+                <div class="school__intro">
+                    <p>
+                        Время Звезд-KIDS создан в 2024 году для воспитания профессиональных хоккеистов!
+                    </p>
+                    <p>
+                        На сегодняшний день «Время Звезд-KIDS» — первая и единственная в России коммерческая школа, заявленная всеми возрастами в чемпионаты и первенства города Москвы!
+                    </p>
+                    <p>
+                        Тренировочный процесс и домашние игры проходят в новом многофункциональном спортивном комплексе ФГБУ ПОО «ГУОР по хоккею».
+                    </p>
+                    <p>
+                        Наша хоккейная школа принимает участие в официальных соревнованиях, проводимых Федерацией Хоккея Москвы (ФХМ).
+                    </p>
+                </div>
+                <div class="school__cta">
+                    <p class="school__cta-text">Идет набор 2010-2023 г.р.</p>
+                    <p class="school__cta-price">
+                        Стоимость абонемента от 9200 руб.
+                    </p>
+                    <a
+                        href="https://timeofthestars-kids.ru/abonementy"
+                        class="btn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Купить абонемент</a
+                    >
+                </div>
+                <!-- <div class="school__media">
+                    <div class="media-placeholder">Тут может быть картинка</div>
+                </div> -->
+                <h2 class="school__subtitle">
+                    Для развития созданы отличные условия:
+                </h2>
+                <ul class="school__conditions">
+                    <li>два больших льда;</li>
+                    <li>залы функциональной подготовки;</li>
+                    <li>игровые залы;</li>
+                    <li>бросковые зоны;</li>
+                    <li>зоны конькобежных тренажёров HST.</li>
+                </ul>
+                <div class="school__outro">
+                    <p>
+                        Тренировки спортсменов проходят в группах по году рождения
+                        для детей от 3-х до 17-ти лет.
+                    </p>
+                    <p>
+                        Продолжительность тренировки для детей составляет 60 минут и проводится от трех раз в неделю (лед+ОФП).
+                    </p>
+                    <p>
+                        Обучение в школе платное. Начиная с 8 лет, наиболее
+                        перспективные воспитанники переводятся на полное обеспечение
+                        хоккейным клубом.
+                    </p>
+                </div>
+                <h2 class="school__subtitle">Документы</h2>
+                <div class="school__docs">
+                    <a
+                        v-for="(doc, i) in docs"
+                        :key="i"
+                        :href="doc.url"
+                        target="_blank"
+                        rel="noopener"
+                        class="school__doc-link btn"
+                        >{{ doc.title }}</a
+                    >
+                </div>
             </section>
-
-            <div class="school__intro">
-                <p>
-                    Время Звезд-KIDS создан в 2024 году для воспитания профессиональных хоккеистов!
-                </p>
-                <p>
-                    На сегодняшний день «Время Звезд-KIDS» — первая и единственная в России коммерческая школа, заявленная всеми возрастами в чемпионаты и первенства города Москвы!
-                </p>
-                <p>
-                    Тренировочный процесс и домашние игры проходят в новом многофункциональном спортивном комплексе ФГБУ ПОО «ГУОР по хоккею».
-                </p>
-                <p>
-                    Наша хоккейная школа принимает участие в официальных соревнованиях, проводимых Федерацией Хоккея Москвы (ФХМ).
-                </p>
-            </div>
-            <div class="school__cta">
-                <p class="school__cta-text">Идет набор 2010-2023 г.р.</p>
-                <p class="school__cta-price">
-                    Стоимость абонемента от 9200 руб.
-                </p>
-                <a
-                    href="https://timeofthestars-kids.ru/abonementy"
-                    class="btn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Купить абонемент</a
-                >
-            </div>
-            <!-- <div class="school__media">
-                <div class="media-placeholder">Тут может быть картинка</div>
-            </div> -->
-            <h2 class="school__subtitle">
-                Для развития созданы отличные условия:
-            </h2>
-            <ul class="school__conditions">
-                <li>два больших льда;</li>
-                <li>залы функциональной подготовки;</li>
-                <li>игровые залы;</li>
-                <li>бросковые зоны;</li>
-                <li>зоны конькобежных тренажёров HST.</li>
-            </ul>
-            <div class="school__outro">
-                <p>
-                    Тренировки спортсменов проходят в группах по году рождения
-                    для детей от 3-х до 17-ти лет.
-                </p>
-                <p>
-                    Продолжительность тренировки для детей составляет 60 минут и проводится от трех раз в неделю (лед+ОФП).
-                </p>
-                <p>
-                    Обучение в школе платное. Начиная с 8 лет, наиболее
-                    перспективные воспитанники переводятся на полное обеспечение
-                    хоккейным клубом.
-                </p>
-            </div>
-            <h2 class="school__subtitle">Документы</h2>
-            <div class="school__docs">
-                <a
-                    v-for="(doc, i) in docs"
-                    :key="i"
-                    :href="doc.url"
-                    target="_blank"
-                    rel="noopener"
-                    class="school__doc-link btn"
-                    >{{ doc.title }}</a
-                >
-            </div>
         </div>
     </div>
 </template>
@@ -140,6 +142,26 @@ const docs = [
 .page__title {
     font-size: 2rem;
     margin: 0 0 1.5rem;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.page-surface {
+    position: relative;
+    padding: 2rem 0 2.5rem;
+}
+.page-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    background: var(--color-bg);
+    z-index: 0;
+}
+.page-surface > * {
+    position: relative;
+    z-index: 1;
 }
 .school__intro p {
     margin: 0 0 1rem;
