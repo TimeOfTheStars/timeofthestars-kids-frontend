@@ -1,35 +1,37 @@
 <template>
   <div class="page sbory-page">
     <div class="container">
-      <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Сборы' }]" />
+      <div v-reveal class="sbory-page__breadcrumbs-wrap">
+        <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Сборы' }]" />
+      </div>
 
       <!-- Hero -->
       <section class="sbory-hero">
         <div class="sbory-hero__inner">
           <div class="sbory-hero__left">
-            <h1 class="sbory-hero__title">Летние сборы<br />в Ярославле</h1>
-            <p class="sbory-hero__subtitle">для полевых игроков и вратарей с 4 до 16 лет!</p>
+            <h1 v-reveal class="sbory-hero__title">Летние сборы<br />в Ярославле</h1>
+            <p v-reveal="{ delay: 70 }" class="sbory-hero__subtitle">для полевых игроков и вратарей с 4 до 16 лет!</p>
 
             <div class="sbory-hero__stats">
-              <div class="stat-badge stat-badge--hero">
+              <div v-reveal="{ delay: 0 }" class="stat-badge stat-badge--hero">
                 <span class="stat-badge__value">12 часов</span>
                 <span class="stat-badge__label">льда</span>
               </div>
-              <div class="stat-badge stat-badge--hero">
+              <div v-reveal="{ delay: 75 }" class="stat-badge stat-badge--hero">
                 <span class="stat-badge__value">12 часов</span>
                 <span class="stat-badge__label">«Земли»</span>
               </div>
-              <div class="stat-badge stat-badge--hero">
+              <div v-reveal="{ delay: 150 }" class="stat-badge stat-badge--hero">
                 <span class="stat-badge__value">6 дней</span>
                 <span class="stat-badge__label">смена</span>
               </div>
-              <div class="stat-badge stat-badge--hero">
+              <div v-reveal="{ delay: 225 }" class="stat-badge stat-badge--hero">
                 <span class="stat-badge__value">5 тренеров</span>
                 <span class="stat-badge__label">на льду</span>
               </div>
             </div>
 
-            <div class="sbory-hero__actions">
+            <div v-reveal="{ delay: 280 }" class="sbory-hero__actions">
               <a
                 href="https://forms.gle/8zcE1px3hvrEKjbd6"
                 target="_blank"
@@ -42,7 +44,7 @@
             </div>
           </div>
 
-          <div class="sbory-hero__right">
+          <div v-reveal="{ delay: 90 }" class="sbory-hero__right">
             <img
               src="/logo-star-kids.webp"
               alt="Время Звезд"
@@ -56,8 +58,8 @@
 
       <!-- Training tasks -->
       <section class="sbory-tasks">
-        <h2 class="sbory-tasks__title">Задачи тренировок</h2>
-        <div class="sbory-tasks__card">
+        <h2 v-reveal class="sbory-tasks__title">Задачи тренировок</h2>
+        <div v-reveal="{ delay: 90 }" class="sbory-tasks__card">
           <h3 class="sbory-tasks__card-title">В программе сборов:</h3>
           <ul class="sbory-tasks__list">
             <li class="sbory-tasks__item">14 часов - тренировок на льду</li>
@@ -68,16 +70,8 @@
             В зависимости от задач тренировок, полевые игроки делятся на 5 групп по 5-6 человек или по парам. Группы формируются по возрасту (5-6 лет, 7-8 лет, 9-10 лет, 11-12 лет, 13-14 лет) и по уровню подготовки. Вратари тренируются отдельно в группе до 6 человек.
           </p>
         </div>
-      </section>
-
-      <!-- Shifts -->
-      <section class="sbory-shifts">
-        <h2 class="sbory-shifts__title">Три смены</h2>
-        <div class="sbory-shifts__grid">
-          <div v-for="shift in shifts" :key="shift.num" class="shift-card">
-            <span class="shift-card__num">{{ shift.num }} смена</span>
-            <span class="shift-card__dates">{{ shift.dates }}</span>
-          </div>
+        <div v-reveal="{ delay: 160 }" class="sbory-tasks__slider-wrap">
+          <SboryTasksFirstSlider />
         </div>
       </section>
 
@@ -86,10 +80,10 @@
 
       <!-- Photo + text -->
       <section class="sbory-promo">
-        <h2 class="sbory-section-title">Готовим профессионалов</h2>
+        <h2 v-reveal class="sbory-section-title">Готовим профессионалов</h2>
 
         <div class="sbory-promo__layout">
-          <div class="sbory-promo__left">
+          <div v-reveal="{ delay: 80 }" class="sbory-promo__left">
             <div class="sbory-promo__media">
               <img src="/sbory/boy.jpg" alt="Юный хоккеист на льду" class="sbory-promo__img" />
             </div>
@@ -113,7 +107,12 @@
 
           <div class="sbory-promo__right">
             <div class="sbory-promo__cards">
-              <article v-for="c in promoCards" :key="c.title" class="promo-card">
+              <article
+                v-for="(c, i) in promoCards"
+                :key="c.title"
+                v-reveal="{ delay: 100 + i * 85 }"
+                class="promo-card"
+              >
                 <img :src="c.icon" alt="" class="promo-card__icon" aria-hidden="true" />
                 <h3 class="promo-card__title">{{ c.title }}</h3>
                 <p class="promo-card__text">{{ c.text }}</p>
@@ -125,12 +124,13 @@
 
       <!-- Coaches -->
       <section class="sbory-coaches">
-        <h2 class="sbory-section-title">Тренерский состав</h2>
+        <h2 v-reveal class="sbory-section-title">Тренерский состав</h2>
         <div class="sbory-coaches__layout">
           <aside class="sbory-coaches__list" aria-label="Список тренеров">
             <button
               v-for="(coach, i) in summerCoachesResolved"
               :key="coach.name"
+              v-reveal="{ delay: Math.min(i * 42, 380) }"
               type="button"
               class="sbory-coaches__item"
               :class="{ 'sbory-coaches__item--active': selectedCoachIndex === i }"
@@ -146,7 +146,7 @@
             </button>
           </aside>
 
-          <div v-if="selectedSummerCoach" class="sbory-coaches__details">
+          <div v-if="selectedSummerCoach" v-reveal="{ delay: 120 }" class="sbory-coaches__details">
             <div class="sbory-coaches__details-media">
               <img
                 v-if="selectedSummerCoach.pic"
@@ -166,41 +166,30 @@
 
       <!-- Schedule -->
       <section class="sbory-schedule">
-        <h2 class="sbory-section-title">Примерное расписание</h2>
+        <h2 v-reveal class="sbory-section-title">Примерное расписание</h2>
         <div class="sbory-schedule__grid">
-          <article class="schedule-card">
+          <article v-reveal="{ delay: 95 }" class="schedule-card schedule-card--single">
             <header class="schedule-card__head">
-              <span class="schedule-card__day">1</span>
               <img src="/sbory/icon-2.png" alt="" class="schedule-card__icon" aria-hidden="true" />
-              <span class="schedule-card__day-label">День</span>
             </header>
             <div class="schedule-card__body">
-              <div v-for="item in scheduleDay1" :key="item.time + item.label" class="schedule-item">
-                <div class="schedule-item__time">{{ item.time }}</div>
-                <div class="schedule-item__divider" aria-hidden="true"></div>
-                <div class="schedule-item__label">{{ item.label }}</div>
-              </div>
-            </div>
-          </article>
-
-          <article class="schedule-card">
-            <header class="schedule-card__head">
-              <span class="schedule-card__day">2–4, 6–8</span>
-              <img src="/sbory/icon-2.png" alt="" class="schedule-card__icon" aria-hidden="true" />
-              <span class="schedule-card__day-label">День</span>
-            </header>
-            <div class="schedule-card__body">
-              <div v-for="item in scheduleDay2to8" :key="item.time + item.label" class="schedule-item">
-                <div class="schedule-item__time">{{ item.time }}</div>
-                <div class="schedule-item__divider" aria-hidden="true"></div>
-                <div class="schedule-item__label">{{ item.label }}</div>
-              </div>
+              <template v-for="(item, i) in schedule" :key="item.time + item.label">
+                <div class="schedule-item">
+                  <div class="schedule-item__time">{{ item.time }}</div>
+                  <div class="schedule-item__label">{{ item.label }}</div>
+                </div>
+                <div
+                  v-if="i < schedule.length - 1"
+                  class="schedule-item__divider"
+                  aria-hidden="true"
+                />
+              </template>
             </div>
           </article>
         </div>
-        <div class="sbory-schedule__footer">
+        <div v-reveal="{ delay: 140 }" class="sbory-schedule__footer">
           <p class="sbory-schedule__note">
-            Мы сделали расписание максимально лёгким и комфортным, чтобы у вас было больше времени насладиться культурной столицей нашей страны. Прогуляйтесь по Таврическому саду, загляните в музеи, которые находятся рядом с нашей локацией, или просто откройте для себя гастрономическое разнообразие Санкт-Петербурга. Кафе и ресторанов здесь огромное количество — каждый найдёт место по вкусу.
+            Расписание ориентировочное: время блоков может незначительно сдвигаться по решению тренерского штаба. Состав и объём тренировок сохраняются.
           </p>
           <p class="sbory-schedule__warning">
             ВНИМАНИЕ! РАСПИСАНИЕ ТРЕНИРОВОК МОЖЕТ НЕЗНАЧИТЕЛЬНО МЕНЯТЬСЯ. КОЛИЧЕСТВО ТРЕНИРОВОК ОСТАНЕТСЯ НЕИЗМЕННЫМ.
@@ -208,10 +197,39 @@
         </div>
       </section>
 
+      <!-- Bright moments -->
+      <section class="sbory-moments">
+        <h2 v-reveal class="sbory-section-title">Яркие моменты</h2>
+        <div v-reveal="{ delay: 100 }" class="sbory-moments__slider-outer">
+          <SboryMomentsSlider />
+        </div>
+        <div v-reveal="{ delay: 220 }" class="sbory-moments__more">
+          <a
+            href="https://vk.ru/album-125696800_307657374"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="sbory-moments__more-link"
+          >
+            Показать ещё
+          </a>
+        </div>
+      </section>
+
       <!-- Venue -->
       <section class="sbory-venue">
-        <h2 class="sbory-section-title">Место проведения и проживание</h2>
-        <div class="sbory-venue__info">
+        <h2 v-reveal class="sbory-section-title">Место проведения и проживание</h2>
+        <div v-reveal="{ delay: 75 }" class="sbory-venue__lead-photo">
+          <img
+            :src="venueLivingImg"
+            alt="Участник летних сборов на льду"
+            class="sbory-venue__lead-img"
+            width="960"
+            height="600"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div v-reveal="{ delay: 130 }" class="sbory-venue__info">
           <p class="sbory-venue__name">ФГБУ ПОО «ГУОР по хоккею»</p>
           <p class="sbory-venue__address">ул. Дядьковская 7, Фрунзенский район, Ярославль</p>
           <p class="sbory-venue__desc">Тренировки на льду и проживание участников — на одной базе. Современный ледовый комплекс, оборудованные залы ОФП, бросковая зона.</p>
@@ -221,9 +239,14 @@
 
       <!-- Shift choice -->
       <section class="sbory-shift-choice">
-        <h2 class="sbory-section-title">Выбор смены</h2>
+        <h2 v-reveal class="sbory-section-title">Выбор смены</h2>
         <div class="sbory-shift-choice__grid">
-          <article v-for="card in shiftChoiceCards" :key="card.title" class="choice-card">
+          <article
+            v-for="(card, i) in shiftChoiceCards"
+            :key="card.title"
+            v-reveal="{ delay: 90 + i * 100 }"
+            class="choice-card"
+          >
             <div v-if="card.stickerSrc" class="choice-card__sticker">
               <img :src="card.stickerSrc" :alt="card.stickerAlt || ''" class="choice-card__sticker-img" />
             </div>
@@ -268,6 +291,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
+import venueLivingImg from '~/assets/fKu8dAF2SN8hISgv_pDOBWz85Pq3fDAK6sPt366ceFxNPM4efhxblQjPHr_uX7XS6k26s6iWVt24N9XEey_rkwAk.jpg'
 
 const showQrModal = ref(false)
 
@@ -285,12 +309,6 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
-
-const shifts = [
-  { num: '1', dates: '15 – 20 июня 2026' },
-  { num: '2', dates: '22 – 27 июня 2026' },
-  { num: '3', dates: '29 июня – 04 июля 2026' },
-]
 
 type CoachJson = {
   name: string
@@ -333,31 +351,15 @@ onMounted(async () => {
 })
 
 const schedule = [
-  { time: '8:00 – 8:30', label: 'Завтрак', residentsOnly: true },
-  { time: '9:00 – 10:00', label: 'Лёд', residentsOnly: false },
-  { time: '10:30 – 11:30', label: 'Зал (ОФП / акробатика)', residentsOnly: false },
-  { time: '12:00 – 13:00', label: 'Обед', residentsOnly: true },
-  { time: '14:00 – 15:00', label: 'Зал (ОФП / акробатика)', residentsOnly: false },
-  { time: '15:30 – 16:30', label: 'Лёд', residentsOnly: false },
-  { time: '18:00 – 18:30', label: 'Ужин', residentsOnly: true },
-  { time: '19:00 – 21:30', label: 'Свободное время (под контролем воспитателя)', residentsOnly: true },
-  { time: '22:00', label: 'Отбой', residentsOnly: true },
-]
-
-const scheduleDay1 = [
-  { time: '14:00', label: 'Заселение' },
-  { time: '15:00', label: 'Обед' },
-  { time: '18:00 – 19:00', label: 'Тренировка на льду' },
-  { time: '20:45', label: 'Ужин' },
-]
-
-const scheduleDay2to8 = [
-  { time: '7:30', label: 'Завтрак' },
-  { time: '9:00 – 10:00', label: 'Тренировка «на земле»' },
-  { time: '10:30 – 11:30', label: 'Тренировка на льду' },
-  { time: '13:00', label: 'Обед' },
-  { time: '16:00 – 17:00', label: 'Тренировка на льду' },
-  { time: '17:30 – 18:30', label: 'Тренировка «на земле»' },
+  { time: '8:00 – 8:30', label: 'Завтрак (для проживающих на базе)' },
+  { time: '9:00 – 10:00', label: 'Лёд' },
+  { time: '10:30 – 11:30', label: 'Зал' },
+  { time: '12:00 – 13:00', label: 'Обед' },
+  { time: '14:00 – 15:00', label: 'Зал' },
+  { time: '15:30 – 16:30', label: 'Лёд' },
+  { time: '18:00 – 18:30', label: 'Ужин (для проживающих на базе)' },
+  { time: '19:00 – 21:30', label: 'Свободное время (для проживающих на базе, под контролем воспитателя)' },
+  { time: '22:00', label: 'Отбой (для проживающих на базе)' },
 ]
 
 const promoCards = [
@@ -567,29 +569,6 @@ const shiftChoiceCards: Array<{
   filter: drop-shadow(0 16px 44px rgba(0, 0, 0, 0.35));
 }
 
-/* Shifts */
-.sbory-shifts {
-  padding: 2rem 0;
-  margin-top: clamp(4rem, 10vh, 7rem);
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-.sbory-shifts::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  background: var(--color-bg);
-  z-index: -1;
-}
-.sbory-shifts__title {
-  font-size: 1.75rem;
-  margin: 0 0 1.25rem;
-}
-
 /* Training tasks */
 .sbory-tasks {
   padding: 2.5rem 0 1rem;
@@ -640,35 +619,6 @@ const shiftChoiceCards: Array<{
   color: var(--color-text-muted);
   line-height: 1.65;
   font-size: 1rem;
-}
-.sbory-shifts__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-.shift-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 1.25rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-.shift-card__num {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-accent);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.shift-card__dates {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--color-text);
 }
 
 /* CTA */
@@ -965,16 +915,11 @@ const shiftChoiceCards: Array<{
 }
 .sbory-schedule__grid {
   width: 100%;
-  max-width: 920px;
+  max-width: 720px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
-}
-@media (min-width: 840px) {
-  .sbory-schedule__grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
 }
 .schedule-card {
   background: var(--color-surface);
@@ -982,23 +927,14 @@ const shiftChoiceCards: Array<{
   border-radius: calc(var(--radius) + 6px);
   padding: 1.5rem 1.25rem;
 }
+.schedule-card--single {
+  width: 100%;
+}
 .schedule-card__head {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   margin-bottom: 1.25rem;
-}
-.schedule-card__day {
-  font-weight: 900;
-  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
-  letter-spacing: 0.01em;
-  color: var(--color-text);
-}
-.schedule-card__day-label {
-  font-weight: 800;
-  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
-  color: var(--color-text);
 }
 .schedule-card__icon {
   width: clamp(40px, 6vw, 56px);
@@ -1008,49 +944,43 @@ const shiftChoiceCards: Array<{
   opacity: 0.9;
 }
 .schedule-card__body {
-  display: grid;
-  gap: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 .schedule-item {
-  display: grid;
-  grid-template-columns: 140px 18px 1fr;
-  align-items: start;
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 .schedule-item__time {
-  text-align: right;
   font-weight: 900;
   color: var(--color-accent);
-  white-space: nowrap;
-  line-height: 1.25;
-  font-size: 1.05rem;
-}
-.schedule-item__divider {
-  position: relative;
-  width: 2px;
-  height: 100%;
-  background: var(--color-text);
-  opacity: 0.2;
-  justify-self: center;
-  border-radius: 2px;
+  font-size: clamp(1.02rem, 2.4vw, 1.15rem);
+  line-height: 1.3;
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.02em;
 }
 .schedule-item__label {
   color: var(--color-text);
-  font-size: 1.05rem;
-  line-height: 1.35;
+  font-size: 1.02rem;
+  line-height: 1.45;
+  margin: 0;
 }
-@media (max-width: 520px) {
-  .schedule-item {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
-    text-align: center;
-  }
-  .schedule-item__time {
-    text-align: center;
-  }
-  .schedule-item__divider {
-    display: none;
-  }
+.schedule-item__divider {
+  width: 2px;
+  height: 1.1rem;
+  margin: 0.85rem auto;
+  flex-shrink: 0;
+  background: var(--color-text);
+  opacity: 0.22;
+  border-radius: 2px;
 }
 .sbory-schedule__footer {
   margin-top: 1.5rem;
@@ -1074,9 +1004,54 @@ const shiftChoiceCards: Array<{
   color: var(--color-text);
 }
 
+/* Bright moments */
+.sbory-moments {
+  padding: 2rem 0 2.5rem;
+}
+.sbory-moments__more {
+  text-align: center;
+  margin-top: 1rem;
+}
+.sbory-moments__more-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  background: var(--color-surface);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.sbory-moments__more-link:hover {
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  border-color: color-mix(in srgb, var(--color-accent) 65%, var(--color-border));
+  transform: translateY(-1px);
+}
+
 /* Venue */
 .sbory-venue {
   padding: 2rem 0;
+}
+.sbory-venue__lead-photo {
+  max-width: 640px;
+  margin: 0 auto 1.25rem;
+  border-radius: calc(var(--radius) + 6px);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+.sbory-venue__lead-img {
+  width: 100%;
+  height: auto;
+  max-height: min(420px, 55vh);
+  object-fit: cover;
+  object-position: center 30%;
+  display: block;
 }
 .sbory-venue__info {
   margin-bottom: 1rem;
