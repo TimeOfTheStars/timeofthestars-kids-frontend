@@ -62,16 +62,13 @@
         <div v-reveal="{ delay: 90 }" class="sbory-tasks__card">
           <h3 class="sbory-tasks__card-title">В программе сборов:</h3>
           <ul class="sbory-tasks__list">
-            <li class="sbory-tasks__item">14 часов - тренировок на льду</li>
+            <li class="sbory-tasks__item">12 часов - тренировок на льду</li>
             <li class="sbory-tasks__item">12 часов - функциональной подготовки в зале</li>
           </ul>
 
           <p class="sbory-tasks__text">
             В зависимости от задач тренировок, полевые игроки делятся на 5 групп по 5-6 человек или по парам. Группы формируются по возрасту (5-6 лет, 7-8 лет, 9-10 лет, 11-12 лет, 13-14 лет) и по уровню подготовки. Вратари тренируются отдельно в группе до 6 человек.
           </p>
-        </div>
-        <div v-reveal="{ delay: 160 }" class="sbory-tasks__slider-wrap">
-          <SboryTasksFirstSlider />
         </div>
       </section>
 
@@ -85,7 +82,15 @@
         <div class="sbory-promo__layout">
           <div v-reveal="{ delay: 80 }" class="sbory-promo__left">
             <div class="sbory-promo__media">
-              <img src="/sbory/boy.jpg" alt="Юный хоккеист на льду" class="sbory-promo__img" />
+              <img
+                :src="sboryPromoPhoto"
+                alt="Юный хоккеист на льду"
+                class="sbory-promo__img"
+                width="960"
+                height="600"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div class="sbory-promo__prices">
               <div class="price-row">
@@ -218,23 +223,15 @@
       <!-- Venue -->
       <section class="sbory-venue">
         <h2 v-reveal class="sbory-section-title">Место проведения и проживание</h2>
-        <div v-reveal="{ delay: 75 }" class="sbory-venue__lead-photo">
-          <img
-            :src="venueLivingImg"
-            alt="Участник летних сборов на льду"
-            class="sbory-venue__lead-img"
-            width="960"
-            height="600"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-        <div v-reveal="{ delay: 130 }" class="sbory-venue__info">
+        <div v-reveal="{ delay: 90 }" class="sbory-venue__info">
           <p class="sbory-venue__name">ФГБУ ПОО «ГУОР по хоккею»</p>
           <p class="sbory-venue__address">ул. Дядьковская 7, Фрунзенский район, Ярославль</p>
           <p class="sbory-venue__desc">Тренировки на льду и проживание участников — на одной базе. Современный ледовый комплекс, оборудованные залы ОФП, бросковая зона.</p>
         </div>
-        <ArenaSlider />
+        <div class="sbory-venue__sliders">
+          <ArenaSlider />
+          <GuorDormSlider />
+        </div>
       </section>
 
       <!-- Shift choice -->
@@ -291,7 +288,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import venueLivingImg from '~/assets/fKu8dAF2SN8hISgv_pDOBWz85Pq3fDAK6sPt366ceFxNPM4efhxblQjPHr_uX7XS6k26s6iWVt24N9XEey_rkwAk.jpg'
+import sboryPromoPhoto from '~/assets/fKu8dAF2SN8hISgv_pDOBWz85Pq3fDAK6sPt366ceFxNPM4efhxblQjPHr_uX7XS6k26s6iWVt24N9XEey_rkwAk.jpg'
 
 const showQrModal = ref(false)
 
@@ -668,6 +665,7 @@ const shiftChoiceCards: Array<{
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 28%;
   display: block;
 }
 .sbory-promo__right {
@@ -1036,26 +1034,26 @@ const shiftChoiceCards: Array<{
 .sbory-venue {
   padding: 2rem 0;
 }
-.sbory-venue__lead-photo {
-  max-width: 640px;
-  margin: 0 auto 1.25rem;
-  border-radius: calc(var(--radius) + 6px);
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
-}
-.sbory-venue__lead-img {
-  width: 100%;
-  height: auto;
-  max-height: min(420px, 55vh);
-  object-fit: cover;
-  object-position: center 30%;
-  display: block;
-}
 .sbory-venue__info {
   margin-bottom: 1rem;
   text-align: center;
+}
+.sbory-venue__sliders {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.25rem, 4vw, 2rem);
+  align-items: start;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .sbory-venue__sliders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 3vw, 1.75rem);
+  }
+  .sbory-venue__sliders :deep(section.section) {
+    padding-top: clamp(0.75rem, 2vw, 1.25rem);
+    padding-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  }
 }
 .sbory-venue__name {
   margin: 0 0 0.25rem;

@@ -1,7 +1,7 @@
 <template>
-  <section class="arena section">
+  <section class="arena arena--dorm section">
     <div class="container">
-      <h2 v-reveal class="section-title">Арена ГУОР</h2>
+      <h2 v-reveal class="section-title">Общежитие ГУОР</h2>
       <ClientOnly>
         <Swiper
           v-reveal="{ delay: 150 }"
@@ -10,8 +10,8 @@
           :modules="modules"
           class="arena-swiper"
         >
-          <SwiperSlide v-for="(img, i) in guorImages" :key="i">
-            <img :src="img" :alt="`Арена ГУОР ${i + 1}`" class="arena__img" />
+          <SwiperSlide v-for="(img, i) in dormImages" :key="i">
+            <img :src="img" :alt="`Общежитие ГУОР ${i + 1}`" class="arena__img" />
           </SwiperSlide>
         </Swiper>
       </ClientOnly>
@@ -27,15 +27,14 @@ import 'swiper/css/effect-cards'
 
 const modules = [EffectCards]
 
-const guorImages = [
-  '/guor/photo_2026-02-01_13-16-32.jpg',
-  '/guor/photo_2026-02-01_13-17-22.jpg',
-  '/guor/photo_2026-02-01_13-17-26.jpg',
-  '/guor/photo_2026-02-01_13-17-29.jpg',
-  '/guor/photo_2026-02-01_13-17-33.jpg',
-  '/guor/photo_2026-02-01_13-17-37.jpg',
-  '/guor/photo_2026-02-01_13-17-41.jpg',
-  '/guor/photo_2026-02-01_13-17-45.jpg',
+const dormImages = [
+  '/guor/photo_2026-05-01_22-23-07.jpg',
+  '/guor/photo_2026-05-01_22-23-50.jpg',
+  '/guor/photo_2026-05-01_22-23-54.jpg',
+  '/guor/photo_2026-05-01_22-23-59.jpg',
+  '/guor/photo_2026-05-01_22-24-03.jpg',
+  '/guor/photo_2026-05-01_22-24-07.jpg',
+  '/guor/photo_2026-05-01_22-24-11.jpg',
 ]
 </script>
 

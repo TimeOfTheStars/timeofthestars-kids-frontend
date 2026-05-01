@@ -43,12 +43,11 @@ import leto1 from '~/assets/leto_sbory/0u28YrbD5bHTSUlHP-5Hf9rYYVGNhAqnzEADdPPz5
 import leto2 from '~/assets/leto_sbory/eSDOMk5ZKYje9IOc-zaJ18KWWiYnWpZWV62j2ckQPdch8wlv5g-2m_dYvSR9RNTCEsHdCOResjlH814UUPsGxoG3.jpg'
 import leto3 from '~/assets/leto_sbory/F7XBzll_d6gOzfu3_P_jKX7XVV-uyebJZbKFLQOoBKWlRS7DtNojMd4R3lMzXdQptxASprnOfhxUC-7enX92RId6.jpg'
 import leto4 from '~/assets/leto_sbory/ouW1WHLqtyni6xdguiTHlfdIacATSq18t_L7g_D5JX2DvNtaOlXBJ_vmSMgr2NKSNPH3BNGwt0YHK7eQivtAWPmq.jpg'
-import leto5 from '~/assets/leto_sbory/RjtCRFCjYxZXWYTT_9jUcxdWSzvYLK9FQjGPUH_Sc-cD9idOiItV3YisKOQcv1t5wz5vHtiT8k3n1jqQB5uO3mt-.jpg'
 import leto6 from '~/assets/leto_sbory/zXiYnn8Tlvk2KBQ9Egn2lNpccZ6VqpYhA-4eje9MR7D1uKvrNa3vyxAxU8DpthJKVDgGNObHUNEb3J9SLh-05uwK.jpg'
 
 const modules = [Navigation, Pagination]
 
-const momentImages = [leto1, leto2, leto3, leto4, leto5, leto6]
+const momentImages = [leto1, leto2, leto3, leto4, leto6]
 </script>
 
 <style scoped>
