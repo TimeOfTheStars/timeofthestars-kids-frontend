@@ -251,6 +251,9 @@ onUnmounted(() => {
     color: #ddd;
     text-decoration: none;
     white-space: nowrap;
+    font-size: clamp(1.125rem, 1.65vw, 1.375rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
 }
 
 .header__link:hover,
@@ -350,11 +353,13 @@ onUnmounted(() => {
     }
 
     .header__link {
-        padding: 0.85rem 0;
+        padding: 1.1rem 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        font-size: 1rem;
+        font-size: clamp(1.4rem, 4.8vw, 1.65rem);
+        font-weight: 800;
         color: #fff;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
+        line-height: 1.35;
     }
 
     .header.header--scrolled .header__nav .header__link {

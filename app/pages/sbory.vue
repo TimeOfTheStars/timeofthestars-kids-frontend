@@ -1044,6 +1044,34 @@ const shiftChoiceCards: Array<{
   gap: clamp(1.25rem, 4vw, 2rem);
   align-items: start;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+.sbory-venue__sliders > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.sbory-venue__sliders :deep(section.section.arena) {
+  min-width: 0;
+  max-width: 100%;
+}
+/* Вложенный .container у слайдеров дублирует отступы страницы — на мобилке даёт визуальный сдвиг */
+.sbory-venue__sliders :deep(section.section.arena > .container) {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.sbory-venue__sliders :deep(section.section.arena .section-title) {
+  align-self: center;
+  width: 100%;
+}
+.sbory-venue__sliders :deep(.arena-swiper-shell) {
+  align-self: center;
 }
 @media (min-width: 768px) {
   .sbory-venue__sliders {
@@ -1053,6 +1081,9 @@ const shiftChoiceCards: Array<{
   .sbory-venue__sliders :deep(section.section) {
     padding-top: clamp(0.75rem, 2vw, 1.25rem);
     padding-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  }
+  .sbory-venue__sliders :deep(section.section.arena > .container) {
+    align-items: center;
   }
 }
 .sbory-venue__name {

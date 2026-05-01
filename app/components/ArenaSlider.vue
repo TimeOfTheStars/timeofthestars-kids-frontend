@@ -2,19 +2,25 @@
   <section class="arena section">
     <div class="container">
       <h2 v-reveal class="section-title">Арена ГУОР</h2>
-      <ClientOnly>
-        <Swiper
-          v-reveal="{ delay: 150 }"
-          :effect="'cards'"
-          :grab-cursor="true"
-          :modules="modules"
-          class="arena-swiper"
-        >
-          <SwiperSlide v-for="(img, i) in guorImages" :key="i">
-            <img :src="img" :alt="`Арена ГУОР ${i + 1}`" class="arena__img" />
-          </SwiperSlide>
-        </Swiper>
-      </ClientOnly>
+      <div class="arena-swiper-shell">
+        <ClientOnly>
+          <Swiper
+            v-reveal="{ delay: 150 }"
+            :effect="'cards'"
+            :cards-effect="{ slideShadows: true, rotate: true, perSlideRotate: 2, perSlideOffset: 6 }"
+            :grab-cursor="true"
+            :modules="modules"
+            :resize-observer="true"
+            :observer="true"
+            :observe-parents="true"
+            class="arena-swiper"
+          >
+            <SwiperSlide v-for="(img, i) in guorImages" :key="i">
+              <img :src="img" :alt="`Арена ГУОР ${i + 1}`" class="arena__img" />
+            </SwiperSlide>
+          </Swiper>
+        </ClientOnly>
+      </div>
     </div>
   </section>
 </template>
@@ -40,11 +46,28 @@ const guorImages = [
 </script>
 
 <style scoped>
+.arena-swiper-shell {
+  width: 100%;
+  max-width: min(420px, 100%);
+  margin-inline: auto;
+  overflow: hidden;
+  box-sizing: border-box;
+  contain: layout style;
+}
 .arena-swiper {
   width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 1rem 0;
+}
+.arena-swiper :deep(.swiper) {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+}
+/* Swiper задаёт swiper-cards overflow:visible — слайды «заезжают» в соседнюю колонку в узкой сетке */
+.arena-swiper :deep(.swiper.swiper-cards) {
+  overflow: hidden;
 }
 .arena-swiper :deep(.swiper-slide) {
   display: flex;
@@ -57,6 +80,7 @@ const guorImages = [
 .arena__img {
   width: 100%;
   height: 100%;
+  max-width: 100%;
   object-fit: cover;
   display: block;
 }
