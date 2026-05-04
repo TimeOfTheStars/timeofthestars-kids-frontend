@@ -87,7 +87,6 @@ import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import type { Review } from '~/types'
-import reviewsData from '~~/public/reviews.json'
 
 const modules = [Navigation]
 
@@ -95,7 +94,13 @@ const reviewsTopicUrl = 'https://vk.com/topic-125696800_56616420'
 const PREVIEW_LIMIT = 420
 const expandedItems = ref<Record<number, boolean>>({})
 
-const items = computed<Review[]>(() => reviewsData.reviews ?? [])
+const { data: reviews } = await useAsyncData<Review[]>(
+  'reviews',
+  () => $fetch<Review[]>('https://api.timeofthestars-kids.ru/reviews'),
+  { default: () => [] }
+)
+
+const items = computed<Review[]>(() => reviews.value ?? [])
 
 const normalizeText = (text: string) => text.replace(/\s+/g, ' ').trim()
 
