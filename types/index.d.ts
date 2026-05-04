@@ -4,6 +4,12 @@ export interface Review {
   pic: string
 }
 
+export interface NewsItem {
+  image: string
+  excerpt: string
+  url: string
+}
+
 export interface FaqItem {
   question: string
   answer: string
