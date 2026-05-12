@@ -53,7 +53,14 @@
               >
                 <div class="t-card__head">
                   <span class="t-card__age">{{ t.ageCategory }}</span>
-                  <span class="t-card__status t-card__status--upcoming">Предстоящий</span>
+                  <span
+                    v-if="isInProgress(t)"
+                    class="t-card__status t-card__status--in-progress"
+                  >В процессе</span>
+                  <span
+                    v-else
+                    class="t-card__status t-card__status--upcoming"
+                  >Предстоящий</span>
                 </div>
                 <h3 class="t-card__title">{{ t.title }}</h3>
                 <ul class="t-card__meta">
@@ -309,10 +316,14 @@ const MONTHS = [
 function formatDateRange(startIso: string, endIso: string): string {
   const start = new Date(startIso)
   const end = new Date(endIso)
+  const sameDay = startIso === endIso
   const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()
   const sameYear = start.getFullYear() === end.getFullYear()
   const year = end.getFullYear()
 
+  if (sameDay) {
+    return `${start.getDate()} ${MONTHS[start.getMonth()]} ${year}`
+  }
   if (sameMonth) {
     return `${start.getDate()}–${end.getDate()} ${MONTHS[end.getMonth()]} ${year}`
   }
@@ -320,6 +331,10 @@ function formatDateRange(startIso: string, endIso: string): string {
     return `${start.getDate()} ${MONTHS[start.getMonth()]} — ${end.getDate()} ${MONTHS[end.getMonth()]} ${year}`
   }
   return `${start.getDate()} ${MONTHS[start.getMonth()]} ${start.getFullYear()} — ${end.getDate()} ${MONTHS[end.getMonth()]} ${year}`
+}
+
+function isInProgress(t: Tournament): boolean {
+  return new Date(t.startDate) <= today && today <= new Date(t.endDate)
 }
 
 </script>
@@ -492,6 +507,10 @@ function formatDateRange(startIso: string, endIso: string): string {
 .t-card__status--upcoming {
   background: rgba(34, 197, 94, 0.12);
   color: #15803d;
+}
+.t-card__status--in-progress {
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
 }
 .t-card__status--done {
   background: var(--color-bg-alt);
