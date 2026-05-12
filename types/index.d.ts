@@ -27,3 +27,23 @@ export interface AbonementCard {
   isGoalie?: boolean
   isDiscount?: boolean
 }
+
+export interface TournamentTeam {
+  name: string
+  logo?: string
+}
+
+export interface Tournament {
+  id: number | string
+  title: string
+  ageCategory: string
+  birthYear?: number
+  startDate: string
+  endDate: string
+  location: string
+  city?: string
+  season: string
+  teams?: TournamentTeam[]
+  description?: string
+  url?: string
+}

@@ -58,6 +58,12 @@
                     >Сборы</NuxtLink
                 >
                 <NuxtLink
+                    to="/turniry"
+                    class="header__link"
+                    @click="menuOpen = false"
+                    >Турниры</NuxtLink
+                >
+                <NuxtLink
                     to="/trenery"
                     class="header__link"
                     @click="menuOpen = false"
