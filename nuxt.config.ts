@@ -4,9 +4,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   modules: ['nuxt-swiper', '@nuxt/icon'],
-  nitro: {
-    preset: 'static',
-  },
   app: {
     head: {
       link: [

@@ -197,7 +197,7 @@ const DEMO_TOURNAMENTS: Tournament[] = [
       { name: 'Локомотив-2014' },
       { name: 'ЦСКА-2014' },
       { name: 'Динамо-2014' }
-    ]
+    ],
   },
   {
     id: 'demo-2',
