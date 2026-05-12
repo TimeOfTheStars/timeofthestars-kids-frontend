@@ -34,6 +34,7 @@
                     >
                     <NuxtLink to="/abonementy">Услуги</NuxtLink>
                     <NuxtLink to="/sbory">Сборы</NuxtLink>
+                    <NuxtLink to="/turniry">Турниры</NuxtLink>
                     <NuxtLink to="/trenery">Тренеры</NuxtLink>
                     <NuxtLink to="/kontakty">Контакты</NuxtLink>
                 </nav>
