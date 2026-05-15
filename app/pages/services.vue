@@ -44,7 +44,7 @@
               </label>
               <p class="service-request__disclaimer">
                 Заполняя и отправляя форму, Вы даете
-                <NuxtLink to="/politika-konfidencialnosti" class="service-request__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
+                <NuxtLink to="/privacy-policy" class="service-request__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
               </p>
               <button type="submit" class="btn" :disabled="serviceRequestLoading">Отправить</button>
             </form>
@@ -63,6 +63,17 @@ import { postJson } from '~/utils/api'
 
 definePageMeta({
   layout: 'default'
+})
+
+useHead({
+  title: 'Услуги — Время Звёзд KIDS',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Абонементы, индивидуальные занятия на тренажёре HST, бросковая, сборы, летний лагерь и командная атрибутика.'
+    }
+  ]
 })
 
 const shopImages = [

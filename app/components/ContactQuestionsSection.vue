@@ -9,7 +9,7 @@
           </button>
           <p class="contact-questions__disclaimer">
             Нажимая «Записаться», Вы даете
-            <NuxtLink to="/politika-konfidencialnosti" class="contact-questions__disclaimer-link"
+            <NuxtLink to="/privacy-policy" class="contact-questions__disclaimer-link"
               >Согласие на обработку персональных данных</NuxtLink
             >.
           </p>

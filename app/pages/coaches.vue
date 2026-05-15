@@ -43,6 +43,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+useHead({
+    title: 'Тренеры — Время Звёзд KIDS',
+    meta: [
+        {
+            name: 'description',
+            content:
+                'Команда тренеров хоккейной школы «Время Звёзд KIDS» — квалификация, опыт, направления подготовки.'
+        }
+    ]
+})
+
 type Coach = {
     name: string
     pic: string

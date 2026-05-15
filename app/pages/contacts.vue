@@ -33,6 +33,17 @@
 <script setup lang="ts">
 import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '~/constants/contacts'
 
+useHead({
+  title: 'Контакты — Время Звёзд KIDS',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Адрес: Дядьковская, 7, Ярославль. Телефон, e-mail и карта проезда хоккейной школы «Время Звёзд KIDS».'
+    }
+  ]
+})
+
 const address = 'Дядьковская улица, 7, Ярославль, 150006'
 const email = 'Time_of_the_stars@mail.ru'
 </script>

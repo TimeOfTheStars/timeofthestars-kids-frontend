@@ -36,7 +36,7 @@
     <p v-else class="lead-form__thanks">Спасибо! Ожидайте звонка менеджера.</p>
     <p v-if="!submitted" class="lead-form__disclaimer">
         Заполняя и отправляя форму, Вы даете
-        <NuxtLink to="/politika-konfidencialnosti" class="lead-form__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
+        <NuxtLink to="/privacy-policy" class="lead-form__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
     </p>
 </template>
 

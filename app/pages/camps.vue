@@ -265,6 +265,18 @@
           </article>
         </div>
       </section>
+
+      <section v-reveal class="sbory-cta-bottom">
+        <a
+          href="https://forms.gle/8zcE1px3hvrEKjbd6"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn"
+        >Принять участие</a>
+        <button type="button" class="btn btn--secondary" @click="openQrModal">
+          Оплатить онлайн
+        </button>
+      </section>
     </div>
   </div>
 
@@ -289,6 +301,17 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import sboryPromoPhoto from '~/assets/fKu8dAF2SN8hISgv_pDOBWz85Pq3fDAK6sPt366ceFxNPM4efhxblQjPHr_uX7XS6k26s6iWVt24N9XEey_rkwAk.jpg'
+
+useHead({
+  title: 'Сборы — Время Звёзд KIDS',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Хоккейные сборы для полевых игроков и вратарей в Ярославле. Лёд, ОФП, бросковая зона, акробатика — программа и условия.'
+    }
+  ]
+})
 
 const showQrModal = ref(false)
 
@@ -1104,6 +1127,18 @@ const shiftChoiceCards: Array<{
   max-width: 640px;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Bottom CTA */
+.sbory-cta-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 0 3rem;
+}
+.sbory-cta-bottom .btn {
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12);
 }
 
 /* Shift choice */

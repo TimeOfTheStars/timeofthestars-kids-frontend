@@ -68,7 +68,7 @@
                         Стоимость абонемента от 9200 руб.
                     </p>
                     <a
-                        href="https://timeofthestars-kids.ru/abonementy"
+                        href="https://timeofthestars-kids.ru/services"
                         class="btn"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -121,6 +121,17 @@
 <script setup lang="ts">
 definePageMeta({
     layout: 'default',
+})
+
+useHead({
+    title: 'Сведения — Время Звёзд KIDS',
+    meta: [
+        {
+            name: 'description',
+            content:
+                'Сведения об автономной некоммерческой физкультурно-спортивной организации «ВРЕМЯ ЗВЕЗД» и уставные документы.'
+        }
+    ]
 })
 
 const docs = [

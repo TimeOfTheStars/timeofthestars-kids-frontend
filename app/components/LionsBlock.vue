@@ -17,7 +17,7 @@
                 <p class="lions__text">Продолжается набор детей с 3-х лет и старше </p>
             </div>
             <div v-reveal="{ delay: 300 }" class="lions__action">
-                <NuxtLink to="/abonementy" class="btn btn--red">Подробнее</NuxtLink>
+                <NuxtLink to="/services" class="btn btn--red">Подробнее</NuxtLink>
             </div>
         </div>
     </section>

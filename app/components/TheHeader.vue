@@ -40,37 +40,37 @@
                     </button>
                 </div>
                 <NuxtLink
-                    to="/hokkeynaya-shkola"
+                    to="/about"
                     class="header__link"
                     @click="menuOpen = false"
                     >Сведения</NuxtLink
                 >
                 <NuxtLink
-                    to="/abonementy"
+                    to="/services"
                     class="header__link"
                     @click="menuOpen = false"
                     >Услуги</NuxtLink
                 >
                 <NuxtLink
-                    to="/trenery"
+                    to="/coaches"
                     class="header__link"
                     @click="menuOpen = false"
                     >Тренеры</NuxtLink
                 >
                 <NuxtLink
-                    to="/sbory"
+                    to="/camps"
                     class="header__link"
                     @click="menuOpen = false"
                     >Сборы</NuxtLink
                 >
                 <NuxtLink
-                    to="/turniry"
+                    to="/tournaments"
                     class="header__link"
                     @click="menuOpen = false"
                     >Турниры</NuxtLink
                 >
                 <NuxtLink
-                    to="/kontakty"
+                    to="/contacts"
                     class="header__link"
                     @click="menuOpen = false"
                     >Контакты</NuxtLink

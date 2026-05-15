@@ -18,7 +18,7 @@
                     <button type="button" class="btn hero__form-btn" @click="openModal">Записаться</button>
                     <p class="hero__form-disclaimer">
                         Заполняя и отправляя форму, Вы даете
-                        <NuxtLink to="/politika-konfidencialnosti" class="hero__form-link">Согласие на обработку персональных данных</NuxtLink>.
+                        <NuxtLink to="/privacy-policy" class="hero__form-link">Согласие на обработку персональных данных</NuxtLink>.
                     </p>
                     <div class="hero__game-circle" aria-hidden="true">
                         <span class="hero__game-line hero__game-line--top"></span>

@@ -22,6 +22,17 @@
 definePageMeta({
   layout: 'default'
 })
+
+useHead({
+  title: 'Аренда — Время Звёзд KIDS',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Аренда хоккейного льда и тренировочных залов в Ярославле — условия и контакты.'
+    }
+  ]
+})
 </script>
 
 <style scoped>

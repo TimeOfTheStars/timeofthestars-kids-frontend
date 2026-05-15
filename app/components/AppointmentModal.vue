@@ -63,7 +63,7 @@
                 <p class="appointment-modal__disclaimer">
                     Заполняя и отправляя форму, Вы даете
                     <NuxtLink
-                        to="/politika-konfidencialnosti"
+                        to="/privacy-policy"
                         class="appointment-modal__disclaimer-link"
                         @click="emit('close')"
                         >Согласие на обработку персональных данных</NuxtLink

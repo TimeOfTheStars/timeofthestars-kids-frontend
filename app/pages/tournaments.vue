@@ -254,6 +254,17 @@
 import { computed, ref } from 'vue'
 import type { Tournament } from '~/types'
 
+useHead({
+  title: 'Турниры — Время Звёзд KIDS',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Расписание предстоящих и итоги завершённых турниров команд «Время Звёзд KIDS». Фильтрация по сезону, названию и возрастной категории.'
+    }
+  ]
+})
+
 const DEMO_TOURNAMENTS: Tournament[] = [
   {
     id: 'demo-1',

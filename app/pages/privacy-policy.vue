@@ -62,6 +62,17 @@
 definePageMeta({
     layout: 'default',
 })
+
+useHead({
+    title: 'Политика конфиденциальности — Время Звёзд KIDS',
+    meta: [
+        {
+            name: 'description',
+            content:
+                'Политика обработки персональных данных АНФСО «ВРЕМЯ ЗВЕЗД».'
+        }
+    ]
+})
 </script>
 
 <style scoped>

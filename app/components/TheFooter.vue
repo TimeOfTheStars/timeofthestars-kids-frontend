@@ -29,14 +29,14 @@
                     </a>
                 </div>
                 <nav class="footer__nav">
-                    <NuxtLink to="/hokkeynaya-shkola"
+                    <NuxtLink to="/about"
                         >Сведения</NuxtLink
                     >
-                    <NuxtLink to="/abonementy">Услуги</NuxtLink>
-                    <NuxtLink to="/trenery">Тренеры</NuxtLink>
-                    <NuxtLink to="/sbory">Сборы</NuxtLink>
-                    <NuxtLink to="/turniry">Турниры</NuxtLink>
-                    <NuxtLink to="/kontakty">Контакты</NuxtLink>
+                    <NuxtLink to="/services">Услуги</NuxtLink>
+                    <NuxtLink to="/coaches">Тренеры</NuxtLink>
+                    <NuxtLink to="/camps">Сборы</NuxtLink>
+                    <NuxtLink to="/tournaments">Турниры</NuxtLink>
+                    <NuxtLink to="/contacts">Контакты</NuxtLink>
                 </nav>
             </div>
             <div class="footer__bottom">
