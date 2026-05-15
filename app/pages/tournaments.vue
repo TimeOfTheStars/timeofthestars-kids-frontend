@@ -11,6 +11,15 @@
         в которых участвуют наши команды: предстоящие и уже сыгранные.
       </p>
 
+      <div v-reveal="{ delay: 120 }" class="turniry__cta">
+        <button type="button" class="btn" @click="openApply('player')">
+          Участвовать как игрок
+        </button>
+        <button type="button" class="btn btn--red" @click="openApply('team')">
+          Участвовать как команда
+        </button>
+      </div>
+
       <section class="turniry__section">
         <div v-if="seasons.length > 1" v-reveal class="turniry__seasons" role="tablist" aria-label="Сезоны">
           <button
@@ -261,6 +270,136 @@
     </div>
 
     <div
+      v-if="applyMode"
+      class="apply-modal"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="applyMode === 'player' ? 'Участвовать как игрок' : 'Участвовать как команда'"
+      @click.self="closeApply"
+      @keydown.esc="closeApply"
+    >
+      <div class="apply-modal__inner">
+        <button
+          type="button"
+          class="apply-modal__close"
+          aria-label="Закрыть"
+          @click="closeApply"
+        >×</button>
+        <h3 class="apply-modal__title">
+          {{ applyMode === 'player' ? 'Участвовать как игрок' : 'Участвовать как команда' }}
+        </h3>
+
+        <form
+          v-if="!applySent"
+          class="apply-form"
+          @submit.prevent="submitApply"
+        >
+          <div class="apply-form__fields">
+            <template v-if="applyMode === 'player'">
+              <input
+                v-model="playerForm.parent_name"
+                type="text"
+                class="apply-form__input"
+                placeholder="ФИО родителя"
+                required
+              />
+              <input
+                v-model="playerForm.child_name"
+                type="text"
+                class="apply-form__input"
+                placeholder="ФИО ребёнка"
+                required
+              />
+              <input
+                v-model.number="playerForm.child_age"
+                type="number"
+                min="1"
+                max="18"
+                inputmode="numeric"
+                class="apply-form__input"
+                placeholder="Возраст ребёнка"
+                required
+              />
+              <input
+                v-model="playerForm.phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                class="apply-form__input"
+                placeholder="+7 (___) ___-__-__"
+                required
+                @input="onPlayerPhoneInput"
+              />
+            </template>
+            <template v-else>
+              <input
+                v-model="teamForm.team_name"
+                type="text"
+                class="apply-form__input"
+                placeholder="Название команды"
+                required
+              />
+              <input
+                v-model="teamForm.city"
+                type="text"
+                class="apply-form__input"
+                placeholder="Город"
+                required
+              />
+              <input
+                v-model="teamForm.age_category"
+                type="text"
+                class="apply-form__input"
+                placeholder="Возрастная категория (например, U10)"
+                required
+              />
+              <input
+                v-model="teamForm.coach_name"
+                type="text"
+                class="apply-form__input"
+                placeholder="ФИО тренера"
+                required
+              />
+              <input
+                v-model="teamForm.phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                class="apply-form__input"
+                placeholder="+7 (___) ___-__-__"
+                required
+                @input="onTeamPhoneInput"
+              />
+              <textarea
+                v-model="teamForm.comment"
+                class="apply-form__input apply-form__textarea"
+                placeholder="Комментарий (необязательно)"
+                rows="3"
+              />
+            </template>
+          </div>
+
+          <p v-if="applyError" class="apply-form__error" role="alert">{{ applyError }}</p>
+
+          <label class="apply-form__agree">
+            <input v-model="applyAgree" type="checkbox" required />
+            <span>Согласие на обработку персональных данных</span>
+          </label>
+          <p class="apply-form__disclaimer">
+            Заполняя и отправляя форму, Вы даете
+            <NuxtLink to="/privacy-policy" class="apply-form__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
+          </p>
+
+          <button type="submit" class="btn" :disabled="applyLoading">
+            {{ applyLoading ? 'Отправляем…' : 'Отправить' }}
+          </button>
+        </form>
+
+        <p v-else class="apply-form__thanks">Спасибо! Заявка принята, мы свяжемся с вами.</p>
+      </div>
+    </div>
+
+    <div
       v-if="teamPhoto"
       class="team-photo-modal"
       role="dialog"
@@ -288,8 +427,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import type { Tournament, TournamentTeam } from '~/types'
+import { postJson } from '~/utils/api'
 
 useHead({
   title: 'Турниры — Время Звёзд KIDS',
@@ -497,6 +637,100 @@ function openTeamPhoto(team: TournamentTeam) {
 
 function closeTeamPhoto() {
   teamPhoto.value = null
+}
+
+type ApplyMode = 'player' | 'team'
+
+const applyMode = ref<ApplyMode | null>(null)
+const applyLoading = ref(false)
+const applyError = ref<string | null>(null)
+const applySent = ref(false)
+const applyAgree = ref(false)
+
+const playerForm = reactive({
+  parent_name: '',
+  child_name: '',
+  child_age: null as number | null,
+  phone: ''
+})
+
+const teamForm = reactive({
+  team_name: '',
+  city: '',
+  age_category: '',
+  coach_name: '',
+  phone: '',
+  comment: ''
+})
+
+function normalizePhone(raw: string): string {
+  const digitsOnly = raw.replace(/\D/g, '')
+  const hasPlus = raw.trim().startsWith('+')
+  return `${hasPlus ? '+' : ''}${digitsOnly}`
+}
+
+function onPlayerPhoneInput(e: Event) {
+  playerForm.phone = normalizePhone((e.target as HTMLInputElement).value)
+}
+
+function onTeamPhoneInput(e: Event) {
+  teamForm.phone = normalizePhone((e.target as HTMLInputElement).value)
+}
+
+function resetApply() {
+  applyLoading.value = false
+  applyError.value = null
+  applySent.value = false
+  applyAgree.value = false
+  playerForm.parent_name = ''
+  playerForm.child_name = ''
+  playerForm.child_age = null
+  playerForm.phone = ''
+  teamForm.team_name = ''
+  teamForm.city = ''
+  teamForm.age_category = ''
+  teamForm.coach_name = ''
+  teamForm.phone = ''
+  teamForm.comment = ''
+}
+
+function openApply(mode: ApplyMode) {
+  resetApply()
+  applyMode.value = mode
+}
+
+function closeApply() {
+  applyMode.value = null
+}
+
+async function submitApply() {
+  if (applyLoading.value || !applyMode.value) return
+  applyError.value = null
+  applyLoading.value = true
+  try {
+    if (applyMode.value === 'player') {
+      await postJson('/tournament-applications/player', {
+        parent_name: playerForm.parent_name.trim(),
+        child_name: playerForm.child_name.trim(),
+        child_age: playerForm.child_age,
+        phone: playerForm.phone.trim()
+      })
+    } else {
+      await postJson('/tournament-applications/team', {
+        team_name: teamForm.team_name.trim(),
+        city: teamForm.city.trim(),
+        age_category: teamForm.age_category.trim(),
+        coach_name: teamForm.coach_name.trim(),
+        phone: teamForm.phone.trim(),
+        comment: teamForm.comment.trim()
+      })
+    }
+    applySent.value = true
+  } catch {
+    applyError.value = 'Не удалось отправить. Попробуйте ещё раз.'
+  } finally {
+    applyLoading.value = false
+  }
 }
 
 </script>
@@ -825,6 +1059,129 @@ function closeTeamPhoto() {
 .t-card__team--clickable:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+.turniry__cta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0 0 2rem;
+}
+@media (max-width: 600px) {
+  .turniry__cta .btn {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}
+
+.apply-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+  overflow-y: auto;
+}
+.apply-modal__inner {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem 1.5rem;
+  max-width: 520px;
+  width: 100%;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+.apply-modal__title {
+  margin: 0 2.5rem 1.25rem 0;
+  font-size: 1.2rem;
+  color: var(--color-text);
+}
+.apply-modal__close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+}
+.apply-modal__close:hover {
+  background: var(--color-border);
+}
+
+.apply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.apply-form__fields {
+  display: grid;
+  gap: 0.75rem;
+}
+.apply-form__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+}
+.apply-form__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.apply-form__textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.apply-form__agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.apply-form__agree input {
+  margin-top: 0.2rem;
+}
+.apply-form__disclaimer {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+.apply-form__disclaimer-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.apply-form__error {
+  margin: 0;
+  color: #ef4444;
+  font-size: 0.9rem;
+}
+.apply-form__thanks {
+  margin: 0;
+  color: #22c55e;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .team-photo-modal {
