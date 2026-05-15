@@ -31,6 +31,7 @@ export interface AbonementCard {
 export interface TournamentTeam {
   name: string
   logo?: string
+  photo?: string
 }
 
 export interface Tournament {
