@@ -57,7 +57,7 @@ const guorImages = [
 .arena-swiper-shell {
   position: relative;
   width: 100%;
-  max-width: min(640px, 100%);
+  max-width: min(950px, 100%);
   margin-inline: auto;
   padding: 1rem clamp(2rem, 5vw, 3.5rem);
   box-sizing: border-box;
