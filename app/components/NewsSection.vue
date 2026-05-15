@@ -7,6 +7,7 @@
           <Swiper
             :modules="modules"
             :navigation="{ nextEl: '.news__next', prevEl: '.news__prev' }"
+            :loop="(newsItems?.length ?? 0) > 1"
             :auto-height="false"
             class="news-swiper"
           >

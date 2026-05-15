@@ -9,6 +9,7 @@
             :effect="'cards'"
             :cards-effect="{ slideShadows: true, rotate: true, perSlideRotate: 2, perSlideOffset: 10 }"
             :grab-cursor="true"
+            :loop="guorImages.length > 1"
             :modules="modules"
             :navigation="{ nextEl: '.arena-swiper-nav--next.arena-swiper-nav--guor', prevEl: '.arena-swiper-nav--prev.arena-swiper-nav--guor' }"
             :resize-observer="true"

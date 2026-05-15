@@ -7,6 +7,7 @@
           :slides-per-view="1.08"
           :space-between="12"
           :centered-slides="true"
+          :loop="momentImages.length > 1"
           :pagination="{ clickable: true }"
           :navigation="{ nextEl: '.sbory-moments-slider__next', prevEl: '.sbory-moments-slider__prev' }"
           :breakpoints="{
