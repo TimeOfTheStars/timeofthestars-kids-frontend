@@ -39,6 +39,7 @@ export interface Tournament {
   ageCategory: string
   birthYear?: number
   startDate: string
+  startTime?: string
   endDate: string
   location: string
   city?: string

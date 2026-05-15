@@ -93,6 +93,10 @@
                     <Icon name="ph:calendar-blank" class="t-card__meta-icon" />
                     <span>{{ formatDateRange(t.startDate, t.endDate) }}</span>
                   </li>
+                  <li v-if="t.startTime" class="t-card__meta-row">
+                    <Icon name="ph:clock" class="t-card__meta-icon" />
+                    <span>Начало в {{ t.startTime }}</span>
+                  </li>
                   <li class="t-card__meta-row">
                     <Icon name="ph:map-pin" class="t-card__meta-icon" />
                     <span>{{ t.location }}</span>
@@ -107,10 +111,15 @@
                   <span class="t-card__teams-label">Команды:</span>
                   <ul class="t-card__teams-list">
                     <li
-                      v-for="team in t.teams"
+                      v-for="(team, idx) in t.teams"
                       :key="team.name"
                       class="t-card__team"
                     >
+                      <span
+                        v-if="medalForTeam(t, idx)"
+                        class="t-card__team-medal"
+                        aria-hidden="true"
+                      >{{ medalForTeam(t, idx) }}</span>
                       <img
                         v-if="team.logo"
                         :src="team.logo"
@@ -171,6 +180,10 @@
                     <Icon name="ph:calendar-blank" class="t-card__meta-icon" />
                     <span>{{ formatDateRange(t.startDate, t.endDate) }}</span>
                   </li>
+                  <li v-if="t.startTime" class="t-card__meta-row">
+                    <Icon name="ph:clock" class="t-card__meta-icon" />
+                    <span>Начало в {{ t.startTime }}</span>
+                  </li>
                   <li class="t-card__meta-row">
                     <Icon name="ph:map-pin" class="t-card__meta-icon" />
                     <span>{{ t.location }}</span>
@@ -185,10 +198,15 @@
                   <span class="t-card__teams-label">Команды:</span>
                   <ul class="t-card__teams-list">
                     <li
-                      v-for="team in t.teams"
+                      v-for="(team, idx) in t.teams"
                       :key="team.name"
                       class="t-card__team"
                     >
+                      <span
+                        v-if="medalForTeam(t, idx)"
+                        class="t-card__team-medal"
+                        aria-hidden="true"
+                      >{{ medalForTeam(t, idx) }}</span>
                       <img
                         v-if="team.logo"
                         :src="team.logo"
@@ -409,6 +427,13 @@ function formatDateRange(startIso: string, endIso: string): string {
 
 function isInProgress(t: Tournament): boolean {
   return new Date(t.startDate) <= today && today <= new Date(t.endDate)
+}
+
+const TEAM_MEDALS = ['🥇', '🥈', '🥉']
+
+function medalForTeam(t: Tournament, idx: number): string {
+  if (new Date(t.endDate) >= today) return ''
+  return TEAM_MEDALS[idx] ?? '🏅'
 }
 
 </script>
@@ -731,6 +756,10 @@ function isInProgress(t: Tournament): boolean {
   object-fit: contain;
   border-radius: 50%;
   background: #fff;
+}
+.t-card__team-medal {
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .t-card__links {
