@@ -388,16 +388,20 @@ function matchesFilters(t: Tournament): boolean {
   return true
 }
 
+function startKey(t: Tournament): string {
+  return `${t.startDate}T${t.startTime ?? '00:00'}`
+}
+
 const upcomingForSeason = computed(() =>
   tournaments.value
     .filter(t => t.season === activeSeason.value && matchesFilters(t) && new Date(t.endDate) >= today)
-    .sort((a, b) => a.startDate.localeCompare(b.startDate))
+    .sort((a, b) => startKey(a).localeCompare(startKey(b)))
 )
 
 const completedForSeason = computed(() =>
   tournaments.value
     .filter(t => t.season === activeSeason.value && matchesFilters(t) && new Date(t.endDate) < today)
-    .sort((a, b) => b.startDate.localeCompare(a.startDate))
+    .sort((a, b) => startKey(b).localeCompare(startKey(a)))
 )
 
 const MONTHS = [
