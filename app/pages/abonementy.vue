@@ -1,12 +1,14 @@
 <template>
   <div class="page abonementy-page">
     <div class="container">
-      <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Услуги' }]" />
-      <h1 class="page__title">Услуги</h1>
+      <div v-reveal>
+        <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Услуги' }]" />
+      </div>
+      <h1 v-reveal="{ delay: 60 }" class="page__title">Услуги</h1>
 
       <section class="page-surface">
         <div class="abonementy__grid">
-          <article v-for="(item, i) in services" :key="i" class="abonementy-card">
+          <article v-for="(item, i) in services" :key="i" v-reveal="{ delay: 60 * i }" class="abonementy-card">
             <div class="abonementy-card__media">
               <img :src="item.image" :alt="item.title" class="abonementy-card__img" />
             </div>

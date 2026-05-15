@@ -1,11 +1,13 @@
 <template>
   <div class="page kontakty-page">
     <div class="container">
-      <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Контакты' }]" />
-      <h1 class="page__title">Контакты</h1>
+      <div v-reveal>
+        <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Контакты' }]" />
+      </div>
+      <h1 v-reveal="{ delay: 60 }" class="page__title">Контакты</h1>
 
       <section class="page-surface">
-        <div class="kontakty__content">
+        <div v-reveal="{ delay: 120 }" class="kontakty__content">
           <p><strong>Адрес:</strong> {{ address }}</p>
           <p>
             <strong>Телефон:</strong>
@@ -13,7 +15,7 @@
           </p>
           <p><strong>E-mail:</strong> <a :href="`mailto:${email}`">{{ email }}</a></p>
         </div>
-        <div class="kontakty__map">
+        <div v-reveal="{ delay: 200 }" class="kontakty__map">
           <iframe
             src="https://yandex.ru/map-widget/v1/?ll=39.902303%2C57.583665&z=16&pt=39.902303%2C57.583665"
             width="100%"

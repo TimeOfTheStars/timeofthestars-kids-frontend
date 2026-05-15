@@ -46,4 +46,5 @@ export interface Tournament {
   teams?: TournamentTeam[]
   description?: string
   url?: string
+  recordingsUrl?: string
 }

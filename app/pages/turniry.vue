@@ -27,6 +27,31 @@
           </button>
         </div>
 
+        <div v-if="!loading && (ageOptions.length || titleOptions.length)" v-reveal class="turniry__filters">
+          <label v-if="titleOptions.length" class="turniry__filter">
+            <span class="turniry__filter-label">Название</span>
+            <select v-model="selectedTitle" class="turniry__filter-select">
+              <option value="">Все</option>
+              <option v-for="title in titleOptions" :key="title" :value="title">{{ title }}</option>
+            </select>
+          </label>
+          <label v-if="ageOptions.length" class="turniry__filter">
+            <span class="turniry__filter-label">Категория</span>
+            <select v-model="selectedAge" class="turniry__filter-select">
+              <option value="">Все</option>
+              <option v-for="age in ageOptions" :key="age" :value="age">{{ age }}</option>
+            </select>
+          </label>
+          <button
+            v-if="selectedAge || selectedTitle"
+            type="button"
+            class="turniry__filter-reset"
+            @click="selectedAge = ''; selectedTitle = ''"
+          >
+            Сбросить
+          </button>
+        </div>
+
         <div v-if="loading" class="turniry__state">
           <p>Загружаем турниры...</p>
         </div>
@@ -98,16 +123,28 @@
                     </li>
                   </ul>
                 </div>
-                <a
-                  v-if="t.url"
-                  :href="t.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="t-card__link"
-                >
-                  Подробнее
-                  <Icon name="ph:arrow-up-right" />
-                </a>
+                <div v-if="t.url || t.recordingsUrl" class="t-card__links">
+                  <a
+                    v-if="t.url"
+                    :href="t.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="t-card__link"
+                  >
+                    Подробнее
+                    <Icon name="ph:arrow-up-right" />
+                  </a>
+                  <a
+                    v-if="t.recordingsUrl"
+                    :href="t.recordingsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="t-card__link t-card__link--recordings"
+                  >
+                    Записи матчей
+                    <Icon name="ph:play-circle" />
+                  </a>
+                </div>
               </article>
             </div>
           </div>
@@ -164,16 +201,28 @@
                     </li>
                   </ul>
                 </div>
-                <a
-                  v-if="t.url"
-                  :href="t.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="t-card__link"
-                >
-                  Подробнее
-                  <Icon name="ph:arrow-up-right" />
-                </a>
+                <div v-if="t.url || t.recordingsUrl" class="t-card__links">
+                  <a
+                    v-if="t.url"
+                    :href="t.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="t-card__link"
+                  >
+                    Подробнее
+                    <Icon name="ph:arrow-up-right" />
+                  </a>
+                  <a
+                    v-if="t.recordingsUrl"
+                    :href="t.recordingsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="t-card__link t-card__link--recordings"
+                  >
+                    Записи матчей
+                    <Icon name="ph:play-circle" />
+                  </a>
+                </div>
               </article>
             </div>
           </div>
@@ -296,15 +345,40 @@ const initialSeason = computed(() => {
 
 const activeSeason = ref<string>(initialSeason.value)
 
+const selectedAge = ref<string>('')
+const selectedTitle = ref<string>('')
+
+const ageOptions = computed(() => {
+  const set = new Set<string>()
+  for (const t of tournaments.value) {
+    if (t.ageCategory) set.add(t.ageCategory)
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, 'ru', { numeric: true }))
+})
+
+const titleOptions = computed(() => {
+  const set = new Set<string>()
+  for (const t of tournaments.value) {
+    if (t.title) set.add(t.title)
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, 'ru'))
+})
+
+function matchesFilters(t: Tournament): boolean {
+  if (selectedAge.value && t.ageCategory !== selectedAge.value) return false
+  if (selectedTitle.value && t.title !== selectedTitle.value) return false
+  return true
+}
+
 const upcomingForSeason = computed(() =>
   tournaments.value
-    .filter(t => t.season === activeSeason.value && new Date(t.endDate) >= today)
+    .filter(t => t.season === activeSeason.value && matchesFilters(t) && new Date(t.endDate) >= today)
     .sort((a, b) => a.startDate.localeCompare(b.startDate))
 )
 
 const completedForSeason = computed(() =>
   tournaments.value
-    .filter(t => t.season === activeSeason.value && new Date(t.endDate) < today)
+    .filter(t => t.season === activeSeason.value && matchesFilters(t) && new Date(t.endDate) < today)
     .sort((a, b) => b.startDate.localeCompare(a.startDate))
 )
 
@@ -372,10 +446,75 @@ function isInProgress(t: Tournament): boolean {
   z-index: 0;
 }
 .turniry__seasons,
+.turniry__filters,
 .turniry__group,
 .turniry__state {
   position: relative;
   z-index: 1;
+}
+
+.turniry__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.75rem;
+}
+.turniry__filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 200px;
+}
+.turniry__filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.turniry__filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--color-surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='%2364748b'><path d='M2 4l4 4 4-4z'/></svg>") no-repeat right 0.85rem center / 12px 12px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.6rem 2.25rem 0.6rem 0.85rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 200px;
+  max-width: 100%;
+}
+.turniry__filter-select:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+.turniry__filter-reset {
+  align-self: flex-end;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: 0.55rem 0.9rem;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.turniry__filter-reset:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+}
+@media (max-width: 600px) {
+  .turniry__filter {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .turniry__filter-select {
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 .turniry__seasons {
@@ -594,12 +733,17 @@ function isInProgress(t: Tournament): boolean {
   background: #fff;
 }
 
-.t-card__link {
+.t-card__links {
   margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+}
+.t-card__link {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  align-self: flex-start;
   color: var(--color-accent);
   text-decoration: none;
   font-weight: 600;
@@ -607,6 +751,9 @@ function isInProgress(t: Tournament): boolean {
 }
 .t-card__link:hover {
   text-decoration: underline;
+}
+.t-card__link--recordings {
+  color: #b91c1c;
 }
 
 @media (max-width: 600px) {

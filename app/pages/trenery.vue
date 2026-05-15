@@ -1,16 +1,19 @@
 <template>
     <div class="page trenery-page">
         <div class="container">
-            <Breadcrumbs
-                :items="[{ title: 'Главная', to: '/' }, { title: 'Тренеры' }]"
-            />
-            <h1 class="page__title">Тренеры</h1>
+            <div v-reveal>
+                <Breadcrumbs
+                    :items="[{ title: 'Главная', to: '/' }, { title: 'Тренеры' }]"
+                />
+            </div>
+            <h1 v-reveal="{ delay: 60 }" class="page__title">Тренеры</h1>
 
             <section class="trenery__section">
                 <div class="trenery__grid">
                     <article
-                        v-for="coach in coaches"
+                        v-for="(coach, i) in coaches"
                         :key="coach.name"
+                        v-reveal="{ delay: 60 * i }"
                         class="trenery-card"
                         role="button"
                         tabindex="0"

@@ -7,6 +7,7 @@
           <Swiper
             :modules="modules"
             :navigation="{ nextEl: '.news__next', prevEl: '.news__prev' }"
+            :auto-height="false"
             class="news-swiper"
           >
             <SwiperSlide v-for="(item, i) in newsItems" :key="i">
@@ -16,8 +17,15 @@
                   <div v-else class="media-placeholder">Тут может быть картинка</div>
                 </div>
                 <div class="news-card__body">
-                  <p class="news-card__text">{{ item.excerpt }}</p>
-                  <a :href="item.url" target="_blank" rel="noopener" class="btn btn--small">Подробнее</a>
+                  <div
+                    class="news-card__text-wrap"
+                    @wheel.stop
+                    @touchstart.stop
+                    @touchmove.stop
+                  >
+                    <p class="news-card__text">{{ item.excerpt }}</p>
+                  </div>
+                  <a :href="item.url" target="_blank" rel="noopener" class="btn btn--small news-card__more">Подробнее</a>
                 </div>
               </article>
             </SwiperSlide>
@@ -63,26 +71,33 @@ const { data: newsItems } = await useAsyncData<NewsItem[]>(
 }
 .news__slider-wrap {
   position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 .news-swiper {
   padding-bottom: 0.5rem;
 }
+.news-swiper :deep(.swiper-slide) {
+  height: auto;
+  display: flex;
+}
 .news-card {
   background: var(--color-surface);
-  border-radius: var(--radius);
+  border-radius: 1.5rem;
   overflow: hidden;
   border: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  min-height: 320px;
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  height: 640px;
   transition: border-color 0.25s, box-shadow 0.25s;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
 }
 .news-card:hover {
   border-color: rgba(37, 99, 235, 0.35);
-  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 12px 36px rgba(37, 99, 235, 0.12);
 }
 .news-card__media {
-  aspect-ratio: 16/10;
   background: var(--color-border);
   display: flex;
   align-items: center;
@@ -90,6 +105,7 @@ const { data: newsItems } = await useAsyncData<NewsItem[]>(
   color: var(--color-text-muted);
   font-size: 0.85rem;
   overflow: hidden;
+  height: 240px;
 }
 .news-card__img {
   width: 100%;
@@ -98,27 +114,37 @@ const { data: newsItems } = await useAsyncData<NewsItem[]>(
   display: block;
 }
 .news-card__body {
-  padding: 1.25rem;
-  flex: 1;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-height: 0;
+}
+.news-card__text-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .news-card__text {
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--color-text-muted);
-  flex: 1;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--color-text);
   white-space: pre-line;
-  max-height: 320px;
-  overflow-y: auto;
+}
+.news-card__more {
+  align-self: flex-start;
 }
 .news__nav {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
 }
 .news__btn {
   width: 44px;
@@ -129,10 +155,11 @@ const { data: newsItems } = await useAsyncData<NewsItem[]>(
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text);
-  border-radius: var(--radius);
+  border-radius: 9999px;
   cursor: pointer;
   font-size: 1.5rem;
   line-height: 1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 .news__btn:hover:not(:disabled) {
   background: var(--color-border);
@@ -142,8 +169,32 @@ const { data: newsItems } = await useAsyncData<NewsItem[]>(
   cursor: default;
 }
 .btn--small {
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1.1rem;
   font-size: 0.9rem;
-  align-self: flex-start;
+}
+
+@media (min-width: 760px) {
+  .news-card {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    height: 520px;
+  }
+  .news-card__media {
+    height: 100%;
+  }
+  .news-card__body {
+    padding: 1.75rem 1.75rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-card {
+    height: 680px;
+  }
+  .news-card__media {
+    height: 220px;
+  }
+  .news-card__body {
+    padding: 1.25rem;
+  }
 }
 </style>

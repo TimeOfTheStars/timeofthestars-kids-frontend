@@ -1,16 +1,18 @@
 <template>
     <div class="page hokkeynaya-shkola-page">
         <div class="container">
-            <Breadcrumbs
-                :items="[
-                    { title: 'Главная', to: '/' },
-                    { title: 'Сведения' },
-                ]"
-            />
-            <h1 class="page__title">Сведения об образовательной организации</h1>
+            <div v-reveal>
+                <Breadcrumbs
+                    :items="[
+                        { title: 'Главная', to: '/' },
+                        { title: 'Сведения' },
+                    ]"
+                />
+            </div>
+            <h1 v-reveal="{ delay: 60 }" class="page__title">Сведения об образовательной организации</h1>
 
             <section class="page-surface">
-                <section class="school__main-info">
+                <section v-reveal="{ delay: 120 }" class="school__main-info">
                     <h2 class="school__subtitle">Основные сведения</h2>
                     <dl class="school__info-list">
                         <dt>Полное и сокращенное наименование</dt>
@@ -49,7 +51,7 @@
                     </dl>
                 </section>
 
-                <div class="school__intro">
+                <div v-reveal class="school__intro">
                     <p>
                         Время Звезд-KIDS создан в 2024 году для воспитания профессиональных хоккеистов!
                     </p>
@@ -60,7 +62,7 @@
                         Наша хоккейная школа принимает участие в официальных соревнованиях города Ярославля и Ярославской области.
                     </p>
                 </div>
-                <div class="school__cta">
+                <div v-reveal class="school__cta">
                     <p class="school__cta-text">Идет набор 2010-2023 г.р.</p>
                     <p class="school__cta-price">
                         Стоимость абонемента от 9200 руб.
@@ -76,17 +78,17 @@
                 <!-- <div class="school__media">
                     <div class="media-placeholder">Тут может быть картинка</div>
                 </div> -->
-                <h2 class="school__subtitle">
+                <h2 v-reveal class="school__subtitle">
                     Для развития созданы отличные условия:
                 </h2>
-                <ul class="school__conditions">
+                <ul v-reveal="{ delay: 80 }" class="school__conditions">
                     <li>два больших льда;</li>
                     <li>залы функциональной подготовки;</li>
                     <li>игровые залы;</li>
                     <li>бросковые зоны;</li>
                     <li>зоны конькобежных тренажёров HST.</li>
                 </ul>
-                <div class="school__outro">
+                <div v-reveal class="school__outro">
                     <p>
                         Тренировки спортсменов проходят в группах по году рождения
                         для детей от 3-х до 17-ти лет.
@@ -98,11 +100,12 @@
                         Обучение в школе платное.
                     </p>
                 </div>
-                <h2 class="school__subtitle">Документы</h2>
+                <h2 v-reveal class="school__subtitle">Документы</h2>
                 <div class="school__docs">
                     <a
                         v-for="(doc, i) in docs"
                         :key="i"
+                        v-reveal="{ delay: 60 * i }"
                         :href="doc.url"
                         target="_blank"
                         rel="noopener"

@@ -52,6 +52,12 @@
                     >Услуги</NuxtLink
                 >
                 <NuxtLink
+                    to="/trenery"
+                    class="header__link"
+                    @click="menuOpen = false"
+                    >Тренеры</NuxtLink
+                >
+                <NuxtLink
                     to="/sbory"
                     class="header__link"
                     @click="menuOpen = false"
@@ -62,12 +68,6 @@
                     class="header__link"
                     @click="menuOpen = false"
                     >Турниры</NuxtLink
-                >
-                <NuxtLink
-                    to="/trenery"
-                    class="header__link"
-                    @click="menuOpen = false"
-                    >Тренеры</NuxtLink
                 >
                 <NuxtLink
                     to="/kontakty"
