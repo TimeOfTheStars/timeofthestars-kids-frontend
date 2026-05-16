@@ -471,7 +471,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import type { Tournament, TournamentTeam } from '~/types'
 import { postJson } from '~/utils/api'
 
@@ -542,14 +542,17 @@ const DEMO_TOURNAMENTS: Tournament[] = [
   }
 ]
 
-const now = new Date()
+const nowMs = useState<number>('tournaments-now', () => Date.now())
+const now = computed(() => new Date(nowMs.value))
+
+onMounted(() => {
+  nowMs.value = Date.now()
+})
 
 function parseDateTime(date: string, time: string | undefined, fallback: 'start' | 'end'): Date {
   const t = time && /^\d{1,2}:\d{2}$/.test(time) ? time : (fallback === 'start' ? '00:00' : '23:59')
-  const [h, m] = t.split(':').map(Number)
-  const d = new Date(date)
-  d.setHours(h ?? 0, m ?? 0, 0, 0)
-  return d
+  const [hh, mm] = t.split(':')
+  return new Date(`${date}T${hh!.padStart(2, '0')}:${mm!.padStart(2, '0')}:00+03:00`)
 }
 
 function startOf(t: Tournament): Date {
@@ -603,7 +606,7 @@ const initialSeason = computed(() => {
   const list = seasons.value
   if (!list.length) return ''
   const withUpcoming = list.find(s =>
-    tournaments.value.some(t => t.season === s && endOf(t) >= now)
+    tournaments.value.some(t => t.season === s && endOf(t) >= now.value)
   )
   return withUpcoming || list[0]!
 })
@@ -643,13 +646,13 @@ function startKey(t: Tournament): string {
 
 const upcomingForSeason = computed(() =>
   tournaments.value
-    .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) >= now)
+    .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) >= now.value)
     .sort((a, b) => startKey(a).localeCompare(startKey(b)))
 )
 
 const completedForSeason = computed(() =>
   tournaments.value
-    .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) < now)
+    .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) < now.value)
     .sort((a, b) => startKey(b).localeCompare(startKey(a)))
 )
 
@@ -679,13 +682,13 @@ function formatDateRange(startIso: string, endIso: string): string {
 }
 
 function isInProgress(t: Tournament): boolean {
-  return startOf(t) <= now && now <= endOf(t)
+  return startOf(t) <= now.value && now.value <= endOf(t)
 }
 
 const TEAM_MEDALS = ['🥇', '🥈', '🥉']
 
 function medalForTeam(t: Tournament, idx: number): string {
-  if (endOf(t) >= now) return ''
+  if (endOf(t) >= now.value) return ''
   return TEAM_MEDALS[idx] ?? '🏅'
 }
 
