@@ -51,14 +51,58 @@
               <option v-for="age in ageOptions" :key="age" :value="age">{{ age }}</option>
             </select>
           </label>
+          <label class="turniry__filter">
+            <span class="turniry__filter-label">Дата</span>
+            <input
+              v-model="selectedDate"
+              type="date"
+              class="turniry__filter-select turniry__filter-date"
+            />
+          </label>
           <button
-            v-if="selectedAge || selectedTitle"
+            v-if="selectedAge || selectedTitle || selectedDate"
             type="button"
             class="turniry__filter-reset"
-            @click="selectedAge = ''; selectedTitle = ''"
+            @click="selectedAge = ''; selectedTitle = ''; selectedDate = ''"
           >
             Сбросить
           </button>
+          <div
+            class="status-info"
+            @mouseenter="statusInfoOpen = true"
+            @mouseleave="statusInfoOpen = false"
+          >
+            <button
+              type="button"
+              class="status-info__btn"
+              :aria-expanded="statusInfoOpen"
+              aria-label="Что означают статусы"
+              @click="statusInfoOpen = !statusInfoOpen"
+            >
+              <Icon name="ph:info" />
+            </button>
+            <div
+              v-if="statusInfoOpen"
+              class="status-info__popover"
+              role="tooltip"
+            >
+              <p class="status-info__title">Статусы турниров</p>
+              <ul class="status-info__list">
+                <li>
+                  <span class="t-card__status t-card__status--upcoming">Предстоящий</span>
+                  — ещё не начался
+                </li>
+                <li>
+                  <span class="t-card__status t-card__status--in-progress">В процессе</span>
+                  — идёт прямо сейчас
+                </li>
+                <li>
+                  <span class="t-card__status t-card__status--done">Завершён</span>
+                  — уже сыгран
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div v-if="loading" class="turniry__state">
@@ -498,8 +542,23 @@ const DEMO_TOURNAMENTS: Tournament[] = [
   }
 ]
 
-const today = new Date()
-today.setHours(0, 0, 0, 0)
+const now = new Date()
+
+function parseDateTime(date: string, time: string | undefined, fallback: 'start' | 'end'): Date {
+  const t = time && /^\d{1,2}:\d{2}$/.test(time) ? time : (fallback === 'start' ? '00:00' : '23:59')
+  const [h, m] = t.split(':').map(Number)
+  const d = new Date(date)
+  d.setHours(h ?? 0, m ?? 0, 0, 0)
+  return d
+}
+
+function startOf(t: Tournament): Date {
+  return parseDateTime(t.startDate, t.startTime, 'start')
+}
+
+function endOf(t: Tournament): Date {
+  return parseDateTime(t.endDate, t.endTime, 'end')
+}
 
 function inferSeason(iso: string): string {
   const d = new Date(iso)
@@ -544,7 +603,7 @@ const initialSeason = computed(() => {
   const list = seasons.value
   if (!list.length) return ''
   const withUpcoming = list.find(s =>
-    tournaments.value.some(t => t.season === s && new Date(t.endDate) >= today)
+    tournaments.value.some(t => t.season === s && endOf(t) >= now)
   )
   return withUpcoming || list[0]!
 })
@@ -553,6 +612,7 @@ const activeSeason = ref<string>(initialSeason.value)
 
 const selectedAge = ref<string>('')
 const selectedTitle = ref<string>('')
+const selectedDate = ref<string>('')
 
 const ageOptions = computed(() => {
   const set = new Set<string>()
@@ -573,6 +633,7 @@ const titleOptions = computed(() => {
 function matchesFilters(t: Tournament): boolean {
   if (selectedAge.value && t.ageCategory !== selectedAge.value) return false
   if (selectedTitle.value && t.title !== selectedTitle.value) return false
+  if (selectedDate.value && (t.startDate > selectedDate.value || t.endDate < selectedDate.value)) return false
   return true
 }
 
@@ -582,13 +643,13 @@ function startKey(t: Tournament): string {
 
 const upcomingForSeason = computed(() =>
   tournaments.value
-    .filter(t => t.season === activeSeason.value && matchesFilters(t) && new Date(t.endDate) >= today)
+    .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) >= now)
     .sort((a, b) => startKey(a).localeCompare(startKey(b)))
 )
 
 const completedForSeason = computed(() =>
   tournaments.value
-    .filter(t => t.season === activeSeason.value && matchesFilters(t) && new Date(t.endDate) < today)
+    .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) < now)
     .sort((a, b) => startKey(b).localeCompare(startKey(a)))
 )
 
@@ -618,15 +679,17 @@ function formatDateRange(startIso: string, endIso: string): string {
 }
 
 function isInProgress(t: Tournament): boolean {
-  return new Date(t.startDate) <= today && today <= new Date(t.endDate)
+  return startOf(t) <= now && now <= endOf(t)
 }
 
 const TEAM_MEDALS = ['🥇', '🥈', '🥉']
 
 function medalForTeam(t: Tournament, idx: number): string {
-  if (new Date(t.endDate) >= today) return ''
+  if (endOf(t) >= now) return ''
   return TEAM_MEDALS[idx] ?? '🏅'
 }
+
+const statusInfoOpen = ref(false)
 
 const teamPhoto = ref<{ name: string; photo: string } | null>(null)
 
@@ -745,6 +808,72 @@ async function submitApply() {
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
+.status-info {
+  position: relative;
+  display: inline-flex;
+  margin-left: auto;
+  align-self: flex-end;
+  padding-bottom: 0.15rem;
+  z-index: 150;
+}
+.status-info__btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.status-info__btn:hover,
+.status-info__btn:focus-visible {
+  background: var(--color-bg-alt);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  outline: none;
+}
+.status-info__popover {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 150;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  padding: 0.9rem 1rem;
+  min-width: 260px;
+  max-width: min(320px, calc(100vw - 2rem));
+  font-size: 0.92rem;
+}
+.status-info__title {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.status-info__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.status-info__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.35;
+  flex-wrap: wrap;
+}
 .page__intro {
   margin: 0 0 1.5rem;
   max-width: 720px;
@@ -781,6 +910,7 @@ async function submitApply() {
   align-items: flex-end;
   gap: 0.75rem 1rem;
   margin-bottom: 1.75rem;
+  z-index: 50;
 }
 .turniry__filter {
   display: flex;
@@ -812,6 +942,11 @@ async function submitApply() {
 .turniry__filter-select:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
+}
+.turniry__filter-date {
+  background-image: none;
+  padding-right: 0.85rem;
+  font-family: inherit;
 }
 .turniry__filter-reset {
   align-self: flex-end;
@@ -970,8 +1105,18 @@ async function submitApply() {
   color: #15803d;
 }
 .t-card__status--in-progress {
-  background: rgba(59, 130, 246, 0.14);
-  color: #1d4ed8;
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+  animation: status-pulse 1.6s ease-in-out infinite;
+}
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-card__status--in-progress {
+    animation: none;
+  }
 }
 .t-card__status--done {
   background: var(--color-bg-alt);

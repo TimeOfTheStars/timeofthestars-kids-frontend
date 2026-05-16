@@ -42,6 +42,7 @@ export interface Tournament {
   startDate: string
   startTime?: string
   endDate: string
+  endTime?: string
   location: string
   city?: string
   season: string
