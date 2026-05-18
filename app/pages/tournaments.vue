@@ -151,8 +151,14 @@
                     <span>Начало в {{ t.startTime }}</span>
                   </li>
                   <li class="t-card__meta-row">
-                    <Icon name="ph:map-pin" class="t-card__meta-icon" />
-                    <span>{{ t.location }}</span>
+                    <NuxtLink
+                      to="/contacts#map"
+                      class="t-card__meta-link"
+                      :aria-label="`Открыть карту: ${t.location}`"
+                    >
+                      <Icon name="ph:map-pin" class="t-card__meta-icon" />
+                      <span>{{ t.location }}</span>
+                    </NuxtLink>
                   </li>
                   <li v-if="t.birthYear" class="t-card__meta-row">
                     <Icon name="ph:users-three" class="t-card__meta-icon" />
@@ -244,8 +250,14 @@
                     <span>Начало в {{ t.startTime }}</span>
                   </li>
                   <li class="t-card__meta-row">
-                    <Icon name="ph:map-pin" class="t-card__meta-icon" />
-                    <span>{{ t.location }}</span>
+                    <NuxtLink
+                      to="/contacts#map"
+                      class="t-card__meta-link"
+                      :aria-label="`Открыть карту: ${t.location}`"
+                    >
+                      <Icon name="ph:map-pin" class="t-card__meta-icon" />
+                      <span>{{ t.location }}</span>
+                    </NuxtLink>
                   </li>
                   <li v-if="t.birthYear" class="t-card__meta-row">
                     <Icon name="ph:users-three" class="t-card__meta-icon" />
@@ -1153,6 +1165,21 @@ async function submitApply() {
   height: 18px;
   color: var(--color-accent);
   flex-shrink: 0;
+}
+.t-card__meta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+.t-card__meta-link:hover,
+.t-card__meta-link:focus-visible {
+  color: var(--color-accent);
+  text-decoration: underline;
+  outline: none;
 }
 
 .t-card__desc {

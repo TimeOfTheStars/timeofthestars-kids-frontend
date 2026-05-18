@@ -15,7 +15,7 @@
           </p>
           <p><strong>E-mail:</strong> <a :href="`mailto:${email}`">{{ email }}</a></p>
         </div>
-        <div v-reveal="{ delay: 200 }" class="kontakty__map">
+        <div id="map" v-reveal="{ delay: 200 }" class="kontakty__map" tabindex="-1">
           <iframe
             src="https://yandex.ru/map-widget/v1/?ll=39.902303%2C57.583665&z=16&pt=39.902303%2C57.583665"
             width="100%"
