@@ -153,7 +153,7 @@ async function onSubmit() {
     align-items: center;
     justify-content: center;
     z-index: 220;
-    padding: 1rem;
+    padding: 140px 1rem 1rem;
 }
 .appointment-modal__inner {
     background: var(--color-surface);
@@ -161,14 +161,26 @@ async function onSubmit() {
     border-radius: var(--radius);
     max-width: 520px;
     width: 100%;
-    padding: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 .appointment-modal__top {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1rem;
+    padding: 1rem 0 0.85rem;
+    margin: 0 -1.5rem 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
 }
 .appointment-modal__title {
     margin: 0;

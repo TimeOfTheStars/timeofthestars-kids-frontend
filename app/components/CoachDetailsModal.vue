@@ -1,7 +1,9 @@
 <template>
   <div v-if="open" class="coach-modal" role="dialog" aria-modal="true" :aria-label="coach?.name || 'Тренер'">
     <div class="coach-modal__inner">
-      <button type="button" class="coach-modal__close" aria-label="Закрыть" @click="emit('close')">×</button>
+      <div class="coach-modal__top">
+        <button type="button" class="coach-modal__close" aria-label="Закрыть" @click="emit('close')">×</button>
+      </div>
 
       <div v-if="coach" class="coach-modal__layout">
         <div class="coach-modal__left">
@@ -90,14 +92,25 @@ watch(
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: calc(var(--radius) + 6px);
-  padding: clamp(1.25rem, 2.6vw, 2rem);
+  padding: 0 clamp(1.25rem, 2.6vw, 2rem) clamp(1.25rem, 2.6vw, 2rem);
   max-height: min(640px, calc(100vh - 160px));
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+.coach-modal__top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 0 0.25rem;
+  margin: 0 calc(-1 * clamp(1.25rem, 2.6vw, 2rem));
+  padding-left: clamp(1.25rem, 2.6vw, 2rem);
+  padding-right: clamp(1.25rem, 2.6vw, 2rem);
+  background: var(--color-surface);
 }
 .coach-modal__close {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
   width: 44px;
   height: 44px;
   border-radius: 9999px;
@@ -110,6 +123,7 @@ watch(
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
 .coach-modal__close:hover {
   background: var(--color-border);

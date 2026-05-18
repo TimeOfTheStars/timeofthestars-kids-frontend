@@ -26,7 +26,15 @@
 
       <div v-if="selectedService" class="abonementy-modal" @click.self="selectedService = null">
         <div class="abonementy-modal__inner">
-          <h3 class="abonementy-modal__title">{{ selectedService.title }}</h3>
+          <div class="abonementy-modal__top">
+            <h3 class="abonementy-modal__title">{{ selectedService.title }}</h3>
+            <button
+              type="button"
+              class="abonementy-modal__close"
+              aria-label="Закрыть"
+              @click="selectedService = null"
+            >×</button>
+          </div>
           <p class="abonementy-modal__description">{{ selectedService.description }}</p>
           <div class="abonementy-modal__form">
             <h4 class="abonementy-modal__form-title">Оставить заявку</h4>
@@ -376,20 +384,57 @@ async function submitServiceRequest() {
   align-items: center;
   justify-content: center;
   z-index: 200;
-  padding: 1rem;
+  padding: 140px 1rem 1rem;
 }
 .abonementy-modal__inner {
   background: var(--color-surface);
-  padding: 2rem;
+  padding: 0 2rem 2rem;
   border-radius: var(--radius);
   max-width: 560px;
   width: 100%;
-  max-height: 80vh;
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.abonementy-modal__top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0 0.85rem;
+  margin: 0 -2rem 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 .abonementy-modal__title {
   font-size: 1.25rem;
-  margin: 0 0 1rem;
+  margin: 0;
+  line-height: 1.3;
+}
+.abonementy-modal__close {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+}
+.abonementy-modal__close:hover {
+  background: var(--color-border);
 }
 .abonementy-modal__description {
   margin: 0 0 1.5rem;

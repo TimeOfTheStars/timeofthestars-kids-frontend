@@ -335,15 +335,17 @@
       @keydown.esc="closeApply"
     >
       <div class="apply-modal__inner">
-        <button
-          type="button"
-          class="apply-modal__close"
-          aria-label="Закрыть"
-          @click="closeApply"
-        >×</button>
-        <h3 class="apply-modal__title">
-          {{ applyMode === 'player' ? 'Участвовать как игрок' : 'Участвовать как команда' }}
-        </h3>
+        <div class="apply-modal__top">
+          <h3 class="apply-modal__title">
+            {{ applyMode === 'player' ? 'Участвовать как игрок' : 'Участвовать как команда' }}
+          </h3>
+          <button
+            type="button"
+            class="apply-modal__close"
+            aria-label="Закрыть"
+            @click="closeApply"
+          >×</button>
+        </div>
 
         <form
           v-if="!applySent"
@@ -1259,29 +1261,45 @@ async function submitApply() {
   align-items: center;
   justify-content: center;
   z-index: 200;
-  padding: 1rem;
+  padding: 140px 1rem 1rem;
   overflow-y: auto;
 }
 .apply-modal__inner {
   position: relative;
   background: var(--color-surface);
   border-radius: var(--radius);
-  padding: 1.75rem 1.5rem 1.5rem;
+  padding: 0 1.5rem 1.5rem;
   max-width: 520px;
   width: 100%;
-  max-height: calc(100vh - 2rem);
+  max-height: calc(100vh - 160px);
   overflow-y: auto;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+.apply-modal__top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 0.75rem;
+  margin: 0 -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1rem;
 }
 .apply-modal__title {
-  margin: 0 2.5rem 1.25rem 0;
+  margin: 0;
   font-size: 1.2rem;
   color: var(--color-text);
 }
 .apply-modal__close {
-  position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
+  flex-shrink: 0;
   width: 38px;
   height: 38px;
   display: inline-flex;
@@ -1367,7 +1385,7 @@ async function submitApply() {
   align-items: center;
   justify-content: center;
   z-index: 200;
-  padding: 1rem;
+  padding: 140px 1rem 1rem;
 }
 .team-photo-modal__inner {
   position: relative;
@@ -1375,7 +1393,7 @@ async function submitApply() {
   border-radius: var(--radius);
   padding: 1.25rem;
   max-width: min(900px, 100%);
-  max-height: 90vh;
+  max-height: calc(100vh - 160px);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;

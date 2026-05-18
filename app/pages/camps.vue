@@ -1216,7 +1216,7 @@ const shiftChoiceCards: Array<{
   align-items: center;
   justify-content: center;
   z-index: 220;
-  padding: 1rem;
+  padding: 140px 1rem 1rem;
 }
 .qr-modal__inner {
   position: relative;
@@ -1229,6 +1229,7 @@ const shiftChoiceCards: Array<{
 }
 .qr-modal__title {
   margin: 0 0 1rem;
+  padding-right: 3rem;
   font-size: 1.25rem;
   color: var(--color-text);
 }
