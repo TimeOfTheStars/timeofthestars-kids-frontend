@@ -29,6 +29,19 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/webp', href: '/logo-star-kids.webp' },
       ],
+      meta: [
+        { name: 'theme-color', content: '#2563eb' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'Время Звёзд KIDS' },
+        { property: 'og:locale', content: 'ru_RU' },
+        { property: 'og:image', content: 'https://timeofthestars-kids.ru/logo-star-kids.webp' },
+        { property: 'og:image:type', content: 'image/webp' },
+        { property: 'og:image:width', content: '720' },
+        { property: 'og:image:height', content: '515' },
+        { property: 'og:image:alt', content: 'Время Звёзд KIDS — хоккейная школа' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:image', content: 'https://timeofthestars-kids.ru/logo-star-kids.webp' },
+      ],
     },
   },
 })
