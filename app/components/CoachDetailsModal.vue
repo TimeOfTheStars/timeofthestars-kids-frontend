@@ -1,4 +1,5 @@
 <template>
+  <Transition name="modal">
   <div v-if="open" class="coach-modal" role="dialog" aria-modal="true" :aria-label="coach?.name || 'Тренер'">
     <div class="coach-modal__inner">
       <div class="coach-modal__top">
@@ -18,6 +19,7 @@
       </div>
     </div>
   </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">

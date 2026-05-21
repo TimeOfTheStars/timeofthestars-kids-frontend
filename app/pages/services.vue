@@ -24,6 +24,7 @@
         </div>
       </section>
 
+      <Transition name="modal">
       <div v-if="selectedService" class="abonementy-modal" @click.self="selectedService = null">
         <div class="abonementy-modal__inner">
           <div class="abonementy-modal__top">
@@ -61,6 +62,7 @@
           <button type="button" class="btn btn--secondary" @click="selectedService = null">Закрыть</button>
         </div>
       </div>
+      </Transition>
     </div>
   </div>
 </template>

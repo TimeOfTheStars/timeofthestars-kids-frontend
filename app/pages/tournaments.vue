@@ -150,15 +150,16 @@
                     <Icon name="ph:clock" class="t-card__meta-icon" />
                     <span>Начало в {{ t.startTime }}</span>
                   </li>
-                  <li class="t-card__meta-row">
-                    <NuxtLink
-                      to="/contacts#map"
-                      class="t-card__meta-link"
-                      :aria-label="`Открыть карту: ${t.location}`"
+                  <li v-if="t.arena || t.location" class="t-card__meta-row">
+                    <button
+                      type="button"
+                      class="t-card__meta-link t-card__meta-link--btn"
+                      :aria-label="`Открыть карту: ${arenaLabel(t)}`"
+                      @click="openArena(t)"
                     >
                       <Icon name="ph:map-pin" class="t-card__meta-icon" />
-                      <span>{{ t.location }}</span>
-                    </NuxtLink>
+                      <span>{{ arenaLabel(t) }}</span>
+                    </button>
                   </li>
                   <li v-if="t.birthYear" class="t-card__meta-row">
                     <Icon name="ph:users-three" class="t-card__meta-icon" />
@@ -249,15 +250,16 @@
                     <Icon name="ph:clock" class="t-card__meta-icon" />
                     <span>Начало в {{ t.startTime }}</span>
                   </li>
-                  <li class="t-card__meta-row">
-                    <NuxtLink
-                      to="/contacts#map"
-                      class="t-card__meta-link"
-                      :aria-label="`Открыть карту: ${t.location}`"
+                  <li v-if="t.arena || t.location" class="t-card__meta-row">
+                    <button
+                      type="button"
+                      class="t-card__meta-link t-card__meta-link--btn"
+                      :aria-label="`Открыть карту: ${arenaLabel(t)}`"
+                      @click="openArena(t)"
                     >
                       <Icon name="ph:map-pin" class="t-card__meta-icon" />
-                      <span>{{ t.location }}</span>
-                    </NuxtLink>
+                      <span>{{ arenaLabel(t) }}</span>
+                    </button>
                   </li>
                   <li v-if="t.birthYear" class="t-card__meta-row">
                     <Icon name="ph:users-three" class="t-card__meta-icon" />
@@ -325,6 +327,7 @@
       </section>
     </div>
 
+    <Transition name="modal">
     <div
       v-if="applyMode"
       class="apply-modal"
@@ -456,7 +459,66 @@
         <p v-else class="apply-form__thanks">Спасибо! Заявка принята, мы свяжемся с вами.</p>
       </div>
     </div>
+    </Transition>
 
+    <Transition name="modal">
+    <div
+      v-if="arenaModal"
+      class="arena-modal"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="`Место проведения: ${arenaModal.name}`"
+      @click.self="closeArena"
+      @keydown.esc="closeArena"
+    >
+      <div class="arena-modal__inner">
+        <div class="arena-modal__top">
+          <h3 class="arena-modal__title">{{ arenaModal.name }}</h3>
+          <button
+            type="button"
+            class="arena-modal__close"
+            aria-label="Закрыть"
+            @click="closeArena"
+          >×</button>
+        </div>
+
+        <dl v-if="arenaModal.address || arenaModal.city" class="arena-modal__details">
+          <template v-if="arenaModal.city">
+            <dt>Город</dt>
+            <dd>{{ arenaModal.city }}</dd>
+          </template>
+          <template v-if="arenaModal.address">
+            <dt>Адрес</dt>
+            <dd>{{ arenaModal.address }}</dd>
+          </template>
+        </dl>
+
+        <div v-if="arenaMapUrl" class="arena-modal__map">
+          <iframe
+            :src="arenaMapUrl"
+            width="100%"
+            height="100%"
+            allowfullscreen
+            title="Карта"
+            class="arena-modal__map-iframe"
+          />
+        </div>
+
+        <a
+          v-if="arenaModal.url"
+          :href="arenaModal.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn arena-modal__cta"
+        >
+          Открыть в Яндекс.Картах
+          <Icon name="ph:arrow-up-right" />
+        </a>
+      </div>
+    </div>
+    </Transition>
+
+    <Transition name="modal">
     <div
       v-if="teamPhoto"
       class="team-photo-modal"
@@ -481,12 +543,13 @@
         />
       </div>
     </div>
+    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import type { Tournament, TournamentTeam } from '~/types'
+import type { Tournament, TournamentArena, TournamentTeam } from '~/types'
 import { postJson } from '~/utils/api'
 
 useHead({
@@ -707,6 +770,41 @@ function medalForTeam(t: Tournament, idx: number): string {
 }
 
 const statusInfoOpen = ref(false)
+
+const arenaModal = ref<TournamentArena | null>(null)
+
+function arenaLabel(t: Tournament): string {
+  if (t.arena?.name) return t.arena.name
+  return t.location ?? ''
+}
+
+function openArena(t: Tournament) {
+  if (t.arena) {
+    arenaModal.value = t.arena
+  } else if (t.location) {
+    arenaModal.value = { name: t.location }
+  }
+}
+
+function closeArena() {
+  arenaModal.value = null
+}
+
+const arenaMapUrl = computed<string | null>(() => {
+  const url = arenaModal.value?.url
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    const point = u.searchParams.get('whatshere[point]') ?? u.searchParams.get('ll')
+    if (!point) return null
+    const [lon, lat] = point.split(',')
+    if (!lon || !lat) return null
+    const zoom = u.searchParams.get('z') ?? u.searchParams.get('whatshere[zoom]') ?? '16'
+    return `https://yandex.ru/map-widget/v1/?ll=${lon},${lat}&z=${zoom}&pt=${lon},${lat}`
+  } catch {
+    return null
+  }
+})
 
 const teamPhoto = ref<{ name: string; photo: string } | null>(null)
 
@@ -1177,6 +1275,14 @@ async function submitApply() {
   border-radius: 6px;
   transition: color 0.2s;
 }
+.t-card__meta-link--btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
 .t-card__meta-link:hover,
 .t-card__meta-link:focus-visible {
   color: var(--color-accent);
@@ -1375,6 +1481,106 @@ async function submitApply() {
   color: #22c55e;
   font-weight: 600;
   line-height: 1.5;
+}
+
+.arena-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 140px 1rem 1rem;
+}
+.arena-modal__inner {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 0 1.5rem 1.5rem;
+  max-width: 640px;
+  width: 100%;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.arena-modal__top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 0.85rem;
+  margin: 0 -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.arena-modal__title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text);
+}
+.arena-modal__close {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+}
+.arena-modal__close:hover {
+  background: var(--color-border);
+}
+.arena-modal__details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 1rem;
+  row-gap: 0.4rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+.arena-modal__details dt {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.arena-modal__details dd {
+  margin: 0;
+  color: var(--color-text);
+}
+.arena-modal__map {
+  position: relative;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+.arena-modal__map-iframe {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  width: 100%;
+  height: 100%;
+}
+.arena-modal__cta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .team-photo-modal {

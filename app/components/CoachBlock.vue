@@ -15,19 +15,21 @@
       </div>
       <p v-if="questionSent" class="coach__sent">Спасибо! Мы получили Ваш вопрос и тренер ответит на него в ближайшее время. Ожидайте ответ на Вашу почту.</p>
     </div>
-    <div v-if="showQuestionForm" class="coach__modal" @click.self="showQuestionForm = false">
-      <div class="coach__modal-inner">
-        <h3 class="coach__modal-title">Задать вопрос тренеру</h3>
-        <LeadForm
-          variant="surface"
-          submit-label="Отправить"
-          :show-hint="false"
-          mode="questions"
-          @success="onFormSuccess"
-        />
-        <button type="button" class="coach__modal-close btn btn--secondary" @click="showQuestionForm = false">Закрыть</button>
+    <Transition name="modal">
+      <div v-if="showQuestionForm" class="coach__modal" @click.self="showQuestionForm = false">
+        <div class="coach__modal-inner">
+          <h3 class="coach__modal-title">Задать вопрос тренеру</h3>
+          <LeadForm
+            variant="surface"
+            submit-label="Отправить"
+            :show-hint="false"
+            mode="questions"
+            @success="onFormSuccess"
+          />
+          <button type="button" class="coach__modal-close btn btn--secondary" @click="showQuestionForm = false">Закрыть</button>
+        </div>
       </div>
-    </div>
+    </Transition>
   </section>
 </template>
 

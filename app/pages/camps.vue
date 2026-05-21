@@ -280,22 +280,24 @@
     </div>
   </div>
 
-  <div
-    v-if="showQrModal"
-    class="qr-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Оплата онлайн"
-    @click.self="closeQrModal"
-  >
-    <div class="qr-modal__inner">
-      <button type="button" class="qr-modal__close" aria-label="Закрыть" @click="closeQrModal">
-        ×
-      </button>
-      <h3 class="qr-modal__title">Оплата онлайн</h3>
-      <img src="/sbory/qr.jpg" alt="QR-код для оплаты" class="qr-modal__img" />
+  <Transition name="modal">
+    <div
+      v-if="showQrModal"
+      class="qr-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Оплата онлайн"
+      @click.self="closeQrModal"
+    >
+      <div class="qr-modal__inner">
+        <button type="button" class="qr-modal__close" aria-label="Закрыть" @click="closeQrModal">
+          ×
+        </button>
+        <h3 class="qr-modal__title">Оплата онлайн</h3>
+        <img src="/sbory/qr.jpg" alt="QR-код для оплаты" class="qr-modal__img" />
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">

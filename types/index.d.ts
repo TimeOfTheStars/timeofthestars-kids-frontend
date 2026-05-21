@@ -34,16 +34,24 @@ export interface TournamentTeam {
   photo?: string
 }
 
+export interface TournamentArena {
+  name: string
+  url?: string
+  address?: string
+  city?: string
+}
+
 export interface Tournament {
   id: number | string
   title: string
   ageCategory: string
-  birthYear?: number
+  birthYear?: number | string
   startDate: string
   startTime?: string
   endDate: string
   endTime?: string
-  location: string
+  location?: string
+  arena?: TournamentArena
   city?: string
   season: string
   teams?: TournamentTeam[]

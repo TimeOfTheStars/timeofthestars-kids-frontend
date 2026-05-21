@@ -50,19 +50,21 @@
       </div>
     </div>
 
-    <div v-if="showQuestionForm" class="faq__modal" @click.self="showQuestionForm = false">
-      <div class="faq__modal-inner">
-        <h3 class="faq__modal-title">Задать вопрос тренеру</h3>
-        <LeadForm
-          variant="surface"
-          submit-label="Отправить"
-          :show-hint="false"
-          mode="questions"
-          @success="onFormSuccess"
-        />
-        <button type="button" class="faq__modal-close btn" @click="showQuestionForm = false">Закрыть</button>
+    <Transition name="modal">
+      <div v-if="showQuestionForm" class="faq__modal" @click.self="showQuestionForm = false">
+        <div class="faq__modal-inner">
+          <h3 class="faq__modal-title">Задать вопрос тренеру</h3>
+          <LeadForm
+            variant="surface"
+            submit-label="Отправить"
+            :show-hint="false"
+            mode="questions"
+            @success="onFormSuccess"
+          />
+          <button type="button" class="faq__modal-close btn" @click="showQuestionForm = false">Закрыть</button>
+        </div>
       </div>
-    </div>
+    </Transition>
   </section>
 </template>
 

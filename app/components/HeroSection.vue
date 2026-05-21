@@ -34,11 +34,13 @@
             </div>
         </div>
 
-        <AppointmentModal
-            v-if="modalOpen"
-            @close="modalOpen = false"
-            @success="onAppointmentSuccess"
-        />
+        <Transition name="modal">
+            <AppointmentModal
+                v-if="modalOpen"
+                @close="modalOpen = false"
+                @success="onAppointmentSuccess"
+            />
+        </Transition>
     </section>
 </template>
 

@@ -22,11 +22,13 @@
       </p>
     </div>
 
-    <AppointmentModal
-      v-if="modalOpen"
-      @close="modalOpen = false"
-      @success="onSuccess"
-    />
+    <Transition name="modal">
+      <AppointmentModal
+        v-if="modalOpen"
+        @close="modalOpen = false"
+        @success="onSuccess"
+      />
+    </Transition>
   </section>
 </template>
 
