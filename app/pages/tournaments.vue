@@ -143,8 +143,15 @@
                 <h3 class="t-card__title">{{ t.title }}</h3>
                 <ul class="t-card__meta">
                   <li class="t-card__meta-row">
-                    <Icon name="ph:calendar-blank" class="t-card__meta-icon" />
-                    <span>{{ formatDateRange(t.startDate, t.endDate) }}</span>
+                    <button
+                      type="button"
+                      class="t-card__meta-link t-card__meta-link--btn"
+                      aria-label="Добавить в календарь"
+                      @click="openCalendar(t)"
+                    >
+                      <Icon name="ph:calendar-blank" class="t-card__meta-icon" />
+                      <span>{{ formatDateRange(t.startDate, t.endDate) }}</span>
+                    </button>
                   </li>
                   <li v-if="t.startTime" class="t-card__meta-row">
                     <Icon name="ph:clock" class="t-card__meta-icon" />
@@ -243,8 +250,15 @@
                 <h3 class="t-card__title">{{ t.title }}</h3>
                 <ul class="t-card__meta">
                   <li class="t-card__meta-row">
-                    <Icon name="ph:calendar-blank" class="t-card__meta-icon" />
-                    <span>{{ formatDateRange(t.startDate, t.endDate) }}</span>
+                    <button
+                      type="button"
+                      class="t-card__meta-link t-card__meta-link--btn"
+                      aria-label="Добавить в календарь"
+                      @click="openCalendar(t)"
+                    >
+                      <Icon name="ph:calendar-blank" class="t-card__meta-icon" />
+                      <span>{{ formatDateRange(t.startDate, t.endDate) }}</span>
+                    </button>
                   </li>
                   <li v-if="t.startTime" class="t-card__meta-row">
                     <Icon name="ph:clock" class="t-card__meta-icon" />
@@ -459,6 +473,62 @@
         <p v-else class="apply-form__thanks">Спасибо! Заявка принята, мы свяжемся с вами.</p>
       </div>
     </div>
+    </Transition>
+
+    <Transition name="modal">
+      <div
+        v-if="calendarTournament"
+        class="calendar-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Добавить в календарь"
+        @click.self="closeCalendar"
+        @keydown.esc="closeCalendar"
+      >
+        <div class="calendar-modal__inner">
+          <div class="calendar-modal__top">
+            <h3 class="calendar-modal__title">Добавить в календарь</h3>
+            <button
+              type="button"
+              class="calendar-modal__close"
+              aria-label="Закрыть"
+              @click="closeCalendar"
+            >×</button>
+          </div>
+          <div class="calendar-modal__body">
+            <p class="calendar-modal__event">{{ calendarTournament.title }}</p>
+            <p class="calendar-modal__when">
+              {{ formatDateRange(calendarTournament.startDate, calendarTournament.endDate) }}
+              <template v-if="calendarTournament.startTime">
+                · {{ calendarTournament.startTime }}<template v-if="calendarTournament.endTime">–{{ calendarTournament.endTime }}</template>
+              </template>
+            </p>
+          </div>
+          <div class="calendar-modal__actions">
+            <a
+              :href="googleCalendarUrl(calendarTournament)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn"
+              @click="closeCalendar"
+            >
+              Google Календарь
+              <Icon name="ph:arrow-up-right" />
+            </a>
+            <button
+              type="button"
+              class="btn btn--secondary"
+              @click="downloadIcs(calendarTournament)"
+            >
+              Скачать .ics
+              <Icon name="ph:download-simple" />
+            </button>
+          </div>
+          <p class="calendar-modal__hint">
+            Файл .ics подойдёт для Apple Календаря, Outlook, Яндекс Календаря.
+          </p>
+        </div>
+      </div>
     </Transition>
 
     <Transition name="modal">
@@ -770,6 +840,83 @@ function medalForTeam(t: Tournament, idx: number): string {
 }
 
 const statusInfoOpen = ref(false)
+
+const calendarTournament = ref<Tournament | null>(null)
+
+function openCalendar(t: Tournament) {
+  calendarTournament.value = t
+}
+
+function closeCalendar() {
+  calendarTournament.value = null
+}
+
+function pad(n: number): string {
+  return n.toString().padStart(2, '0')
+}
+
+function toIcsUtc(d: Date): string {
+  return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`
+}
+
+function icsEscape(s: string): string {
+  return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
+}
+
+function calendarLocation(t: Tournament): string {
+  if (t.arena) {
+    return [t.arena.name, t.arena.address, t.arena.city].filter(Boolean).join(', ')
+  }
+  return t.location ?? ''
+}
+
+function googleCalendarUrl(t: Tournament): string {
+  const start = toIcsUtc(startOf(t))
+  const end = toIcsUtc(endOf(t))
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: t.title,
+    dates: `${start}/${end}`,
+    details: t.description ?? '',
+    location: calendarLocation(t)
+  })
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
+function downloadIcs(t: Tournament) {
+  const start = toIcsUtc(startOf(t))
+  const end = toIcsUtc(endOf(t))
+  const stamp = toIcsUtc(new Date())
+  const location = calendarLocation(t)
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Time of the Stars KIDS//Tournaments//RU',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    `UID:tournament-${t.id}@timeofthestars-kids.ru`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${icsEscape(t.title)}`,
+    t.description ? `DESCRIPTION:${icsEscape(t.description)}` : '',
+    location ? `LOCATION:${icsEscape(location)}` : '',
+    t.url ? `URL:${t.url}` : '',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].filter(Boolean).join('\r\n')
+
+  const blob = new Blob([lines], { type: 'text/calendar;charset=utf-8' })
+  const href = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = href
+  a.download = `tournament-${t.id}.ics`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(href)
+  closeCalendar()
+}
 
 const arenaModal = ref<TournamentArena | null>(null)
 
@@ -1481,6 +1628,102 @@ async function submitApply() {
   color: #22c55e;
   font-weight: 600;
   line-height: 1.5;
+}
+
+.calendar-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 140px 1rem 1rem;
+}
+.calendar-modal__inner {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 0 1.5rem 1.5rem;
+  max-width: 460px;
+  width: 100%;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.calendar-modal__top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 0.85rem;
+  margin: 0 -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.calendar-modal__title {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--color-text);
+}
+.calendar-modal__close {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 0;
+}
+.calendar-modal__close:hover {
+  background: var(--color-border);
+}
+.calendar-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.calendar-modal__event {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+.calendar-modal__when {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+.calendar-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.calendar-modal__actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.calendar-modal__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
 }
 
 .arena-modal {
