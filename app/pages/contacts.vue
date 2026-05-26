@@ -34,13 +34,16 @@
 import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '~/constants/contacts'
 
 useHead({
-  title: 'Контакты — Время Звёзд KIDS',
+  title: 'Контакты детской хоккейной школы в Ярославле — «Время Звёзд KIDS»',
   meta: [
     {
       name: 'description',
       content:
-        'Адрес: Дядьковская, 7, Ярославль. Телефон, e-mail и карта проезда хоккейной школы «Время Звёзд KIDS».'
+        'Адрес детской хоккейной школы в Ярославле: Дядьковская, 7 (ФГБУ ПОО ГУОР по хоккею). Телефон +7 (920) 119-13-15, e-mail и карта проезда.'
     }
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://timeofthestars-kids.ru/contacts' }
   ]
 })
 

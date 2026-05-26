@@ -305,13 +305,16 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import sboryPromoPhoto from '~/assets/fKu8dAF2SN8hISgv_pDOBWz85Pq3fDAK6sPt366ceFxNPM4efhxblQjPHr_uX7XS6k26s6iWVt24N9XEey_rkwAk.jpg'
 
 useHead({
-  title: 'Сборы — Время Звёзд KIDS',
+  title: 'Детские хоккейные сборы в Ярославле — «Время Звёзд KIDS»',
   meta: [
     {
       name: 'description',
       content:
-        'Хоккейные сборы для полевых игроков и вратарей в Ярославле. Лёд, ОФП, бросковая зона, акробатика — программа и условия.'
+        'Летние и сезонные детские хоккейные сборы в Ярославле для полевых игроков и вратарей. Лёд, ОФП, бросковая зона, акробатика, проживание и питание. Программа, даты и стоимость.'
     }
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://timeofthestars-kids.ru/camps' }
   ]
 })
 

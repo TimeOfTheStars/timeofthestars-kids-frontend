@@ -117,6 +117,23 @@ function onFormSuccess() {
   showQuestionForm.value = false
   questionSent.value = true
 }
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: items.map(({ question, answer }) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: answer }
+        }))
+      })
+    }
+  ]
+})
 </script>
 
 <style scoped>

@@ -64,13 +64,17 @@ definePageMeta({
 })
 
 useHead({
-    title: 'Политика конфиденциальности — Время Звёзд KIDS',
+    title: 'Политика конфиденциальности — «Время Звёзд KIDS»',
     meta: [
         {
             name: 'description',
             content:
-                'Политика обработки персональных данных АНФСО «ВРЕМЯ ЗВЕЗД».'
-        }
+                'Политика обработки персональных данных АНФСО «ВРЕМЯ ЗВЕЗД» (детская хоккейная школа в Ярославле).'
+        },
+        { name: 'robots', content: 'noindex, follow' }
+    ],
+    link: [
+        { rel: 'canonical', href: 'https://timeofthestars-kids.ru/privacy-policy' }
     ]
 })
 </script>

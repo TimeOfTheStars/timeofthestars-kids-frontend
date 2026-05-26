@@ -623,13 +623,16 @@ import type { Tournament, TournamentArena, TournamentTeam } from '~/types'
 import { postJson } from '~/utils/api'
 
 useHead({
-  title: 'Турниры — Время Звёзд KIDS',
+  title: 'Детские хоккейные турниры в Ярославле — «Время Звёзд KIDS»',
   meta: [
     {
       name: 'description',
       content:
-        'Расписание предстоящих и итоги завершённых турниров команд «Время Звёзд KIDS». Фильтрация по сезону, названию и возрастной категории.'
+        'Расписание предстоящих и итоги завершённых детских хоккейных турниров с участием команд «Время Звёзд KIDS». Фильтрация по сезону, названию и возрастной категории.'
     }
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://timeofthestars-kids.ru/tournaments' }
   ]
 })
 
@@ -840,6 +843,64 @@ function medalForTeam(t: Tournament, idx: number): string {
 }
 
 const statusInfoOpen = ref(false)
+
+const tournamentsJsonLd = computed(() => {
+  const combined = [
+    ...upcomingForSeason.value,
+    ...completedForSeason.value.slice(0, 10)
+  ]
+  const items = combined.slice(0, 30).map((t, idx) => {
+    const loc = t.arena
+      ? {
+          '@type': 'Place',
+          name: t.arena.name,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: t.arena.address,
+            addressLocality: t.arena.city ?? 'Ярославль',
+            addressCountry: 'RU'
+          }
+        }
+      : t.location
+        ? { '@type': 'Place', name: t.location }
+        : undefined
+    return {
+      '@type': 'ListItem',
+      position: idx + 1,
+      item: {
+        '@type': 'SportsEvent',
+        name: t.title,
+        startDate: `${t.startDate}T${t.startTime ?? '00:00'}:00+03:00`,
+        endDate: `${t.endDate}T${t.endTime ?? '23:59'}:00+03:00`,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        sport: 'Ice Hockey',
+        location: loc,
+        description: t.description,
+        url: t.url ?? undefined,
+        organizer: {
+          '@type': 'SportsClub',
+          name: 'Время Звёзд KIDS',
+          url: 'https://timeofthestars-kids.ru/'
+        }
+      }
+    }
+  })
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items
+  }
+})
+
+useHead(() => ({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(tournamentsJsonLd.value)
+    }
+  ]
+}))
 
 const calendarTournament = ref<Tournament | null>(null)
 
