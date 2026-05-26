@@ -12,11 +12,13 @@
       </p>
 
       <div v-reveal="{ delay: 120 }" class="turniry__cta">
-        <button type="button" class="btn" @click="openApply('player')">
-          Участвовать как игрок
+        <button type="button" class="btn turniry__cta-btn" @click="openApply('player')">
+          <Icon name="ph:user-plus" />
+          <span>Участвовать как игрок</span>
         </button>
-        <button type="button" class="btn btn--red" @click="openApply('team')">
-          Участвовать как команда
+        <button type="button" class="btn btn--red turniry__cta-btn" @click="openApply('team')">
+          <Icon name="ph:users-three" />
+          <span>Участвовать как команда</span>
         </button>
       </div>
 
@@ -127,7 +129,7 @@
                 v-for="(t, i) in upcomingForSeason"
                 :key="t.id"
                 v-reveal="{ delay: 60 * i }"
-                class="t-card"
+                :class="['t-card', isInProgress(t) ? 't-card--in-progress' : 't-card--upcoming']"
               >
                 <div class="t-card__head">
                   <span class="t-card__age">{{ t.ageCategory }}</span>
@@ -1380,25 +1382,129 @@ async function submitApply() {
 }
 
 .t-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
+  position: relative;
+  background:
+    url('/hockey-watermark.svg') no-repeat right -10px bottom -8px / 170px auto,
+    linear-gradient(160deg, rgba(37, 99, 235, 0.16) 0%, rgba(37, 99, 235, 0.04) 45%, rgba(15, 23, 42, 0.02) 100%),
+    var(--color-surface);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: calc(var(--radius) + 4px);
+  padding: 1.4rem 1.4rem 1.4rem 1.65rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.9rem;
+  overflow: hidden;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 12px 32px -14px rgba(37, 99, 235, 0.22);
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
+.t-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, var(--color-accent), rgba(37, 99, 235, 0.45));
+}
+.t-card::after {
+  content: '';
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(37, 99, 235, 0.18), transparent 60%);
+  pointer-events: none;
+}
 .t-card:hover {
-  border-color: rgba(37, 99, 235, 0.35);
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1), 0 8px 24px rgba(37, 99, 235, 0.1);
-  transform: translateY(-2px);
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.18),
+    0 20px 42px -16px rgba(37, 99, 235, 0.42);
+  transform: translateY(-3px);
+}
+.t-card--upcoming {
+  background:
+    url('/hockey-watermark.svg') no-repeat right -10px bottom -8px / 170px auto,
+    linear-gradient(160deg, rgba(34, 197, 94, 0.18) 0%, rgba(34, 197, 94, 0.05) 45%, rgba(15, 23, 42, 0.02) 100%),
+    var(--color-surface);
+  border-color: rgba(34, 197, 94, 0.22);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 12px 32px -14px rgba(34, 197, 94, 0.25);
+}
+.t-card--upcoming::before {
+  background: linear-gradient(180deg, #22c55e, rgba(34, 197, 94, 0.45));
+}
+.t-card--upcoming::after {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(34, 197, 94, 0.2), transparent 60%);
+  border-color: rgba(34, 197, 94, 0.18);
+}
+.t-card--upcoming:hover {
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.2),
+    0 20px 42px -16px rgba(34, 197, 94, 0.45);
+}
+.t-card--in-progress {
+  background:
+    url('/hockey-watermark.svg') no-repeat right -10px bottom -8px / 170px auto,
+    linear-gradient(160deg, rgba(245, 158, 11, 0.22) 0%, rgba(245, 158, 11, 0.06) 45%, rgba(15, 23, 42, 0.02) 100%),
+    var(--color-surface);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 12px 32px -14px rgba(245, 158, 11, 0.3);
+}
+.t-card--in-progress::before {
+  background: linear-gradient(180deg, #f59e0b, rgba(245, 158, 11, 0.5));
+}
+.t-card--in-progress::after {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(245, 158, 11, 0.22), transparent 60%);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.t-card--in-progress:hover {
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(245, 158, 11, 0.25),
+    0 20px 42px -16px rgba(245, 158, 11, 0.5);
 }
 .t-card--past {
-  opacity: 0.94;
+  background:
+    url('/hockey-watermark.svg') no-repeat right -10px bottom -8px / 170px auto,
+    linear-gradient(160deg, rgba(148, 163, 184, 0.18) 0%, rgba(148, 163, 184, 0.06) 50%, rgba(15, 23, 42, 0.02) 100%),
+    var(--color-surface);
+  border-color: rgba(148, 163, 184, 0.25);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 10px 28px -14px rgba(15, 23, 42, 0.18);
+}
+.t-card--past::before {
+  background: linear-gradient(180deg, #94a3b8, rgba(148, 163, 184, 0.45));
+}
+.t-card--past::after {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(148, 163, 184, 0.18), transparent 60%);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+.t-card--past:hover {
+  border-color: rgba(148, 163, 184, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.2),
+    0 18px 38px -16px rgba(15, 23, 42, 0.3);
+  transform: translateY(-2px);
 }
 
 .t-card__head {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1407,72 +1513,103 @@ async function submitApply() {
 .t-card__age {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 9999px;
-  background: rgba(37, 99, 235, 0.1);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(37, 99, 235, 0.06));
   color: var(--color-accent);
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.15);
 }
 .t-card__status {
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.2rem 0.55rem;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.7rem;
   border-radius: 9999px;
 }
+.t-card__status::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
 .t-card__status--upcoming {
-  background: rgba(34, 197, 94, 0.12);
+  background: rgba(34, 197, 94, 0.14);
   color: #15803d;
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.25);
 }
 .t-card__status--in-progress {
   background: rgba(245, 158, 11, 0.18);
   color: #b45309;
-  animation: status-pulse 1.6s ease-in-out infinite;
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.35);
 }
-@keyframes status-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-  50% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18); }
+.t-card__status--in-progress::before {
+  animation: status-dot-pulse 1.4s ease-in-out infinite;
+}
+@keyframes status-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); }
+  50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .t-card__status--in-progress {
+  .t-card__status--in-progress::before {
     animation: none;
   }
 }
 .t-card__status--done {
   background: var(--color-bg-alt);
   color: var(--color-text-muted);
+  box-shadow: inset 0 0 0 1px var(--color-border);
 }
 
 .t-card__title {
+  position: relative;
+  z-index: 1;
   margin: 0;
-  font-size: 1.15rem;
-  line-height: 1.3;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.25;
   color: var(--color-text);
+  letter-spacing: -0.01em;
 }
 
 .t-card__meta {
+  position: relative;
+  z-index: 1;
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.55rem;
 }
 .t-card__meta-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   font-size: 0.95rem;
-  color: var(--color-text-muted);
+  color: var(--color-text);
 }
 .t-card__meta-icon {
-  width: 18px;
-  height: 18px;
+  width: 1.05em;
+  height: 1.05em;
   color: var(--color-accent);
   flex-shrink: 0;
+}
+.t-card--upcoming .t-card__meta-icon {
+  color: #15803d;
+}
+.t-card--in-progress .t-card__meta-icon {
+  color: #b45309;
+}
+.t-card--past .t-card__meta-icon {
+  color: #475569;
 }
 .t-card__meta-link {
   display: inline-flex;
@@ -1499,6 +1636,8 @@ async function submitApply() {
 }
 
 .t-card__desc {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-size: 0.9rem;
   color: var(--color-text-muted);
@@ -1506,11 +1645,13 @@ async function submitApply() {
 }
 
 .t-card__teams {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed var(--color-border);
+  gap: 0.55rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-border);
 }
 .t-card__teams-label {
   font-size: 0.8rem;
@@ -1530,14 +1671,17 @@ async function submitApply() {
 .t-card__team {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.65rem;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.35rem;
   background: var(--color-bg-alt);
   border: 1px solid var(--color-border);
   border-radius: 9999px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--color-text);
   transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.t-card__team:not(:has(.t-card__team-logo)) {
+  padding-left: 0.75rem;
 }
 .t-card__team--clickable {
   cursor: pointer;
@@ -1560,10 +1704,21 @@ async function submitApply() {
   gap: 0.75rem;
   margin: 0 0 2rem;
 }
+.turniry__cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+.turniry__cta-btn :deep(svg),
+.turniry__cta-btn .iconify {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
 @media (max-width: 600px) {
-  .turniry__cta .btn {
+  .turniry__cta-btn {
     flex: 1 1 100%;
-    text-align: center;
   }
 }
 
@@ -1945,38 +2100,60 @@ async function submitApply() {
   background: var(--color-border);
 }
 .t-card__team-logo {
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  border-radius: 50%;
-  background: #fff;
+  flex-shrink: 0;
 }
 .t-card__team-medal {
-  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 22px;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .t-card__links {
+  position: relative;
+  z-index: 1;
   margin-top: auto;
+  padding-top: 0.5rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
+  gap: 0.6rem;
   align-items: center;
 }
 .t-card__link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  color: var(--color-accent);
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  background: var(--color-accent);
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 10px -4px rgba(37, 99, 235, 0.5);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .t-card__link:hover {
-  text-decoration: underline;
+  background: #1d4ed8;
+  box-shadow: 0 6px 14px -4px rgba(37, 99, 235, 0.55);
+  transform: translateY(-1px);
 }
 .t-card__link--recordings {
-  color: #b91c1c;
+  background: var(--color-accent-red);
+  color: #fff;
+  box-shadow: 0 4px 10px -4px rgba(220, 38, 38, 0.5);
+}
+.t-card__link--recordings:hover {
+  background: var(--color-accent-red-hover);
+  box-shadow: 0 6px 14px -4px rgba(220, 38, 38, 0.55);
 }
 
 @media (max-width: 600px) {
@@ -1985,6 +2162,12 @@ async function submitApply() {
   }
   .page__title {
     font-size: 1.65rem;
+  }
+  .t-card {
+    padding: 1.15rem 1.15rem 1.15rem 1.4rem;
+  }
+  .t-card__title {
+    font-size: 1.15rem;
   }
 }
 </style>
