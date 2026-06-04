@@ -1,39 +1,72 @@
 <template>
     <form
         v-if="!submitted"
-        :class="['lead-form', { 'lead-form--surface': variant === 'surface' }]"
+        :class="['lead-form', { 'lead-form--surface': variant === 'surface', 'lead-form--stacked': mode === 'questions' }]"
         @submit.prevent="onSubmit"
     >
         <p v-if="showHint" class="lead-form__hint">{{ hint }}</p>
-        <div class="lead-form__fields">
-            <input
-                v-model="name"
-                type="text"
-                placeholder="Имя"
-                class="lead-form__input lead-form__name-input"
-                required
-            />
-            <input
-                v-model="phone"
-                type="tel"
-                inputmode="tel"
-                autocomplete="tel"
-                placeholder="+7 (___) ___-__-__"
-                class="lead-form__input lead-form__phone-input"
-                @input="onPhoneInput"
-                required
-            />
-            <button type="submit" class="lead-form__submit-btn" :disabled="loading">
-                {{ submitLabel }}
-            </button>
-        </div>
+
+        <template v-if="mode === 'questions'">
+            <div class="lead-form__fields lead-form__fields--stacked">
+                <input
+                    v-model="fullName"
+                    type="text"
+                    placeholder="ФИО"
+                    class="lead-form__input"
+                    required
+                />
+                <input
+                    v-model="contact"
+                    type="text"
+                    placeholder="Контакт для связи (email, tg, vk, телефон)"
+                    class="lead-form__input"
+                    required
+                />
+                <textarea
+                    v-model="question"
+                    placeholder="Ваш вопрос"
+                    class="lead-form__input lead-form__textarea"
+                    rows="4"
+                    required
+                />
+                <button type="submit" class="lead-form__submit-btn lead-form__submit-btn--block" :disabled="loading">
+                    {{ submitLabel }}
+                </button>
+            </div>
+        </template>
+
+        <template v-else>
+            <div class="lead-form__fields">
+                <input
+                    v-model="name"
+                    type="text"
+                    placeholder="Имя"
+                    class="lead-form__input lead-form__name-input"
+                    required
+                />
+                <input
+                    v-model="phone"
+                    type="tel"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    placeholder="+7 (___) ___-__-__"
+                    class="lead-form__input lead-form__phone-input"
+                    @input="onPhoneInput"
+                    required
+                />
+                <button type="submit" class="lead-form__submit-btn" :disabled="loading">
+                    {{ submitLabel }}
+                </button>
+            </div>
+        </template>
+
         <p v-if="errorText" class="lead-form__error" role="alert">{{ errorText }}</p>
         <label class="lead-form__agree">
             <input v-model="agree" type="checkbox" required />
             <span>Согласие на обработку персональных данных</span>
         </label>
     </form>
-    <p v-else class="lead-form__thanks">Спасибо! Ожидайте звонка менеджера.</p>
+    <p v-else class="lead-form__thanks">{{ thanksText }}</p>
     <p v-if="!submitted" class="lead-form__disclaimer">
         Заполняя и отправляя форму, Вы даете
         <NuxtLink to="/privacy-policy" class="lead-form__disclaimer-link">Согласие на обработку персональных данных</NuxtLink>.
@@ -41,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { postJson } from '~/utils/api'
 const emit = defineEmits<{ (e: 'success'): void }>()
 
@@ -64,10 +97,19 @@ const props = withDefaults(
 
 const name = ref('')
 const phone = ref('')
+const fullName = ref('')
+const contact = ref('')
+const question = ref('')
 const agree = ref(false)
 const submitted = ref(false)
 const loading = ref(false)
 const errorText = ref<string | null>(null)
+
+const thanksText = computed(() =>
+    props.mode === 'questions'
+        ? 'Спасибо! Мы получили Ваш вопрос и тренер ответит на него в ближайшее время.'
+        : 'Спасибо! Ожидайте звонка менеджера.'
+)
 
 function normalizePhone(raw: string) {
     const digitsOnly = raw.replace(/\D/g, '')
@@ -88,8 +130,9 @@ async function onSubmit() {
     try {
         if (props.mode === 'questions') {
             await postJson('/questions', {
-                full_name: name.value.trim(),
-                phone: phone.value.trim(),
+                full_name: fullName.value.trim(),
+                contact: contact.value.trim(),
+                question: question.value.trim(),
             })
         }
 
@@ -224,5 +267,30 @@ async function onSubmit() {
 }
 .lead-form--surface .lead-form__disclaimer-link {
     color: var(--color-accent);
+}
+
+.lead-form__fields--stacked {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin: 0.5rem 0 0;
+}
+.lead-form__fields--stacked .lead-form__input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+}
+.lead-form__textarea {
+    resize: vertical;
+    min-height: 96px;
+    border-radius: var(--radius);
+    font-family: inherit;
+    line-height: 1.4;
+}
+.lead-form__submit-btn--block {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
 }
 </style>
