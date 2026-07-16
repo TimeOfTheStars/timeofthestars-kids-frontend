@@ -9,8 +9,10 @@
       <section class="sbory-hero">
         <div class="sbory-hero__inner">
           <div class="sbory-hero__left">
-            <h1 v-reveal class="sbory-hero__title">Летние сборы<br />в Ярославле</h1>
+            <h1 v-reveal class="sbory-hero__title">Зимние сборы<br />в Ярославле</h1>
             <p v-reveal="{ delay: 70 }" class="sbory-hero__subtitle">для полевых игроков и вратарей с 4 до 16 лет!</p>
+
+            <p v-reveal="{ delay: 90 }" class="sbory-hero__dates">3–8 января 2027 · одна смена</p>
 
             <div class="sbory-hero__stats">
               <div v-reveal="{ delay: 0 }" class="stat-badge stat-badge--hero">
@@ -99,7 +101,7 @@
               </div>
               <div class="price-row">
                 <span class="price-row__label">С проживанием и питанием</span>
-                <span class="price-row__value">60 000 ₽</span>
+                <span class="price-row__value">63 000 ₽</span>
               </div>
             </div>
             <a
@@ -237,6 +239,7 @@
       <!-- Shift choice -->
       <section class="sbory-shift-choice">
         <h2 v-reveal class="sbory-section-title">Выбор смены</h2>
+        <p v-reveal="{ delay: 40 }" class="sbory-shift-choice__dates">Одна смена: 3–8 января 2027</p>
         <div class="sbory-shift-choice__grid">
           <article
             v-for="(card, i) in shiftChoiceCards"
@@ -444,7 +447,7 @@ const shiftChoiceCards: Array<{
     stickerSrc: '/stickers/otel.png',
     stickerAlt: 'Проживание',
     items: ['Проживание на территории базы', 'Питание на базе', ...shiftChoiceCommonItems],
-    price: '60 000 ₽',
+    price: '63 000 ₽',
   },
   {
     title: 'В стоимость участия без проживания входят:',
@@ -537,7 +540,21 @@ const shiftChoiceCards: Array<{
 .sbory-hero__subtitle {
   font-size: clamp(1rem, 2vw, 1.25rem);
   color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 1rem;
+}
+.sbory-hero__dates {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0 0 1.25rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px;
+  background: rgba(220, 38, 38, 0.16);
+  border: 1px solid rgba(220, 38, 38, 0.45);
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 800;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  letter-spacing: 0.01em;
 }
 .sbory-hero__stats {
   display: flex;
@@ -1149,6 +1166,14 @@ const shiftChoiceCards: Array<{
 /* Shift choice */
 .sbory-shift-choice {
   padding: 3rem 0 2rem;
+}
+.sbory-shift-choice__dates {
+  margin: -0.75rem 0 1.75rem;
+  text-align: center;
+  font-weight: 800;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  color: var(--color-accent);
+  letter-spacing: 0.01em;
 }
 .sbory-shift-choice__grid {
   display: grid;
