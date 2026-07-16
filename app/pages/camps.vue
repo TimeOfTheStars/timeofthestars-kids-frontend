@@ -35,7 +35,7 @@
 
             <div v-reveal="{ delay: 280 }" class="sbory-hero__actions">
               <a
-                href="https://forms.gle/8zcE1px3hvrEKjbd6"
+                href="https://forms.gle/oZtDYm4moPowBZED6"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="btn"
@@ -105,7 +105,7 @@
               </div>
             </div>
             <a
-              href="https://forms.gle/8zcE1px3hvrEKjbd6"
+              href="https://forms.gle/oZtDYm4moPowBZED6"
               target="_blank"
               rel="noopener noreferrer"
               class="btn sbory-promo__cta"
@@ -271,7 +271,7 @@
 
       <section v-reveal class="sbory-cta-bottom">
         <a
-          href="https://forms.gle/8zcE1px3hvrEKjbd6"
+          href="https://forms.gle/oZtDYm4moPowBZED6"
           target="_blank"
           rel="noopener noreferrer"
           class="btn"
