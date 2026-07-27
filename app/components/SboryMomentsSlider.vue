@@ -40,15 +40,17 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 
-import leto1 from '~/assets/leto_sbory/0u28YrbD5bHTSUlHP-5Hf9rYYVGNhAqnzEADdPPz5lml2KtI8Q3AL824Hq9NnUwa1G7I28qu_LKU6CnpDWbckARa.jpg'
-import leto2 from '~/assets/leto_sbory/eSDOMk5ZKYje9IOc-zaJ18KWWiYnWpZWV62j2ckQPdch8wlv5g-2m_dYvSR9RNTCEsHdCOResjlH814UUPsGxoG3.jpg'
-import leto3 from '~/assets/leto_sbory/F7XBzll_d6gOzfu3_P_jKX7XVV-uyebJZbKFLQOoBKWlRS7DtNojMd4R3lMzXdQptxASprnOfhxUC-7enX92RId6.jpg'
-import leto4 from '~/assets/leto_sbory/ouW1WHLqtyni6xdguiTHlfdIacATSq18t_L7g_D5JX2DvNtaOlXBJ_vmSMgr2NKSNPH3BNGwt0YHK7eQivtAWPmq.jpg'
-import leto6 from '~/assets/leto_sbory/zXiYnn8Tlvk2KBQ9Egn2lNpccZ6VqpYhA-4eje9MR7D1uKvrNa3vyxAxU8DpthJKVDgGNObHUNEb3J9SLh-05uwK.jpg'
+import leto1 from '~/assets/leto_sbory/1.jpg'
+import leto2 from '~/assets/leto_sbory/2.jpg'
+import leto3 from '~/assets/leto_sbory/3.jpg'
+import leto4 from '~/assets/leto_sbory/4.jpg'
+import leto6 from '~/assets/leto_sbory/6.jpg'
+import leto7 from '~/assets/leto_sbory/7.jpg'
+
 
 const modules = [Navigation, Pagination]
 
-const momentImages = [leto1, leto2, leto3, leto4, leto6]
+const momentImages = [leto1, leto2, leto3, leto4, leto6, leto7]
 </script>
 
 <style scoped>
