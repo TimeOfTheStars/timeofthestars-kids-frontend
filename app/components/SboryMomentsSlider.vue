@@ -40,12 +40,12 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 
-import leto1 from '~/assets/leto_sbory/1.jpg'
-import leto2 from '~/assets/leto_sbory/2.jpg'
-import leto3 from '~/assets/leto_sbory/3.jpg'
-import leto4 from '~/assets/leto_sbory/4.jpg'
-import leto6 from '~/assets/leto_sbory/6.jpg'
-import leto7 from '~/assets/leto_sbory/7.jpg'
+import leto1 from '~/assets/leto_sbory/photo1.jpg'
+import leto2 from '~/assets/leto_sbory/photo2.jpg'
+import leto3 from '~/assets/leto_sbory/photo3.jpg'
+import leto4 from '~/assets/leto_sbory/photo4.jpg'
+import leto6 from '~/assets/leto_sbory/photo6.jpg'
+import leto7 from '~/assets/leto_sbory/photo7.jpg'
 
 
 const modules = [Navigation, Pagination]
