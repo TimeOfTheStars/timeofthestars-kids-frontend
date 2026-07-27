@@ -212,7 +212,7 @@
         </div>
         <div v-reveal="{ delay: 220 }" class="sbory-moments__more">
           <a
-            href="https://vk.ru/album-125696800_307657374"
+            href="https://vk.ru/album-125696800_311346334"
             target="_blank"
             rel="noopener noreferrer"
             class="sbory-moments__more-link"
