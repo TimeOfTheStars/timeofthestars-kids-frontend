@@ -1,6 +1,6 @@
 <template>
     <section class="hero">
-        <video class="hero__video" autoplay muted loop playsinline>
+        <video class="hero__video" autoplay muted loop playsinline poster="/hero-poster.jpg">
             <source src="/IMG_5223.mp4" type="video/mp4" />
             Ваш браузер не поддерживает видео
         </video>
