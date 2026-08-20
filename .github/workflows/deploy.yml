@@ -1,0 +1,76 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deploys overlap; queue instead of cancelling a half-finished one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable pnpm
+        run: corepack enable
+        env:
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+      - name: Build
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+      - name: Configure SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Upload build
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
+            .output/ \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/timeofthestars-kids-frontend/.output/"
+
+      - name: Restart service
+        run: |
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            'sudo systemctl restart nuxt-tots'
+
+      # A green rsync does not mean a live site. Poll until it actually answers.
+      - name: Health check
+        run: |
+          for i in $(seq 1 15); do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 \
+              https://timeofthestars-kids.ru/ || echo 000)
+            echo "attempt $i -> $code"
+            if [ "$code" = "200" ]; then
+              echo "site is up"
+              exit 0
+            fi
+            sleep 4
+          done
+          echo "health check failed: site did not return 200"
+          exit 1
