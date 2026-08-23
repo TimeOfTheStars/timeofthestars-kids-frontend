@@ -218,11 +218,22 @@ const best = useAsyncData<StatLine[]>(
 
 const LOADERS = { standings, games, players, best }
 
-/** Данные таба грузим при первом открытии */
+/**
+ * Табы, данные которых уже запрошены. Начальный таб приходит с сервера,
+ * остальные догружаются при первом открытии.
+ *
+ * Считать «загружено ли» по status нельзя: во время SSR ленивые useAsyncData
+ * попадают в payload со значением по умолчанию, и после гидрации их статус —
+ * 'success', а не 'idle'. Поэтому ведём учёт сами.
+ */
+const loadedTabs = new Set<string>(ready.value ? [initialTab] : [])
+
 watch([tab, ready], ([value, isReady]) => {
-  if (!isReady) return
+  if (!isReady || loadedTabs.has(value)) return
   const loader = LOADERS[value as keyof typeof LOADERS]
-  if (loader && loader.status.value === 'idle') loader.execute()
+  if (!loader) return
+  loadedTabs.add(value)
+  loader.execute()
 }, { immediate: true })
 
 const selectedTeam = ref('')
