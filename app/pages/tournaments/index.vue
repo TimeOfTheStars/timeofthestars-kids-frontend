@@ -2,7 +2,7 @@
   <div class="page turniry-page">
     <div class="container">
       <div v-reveal class="turniry-page__breadcrumbs-wrap">
-        <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Турниры' }]" />
+        <Breadcrumbs :items="[{ title: 'Турниры' }]" />
       </div>
 
       <h1 v-reveal class="page__title">Турниры</h1>
@@ -142,7 +142,14 @@
                     class="t-card__status t-card__status--upcoming"
                   >Предстоящий</span>
                 </div>
-                <h3 class="t-card__title">{{ t.title }}</h3>
+                <h3 class="t-card__title">
+                  <NuxtLink
+                    v-if="t.hasStats"
+                    :to="`/tournaments/${t.id}`"
+                    class="t-card__title-link"
+                  >{{ t.title }}</NuxtLink>
+                  <template v-else>{{ t.title }}</template>
+                </h3>
                 <ul class="t-card__meta">
                   <li class="t-card__meta-row">
                     <button
@@ -173,6 +180,10 @@
                   <li v-if="t.birthYear" class="t-card__meta-row">
                     <Icon name="ph:users-three" class="t-card__meta-icon" />
                     <span>{{ t.birthYear }} г. р.</span>
+                  </li>
+                  <li v-if="gameFormatLabel(t)" class="t-card__meta-row">
+                    <Icon name="ph:timer" class="t-card__meta-icon" />
+                    <span>{{ gameFormatLabel(t) }}</span>
                   </li>
                 </ul>
                 <p v-if="t.description" class="t-card__desc">{{ t.description }}</p>
@@ -207,7 +218,15 @@
                     </li>
                   </ul>
                 </div>
-                <div v-if="t.url || t.recordingsUrl" class="t-card__links">
+                <div v-if="t.hasStats || t.url || t.recordingsUrl" class="t-card__links">
+                  <NuxtLink
+                    v-if="t.hasStats"
+                    :to="`/tournaments/${t.id}`"
+                    class="t-card__link t-card__link--stats"
+                  >
+                    Статистика
+                    <Icon name="ph:chart-bar" />
+                  </NuxtLink>
                   <a
                     v-if="t.url"
                     :href="t.url"
@@ -249,7 +268,14 @@
                   <span class="t-card__age">{{ t.ageCategory }}</span>
                   <span class="t-card__status t-card__status--done">Завершён</span>
                 </div>
-                <h3 class="t-card__title">{{ t.title }}</h3>
+                <h3 class="t-card__title">
+                  <NuxtLink
+                    v-if="t.hasStats"
+                    :to="`/tournaments/${t.id}`"
+                    class="t-card__title-link"
+                  >{{ t.title }}</NuxtLink>
+                  <template v-else>{{ t.title }}</template>
+                </h3>
                 <ul class="t-card__meta">
                   <li class="t-card__meta-row">
                     <button
@@ -280,6 +306,10 @@
                   <li v-if="t.birthYear" class="t-card__meta-row">
                     <Icon name="ph:users-three" class="t-card__meta-icon" />
                     <span>{{ t.birthYear }} г. р.</span>
+                  </li>
+                  <li v-if="gameFormatLabel(t)" class="t-card__meta-row">
+                    <Icon name="ph:timer" class="t-card__meta-icon" />
+                    <span>{{ gameFormatLabel(t) }}</span>
                   </li>
                 </ul>
                 <p v-if="t.description" class="t-card__desc">{{ t.description }}</p>
@@ -314,7 +344,15 @@
                     </li>
                   </ul>
                 </div>
-                <div v-if="t.url || t.recordingsUrl" class="t-card__links">
+                <div v-if="t.hasStats || t.url || t.recordingsUrl" class="t-card__links">
+                  <NuxtLink
+                    v-if="t.hasStats"
+                    :to="`/tournaments/${t.id}`"
+                    class="t-card__link t-card__link--stats"
+                  >
+                    Статистика
+                    <Icon name="ph:chart-bar" />
+                  </NuxtLink>
                   <a
                     v-if="t.url"
                     :href="t.url"
@@ -623,6 +661,15 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import type { Tournament, TournamentArena, TournamentTeam } from '~/types'
 import { postJson } from '~/utils/api'
+import {
+  endOf,
+  formatDateRange,
+  formatGameFormat,
+  isInProgress as isInProgressAt,
+  startKey,
+  startOf,
+  withSeason
+} from '~/utils/tournaments'
 
 useHead({
   title: 'Детские хоккейные турниры в Ярославле — «Время Звёзд KIDS»',
@@ -701,45 +748,7 @@ onMounted(() => {
   nowMs.value = Date.now()
 })
 
-function parseDateTime(date: string, time: string | undefined, fallback: 'start' | 'end'): Date {
-  const t = time && /^\d{1,2}:\d{2}$/.test(time) ? time : (fallback === 'start' ? '00:00' : '23:59')
-  const [hh, mm] = t.split(':')
-  return new Date(`${date}T${hh!.padStart(2, '0')}:${mm!.padStart(2, '0')}:00+03:00`)
-}
-
-function startOf(t: Tournament): Date {
-  return parseDateTime(t.startDate, t.startTime, 'start')
-}
-
-function endOf(t: Tournament): Date {
-  return parseDateTime(t.endDate, t.endTime, 'end')
-}
-
-function inferSeason(iso: string): string {
-  const d = new Date(iso)
-  const y = d.getFullYear()
-  const m = d.getMonth() + 1
-  return m >= 8 ? `${y}/${y + 1}` : `${y - 1}/${y}`
-}
-
-function withSeason(t: Tournament): Tournament {
-  return { ...t, season: t.season || inferSeason(t.startDate) }
-}
-
-const { data: apiData, pending } = await useAsyncData<Tournament[]>(
-  'tournaments',
-  async () => {
-    try {
-      const res = await $fetch<Tournament[] | { tournaments?: Tournament[] }>(
-        'https://api.timeofthestars-kids.ru/tournaments'
-      )
-      return Array.isArray(res) ? res : (res?.tournaments ?? [])
-    } catch {
-      return []
-    }
-  },
-  { default: () => [] }
-)
+const { data: apiData, pending } = await useTournaments()
 
 const loading = computed(() => pending.value)
 
@@ -792,10 +801,6 @@ function matchesFilters(t: Tournament): boolean {
   return true
 }
 
-function startKey(t: Tournament): string {
-  return `${t.startDate}T${t.startTime ?? '00:00'}`
-}
-
 const upcomingForSeason = computed(() =>
   tournaments.value
     .filter(t => t.season === activeSeason.value && matchesFilters(t) && endOf(t) >= now.value)
@@ -808,33 +813,12 @@ const completedForSeason = computed(() =>
     .sort((a, b) => startKey(b).localeCompare(startKey(a)))
 )
 
-const MONTHS = [
-  'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
-]
-
-function formatDateRange(startIso: string, endIso: string): string {
-  const start = new Date(startIso)
-  const end = new Date(endIso)
-  const sameDay = startIso === endIso
-  const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()
-  const sameYear = start.getFullYear() === end.getFullYear()
-  const year = end.getFullYear()
-
-  if (sameDay) {
-    return `${start.getDate()} ${MONTHS[start.getMonth()]} ${year}`
-  }
-  if (sameMonth) {
-    return `${start.getDate()}–${end.getDate()} ${MONTHS[end.getMonth()]} ${year}`
-  }
-  if (sameYear) {
-    return `${start.getDate()} ${MONTHS[start.getMonth()]} — ${end.getDate()} ${MONTHS[end.getMonth()]} ${year}`
-  }
-  return `${start.getDate()} ${MONTHS[start.getMonth()]} ${start.getFullYear()} — ${end.getDate()} ${MONTHS[end.getMonth()]} ${year}`
+function isInProgress(t: Tournament): boolean {
+  return isInProgressAt(t, now.value)
 }
 
-function isInProgress(t: Tournament): boolean {
-  return startOf(t) <= now.value && now.value <= endOf(t)
+function gameFormatLabel(t: Tournament): string {
+  return formatGameFormat(t)
 }
 
 const TEAM_MEDALS = ['🥇', '🥈', '🥉']
@@ -1579,6 +1563,17 @@ async function submitApply() {
   letter-spacing: -0.01em;
 }
 
+.t-card__title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.t-card__title-link:hover,
+.t-card__title-link:focus-visible {
+  color: var(--color-accent);
+  text-decoration: underline;
+  outline: none;
+}
+
 .t-card__meta {
   position: relative;
   z-index: 1;
@@ -2146,6 +2141,18 @@ async function submitApply() {
   box-shadow: 0 6px 14px -4px rgba(37, 99, 235, 0.55);
   transform: translateY(-1px);
 }
+.t-card__link--stats {
+  background: var(--color-surface);
+  color: var(--color-accent);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 4px 10px -6px rgba(37, 99, 235, 0.45);
+}
+.t-card__link--stats:hover {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: transparent;
+}
+
 .t-card__link--recordings {
   background: var(--color-accent-red);
   color: #fff;

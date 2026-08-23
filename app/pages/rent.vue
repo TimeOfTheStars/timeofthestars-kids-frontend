@@ -1,7 +1,7 @@
 <template>
   <div class="page arenda-page">
     <div class="container">
-      <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Аренда' }]" />
+      <Breadcrumbs :items="[{ title: 'Аренда' }]" />
       <h1 class="page__title">Аренда</h1>
 
       <section class="page-surface">

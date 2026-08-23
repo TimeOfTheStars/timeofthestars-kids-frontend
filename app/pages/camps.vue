@@ -2,7 +2,7 @@
   <div class="page sbory-page">
     <div class="container">
       <div v-reveal class="sbory-page__breadcrumbs-wrap">
-        <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Сборы' }]" />
+        <Breadcrumbs :items="[{ title: 'Сборы' }]" />
       </div>
 
       <!-- Hero -->

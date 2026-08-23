@@ -2,7 +2,7 @@
   <div class="page abonementy-page">
     <div class="container">
       <div v-reveal>
-        <Breadcrumbs :items="[{ title: 'Главная', to: '/' }, { title: 'Услуги' }]" />
+        <Breadcrumbs :items="[{ title: 'Услуги' }]" />
       </div>
       <h1 v-reveal="{ delay: 60 }" class="page__title">Услуги</h1>
 

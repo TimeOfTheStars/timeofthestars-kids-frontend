@@ -4,7 +4,6 @@
             <div v-reveal>
                 <Breadcrumbs
                     :items="[
-                        { title: 'Главная', to: '/' },
                         { title: 'Сведения' },
                     ]"
                 />

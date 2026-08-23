@@ -3,7 +3,6 @@
         <div class="container">
             <Breadcrumbs
                 :items="[
-                    { title: 'Главная', to: '/' },
                     { title: 'Индивидуальные тренировки' },
                 ]"
             />

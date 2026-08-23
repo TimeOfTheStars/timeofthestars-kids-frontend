@@ -3,7 +3,7 @@
         <div class="container">
             <div v-reveal>
                 <Breadcrumbs
-                    :items="[{ title: 'Главная', to: '/' }, { title: 'Тренеры' }]"
+                    :items="[{ title: 'Тренеры' }]"
                 />
             </div>
             <h1 v-reveal="{ delay: 60 }" class="page__title">Тренеры</h1>

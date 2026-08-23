@@ -16,7 +16,11 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE_URL = 'https://api.timeofthestars-kids.ru'
+export const API_BASE_URL = 'https://api.timeofthestars-kids.ru'
+
+export function apiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`
+}
 
 export async function postJson<TResponse = unknown>(
   path: string,
