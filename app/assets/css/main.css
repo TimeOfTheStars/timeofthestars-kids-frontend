@@ -104,6 +104,28 @@ section.section {
   box-shadow: 0 4px 20px rgba(220, 38, 38, 0.45);
 }
 
+/* Кликабельное упоминание команды: открывает модалку команды */
+.team-open {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  text-align: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.team-open:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.team-open:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  text-decoration: underline;
+}
+
 /* Scroll-reveal */
 .v-reveal {
   opacity: 0;

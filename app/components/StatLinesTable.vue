@@ -18,7 +18,6 @@
               <th v-if="showRank" scope="col" class="slt__th slt__th--rank">#</th>
               <th scope="col" class="slt__th slt__th--num" title="Игровой номер">№</th>
               <th scope="col" class="slt__th slt__th--player">Игрок</th>
-              <th v-if="showTeam" scope="col" class="slt__th slt__th--team">Команда</th>
               <th v-if="showGames" scope="col" class="slt__th" title="Игры">И</th>
               <template v-if="variant === 'goalie'">
                 <th scope="col" class="slt__th" title="Пропущено шайб">ПШ</th>
@@ -43,22 +42,25 @@
               <td class="slt__td slt__td--player">
                 <NuxtLink :to="`/players/${row.player.id}`" class="slt__player">
                   <span class="slt__player-name">{{ row.player.fullName }}</span>
-                  <span v-if="showTeam && row.team?.name" class="slt__player-team">{{ row.team.name }}</span>
                   <span v-if="row.player.position" class="slt__player-pos">{{ row.player.position }}</span>
                 </NuxtLink>
-              </td>
-              <td v-if="showTeam" class="slt__td slt__td--team">
-                <span class="slt__team">
+                <button
+                  v-if="showTeam && row.team?.name"
+                  type="button"
+                  class="team-open slt__team"
+                  :aria-label="`Команда ${row.team.name}`"
+                  @click="openTeam({ teamId: row.team.id, name: row.team.name, logo: row.team.logo, tournamentId })"
+                >
                   <img
-                    v-if="row.team?.logo"
+                    v-if="row.team.logo"
                     :src="row.team.logo"
                     alt=""
                     class="slt__team-logo"
                     loading="lazy"
                     decoding="async"
                   />
-                  <span>{{ row.team?.name }}</span>
-                </span>
+                  <span>{{ row.team.name }}</span>
+                </button>
               </td>
               <td v-if="showGames" class="slt__td">{{ row.games }}</td>
               <template v-if="variant === 'goalie'">
@@ -97,6 +99,7 @@ withDefaults(
     showRank?: boolean
     showGames?: boolean
     showNote?: boolean
+    tournamentId?: string
     emptyText?: string
   }>(),
   {
@@ -108,6 +111,8 @@ withDefaults(
     emptyText: 'Пока нет данных.'
   }
 )
+
+const { openTeam } = useTeamModal()
 
 const MEDALS = ['🥇', '🥈', '🥉']
 
@@ -201,10 +206,6 @@ function savePct(row: StatLine): string {
   padding-left: 0.9rem;
   min-width: 165px;
 }
-.slt__th--team {
-  text-align: left;
-  min-width: 130px;
-}
 .slt__td {
   text-align: center;
   padding: 0.62rem 0.4rem;
@@ -230,8 +231,9 @@ function savePct(row: StatLine): string {
   white-space: normal;
 }
 .slt__player {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
+  width: fit-content;
   gap: 0.1rem;
   text-decoration: none;
   color: var(--color-text);
@@ -255,28 +257,20 @@ function savePct(row: StatLine): string {
   font-weight: 500;
   color: var(--color-text-muted);
 }
-/* Дубль команды под именем: на узком экране колонка «Команда» скрывается,
-   иначе она выдавливает за край очки */
-.slt__player-team {
-  display: none;
-  font-size: 0.75rem;
+.slt__team {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 0.4rem;
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-text-muted);
-}
-.slt__td--team {
-  text-align: left;
   white-space: normal;
 }
-.slt__team {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-}
 .slt__team-logo {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -309,13 +303,6 @@ function savePct(row: StatLine): string {
   }
   .slt__th--num {
     width: 34px;
-  }
-  .slt__th--team,
-  .slt__td--team {
-    display: none;
-  }
-  .slt__player-team {
-    display: block;
   }
 }
 </style>

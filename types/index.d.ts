@@ -30,6 +30,7 @@ export interface AbonementCard {
 
 export interface TournamentTeam {
   name: string
+  city?: string | null
   logo?: string
   photo?: string
 }
@@ -69,7 +70,30 @@ export interface Tournament {
 export interface TeamRef {
   id: string
   name: string
+  city?: string | null
   logo?: string | null
+}
+
+export interface TeamStats {
+  tournaments: number
+  games: number
+  wins: number
+  draws: number
+  losses: number
+  goalsFor: number
+  goalsAgainst: number
+  goalDiff: number
+  points: number
+}
+
+/** Справочник команд: GET /teams и GET /teams/{id}. Фото команды здесь нет — оно в связке с турниром */
+export interface Team {
+  id: string
+  name: string
+  city?: string | null
+  logo?: string | null
+  description?: string | null
+  stats: TeamStats
 }
 
 export interface PlayerRef {

@@ -190,31 +190,28 @@
                 <div v-if="t.teams && t.teams.length" class="t-card__teams">
                   <span class="t-card__teams-label">Команды:</span>
                   <ul class="t-card__teams-list">
-                    <li
-                      v-for="(team, idx) in t.teams"
-                      :key="team.name"
-                      class="t-card__team"
-                      :class="{ 't-card__team--clickable': team.photo }"
-                      :role="team.photo ? 'button' : undefined"
-                      :tabindex="team.photo ? 0 : undefined"
-                      @click="team.photo && openTeamPhoto(team)"
-                      @keydown.enter.prevent="team.photo && openTeamPhoto(team)"
-                      @keydown.space.prevent="team.photo && openTeamPhoto(team)"
-                    >
-                      <span
-                        v-if="medalForTeam(t, idx)"
-                        class="t-card__team-medal"
-                        aria-hidden="true"
-                      >{{ medalForTeam(t, idx) }}</span>
-                      <img
-                        v-if="team.logo"
-                        :src="team.logo"
-                        :alt="team.name"
-                        class="t-card__team-logo"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <span class="t-card__team-name">{{ team.name }}</span>
+                    <li v-for="(team, idx) in t.teams" :key="team.name">
+                      <button
+                        type="button"
+                        class="t-card__team"
+                        :aria-label="`Команда ${team.name}`"
+                        @click="openTeam({ name: team.name, logo: team.logo, tournamentId: String(t.id) })"
+                      >
+                        <span
+                          v-if="medalForTeam(t, idx)"
+                          class="t-card__team-medal"
+                          aria-hidden="true"
+                        >{{ medalForTeam(t, idx) }}</span>
+                        <img
+                          v-if="team.logo"
+                          :src="team.logo"
+                          :alt="''"
+                          class="t-card__team-logo"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span class="t-card__team-name">{{ team.name }}</span>
+                      </button>
                     </li>
                   </ul>
                 </div>
@@ -316,31 +313,28 @@
                 <div v-if="t.teams && t.teams.length" class="t-card__teams">
                   <span class="t-card__teams-label">Команды:</span>
                   <ul class="t-card__teams-list">
-                    <li
-                      v-for="(team, idx) in t.teams"
-                      :key="team.name"
-                      class="t-card__team"
-                      :class="{ 't-card__team--clickable': team.photo }"
-                      :role="team.photo ? 'button' : undefined"
-                      :tabindex="team.photo ? 0 : undefined"
-                      @click="team.photo && openTeamPhoto(team)"
-                      @keydown.enter.prevent="team.photo && openTeamPhoto(team)"
-                      @keydown.space.prevent="team.photo && openTeamPhoto(team)"
-                    >
-                      <span
-                        v-if="medalForTeam(t, idx)"
-                        class="t-card__team-medal"
-                        aria-hidden="true"
-                      >{{ medalForTeam(t, idx) }}</span>
-                      <img
-                        v-if="team.logo"
-                        :src="team.logo"
-                        :alt="team.name"
-                        class="t-card__team-logo"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <span class="t-card__team-name">{{ team.name }}</span>
+                    <li v-for="(team, idx) in t.teams" :key="team.name">
+                      <button
+                        type="button"
+                        class="t-card__team"
+                        :aria-label="`Команда ${team.name}`"
+                        @click="openTeam({ name: team.name, logo: team.logo, tournamentId: String(t.id) })"
+                      >
+                        <span
+                          v-if="medalForTeam(t, idx)"
+                          class="t-card__team-medal"
+                          aria-hidden="true"
+                        >{{ medalForTeam(t, idx) }}</span>
+                        <img
+                          v-if="team.logo"
+                          :src="team.logo"
+                          :alt="''"
+                          class="t-card__team-logo"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span class="t-card__team-name">{{ team.name }}</span>
+                      </button>
                     </li>
                   </ul>
                 </div>
@@ -628,38 +622,12 @@
     </div>
     </Transition>
 
-    <Transition name="modal">
-    <div
-      v-if="teamPhoto"
-      class="team-photo-modal"
-      role="dialog"
-      aria-modal="true"
-      :aria-label="`Фото команды ${teamPhoto.name}`"
-      @click.self="closeTeamPhoto"
-      @keydown.esc="closeTeamPhoto"
-    >
-      <div class="team-photo-modal__inner">
-        <button
-          type="button"
-          class="team-photo-modal__close"
-          aria-label="Закрыть"
-          @click="closeTeamPhoto"
-        >×</button>
-        <h3 class="team-photo-modal__title">{{ teamPhoto.name }}</h3>
-        <img
-          :src="teamPhoto.photo"
-          :alt="`Фото команды ${teamPhoto.name}`"
-          class="team-photo-modal__img"
-        />
-      </div>
-    </div>
-    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import type { Tournament, TournamentArena, TournamentTeam } from '~/types'
+import type { Tournament, TournamentArena } from '~/types'
 import { postJson } from '~/utils/api'
 import {
   endOf,
@@ -830,6 +798,8 @@ function medalForTeam(t: Tournament, idx: number): string {
 
 const statusInfoOpen = ref(false)
 
+const { openTeam } = useTeamModal()
+
 const tournamentsJsonLd = computed(() => {
   const combined = [
     ...upcomingForSeason.value,
@@ -999,17 +969,6 @@ const arenaMapUrl = computed<string | null>(() => {
     return null
   }
 })
-
-const teamPhoto = ref<{ name: string; photo: string } | null>(null)
-
-function openTeamPhoto(team: TournamentTeam) {
-  if (!team.photo) return
-  teamPhoto.value = { name: team.name, photo: team.photo }
-}
-
-function closeTeamPhoto() {
-  teamPhoto.value = null
-}
 
 type ApplyMode = 'player' | 'team'
 
@@ -1671,22 +1630,21 @@ async function submitApply() {
   background: var(--color-bg-alt);
   border: 1px solid var(--color-border);
   border-radius: 9999px;
+  font-family: inherit;
   font-size: 0.9rem;
   color: var(--color-text);
+  cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
 .t-card__team:not(:has(.t-card__team-logo)) {
   padding-left: 0.75rem;
 }
-.t-card__team--clickable {
-  cursor: pointer;
-}
-.t-card__team--clickable:hover {
+.t-card__team:hover {
   border-color: var(--color-accent);
   background: var(--color-surface);
   transform: translateY(-1px);
 }
-.t-card__team--clickable:focus-visible {
+.t-card__team:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
@@ -2037,63 +1995,6 @@ async function submitApply() {
   gap: 0.45rem;
 }
 
-.team-photo-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.78);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  padding: 140px 1rem 1rem;
-}
-.team-photo-modal__inner {
-  position: relative;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  padding: 1.25rem;
-  max-width: min(900px, 100%);
-  max-height: calc(100vh - 160px);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
-}
-.team-photo-modal__title {
-  margin: 0;
-  font-size: 1.1rem;
-  color: var(--color-text);
-  padding-right: 2.5rem;
-}
-.team-photo-modal__img {
-  display: block;
-  max-width: 100%;
-  max-height: calc(90vh - 5rem);
-  object-fit: contain;
-  border-radius: calc(var(--radius) - 4px);
-  background: var(--color-bg-alt);
-}
-.team-photo-modal__close {
-  position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
-  width: 38px;
-  height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-bg-alt);
-  border: 1px solid var(--color-border);
-  border-radius: 9999px;
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--color-text);
-  padding: 0;
-}
-.team-photo-modal__close:hover {
-  background: var(--color-border);
-}
 .t-card__team-logo {
   width: 28px;
   height: 28px;

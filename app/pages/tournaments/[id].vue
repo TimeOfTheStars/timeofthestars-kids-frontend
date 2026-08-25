@@ -55,7 +55,7 @@
           <div v-if="tab === 'standings'" class="t-page__section">
             <div v-if="standings.pending.value" class="stats-state"><p>Загружаем таблицу...</p></div>
             <div v-else-if="!standings.data.value.length" class="stats-state"><p>Таблица пока пуста.</p></div>
-            <TournamentStandings v-else v-reveal :rows="standings.data.value" />
+            <TournamentStandings v-else v-reveal :rows="standings.data.value" :tournament-id="id" />
           </div>
 
           <div v-else-if="tab === 'games'" class="t-page__section">
@@ -89,6 +89,7 @@
                 title="Полевые игроки"
                 :rows="fieldPlayers"
                 :show-team="!selectedTeam"
+                :tournament-id="id"
                 empty-text="Полевых игроков в заявке нет."
               />
               <StatLinesTable
@@ -97,6 +98,7 @@
                 variant="goalie"
                 :rows="goaliePlayers"
                 :show-team="!selectedTeam"
+                :tournament-id="id"
                 empty-text="Вратарей в заявке нет."
               />
             </template>
@@ -111,6 +113,7 @@
               :rows="best.data.value"
               show-rank
               show-team
+              :tournament-id="id"
               empty-text="Пока никто не набрал очков."
             />
           </div>

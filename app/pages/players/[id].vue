@@ -22,16 +22,26 @@
 
         <template v-else>
           <div v-reveal class="player-card">
-            <div class="player-card__photo-wrap">
+            <button
+              v-if="player?.photo"
+              type="button"
+              class="player-card__photo-wrap player-card__photo-wrap--zoom"
+              :aria-label="`Открыть фото ${player.fullName} на весь экран`"
+              @click="openPhoto({ src: player.photo, title: player.fullName })"
+            >
               <img
-                v-if="player?.photo"
                 :src="player.photo"
                 :alt="player.fullName"
                 class="player-card__photo"
                 loading="lazy"
                 decoding="async"
               />
-              <span v-else class="player-card__initials" aria-hidden="true">{{ initials }}</span>
+              <span class="player-card__zoom" aria-hidden="true">
+                <Icon name="ph:magnifying-glass-plus" />
+              </span>
+            </button>
+            <div v-else class="player-card__photo-wrap">
+              <span class="player-card__initials" aria-hidden="true">{{ initials }}</span>
             </div>
             <div class="player-card__body">
               <p v-if="player?.position" class="player-card__pos">{{ player.position }}</p>
@@ -40,7 +50,15 @@
                   <dt>{{ stats.byTeam.length > 1 ? 'Команды' : 'Команда' }}</dt>
                   <dd>
                     <template v-if="stats.byTeam.length">
-                      {{ stats.byTeam.map(t => t.name).join(', ') }}
+                      <template v-for="(row, i) in stats.byTeam" :key="row.id">
+                        <span v-if="i" class="player-card__sep">, </span>
+                        <button
+                          type="button"
+                          class="team-open"
+                          :aria-label="`Команда ${row.name}`"
+                          @click="openTeam({ teamId: row.id, name: row.name })"
+                        >{{ row.name }}</button>
+                      </template>
                     </template>
                     <template v-else>не указана</template>
                   </dd>
@@ -129,7 +147,14 @@
                   </thead>
                   <tbody>
                     <tr v-for="row in stats.byTeam" :key="row.id" class="totals__row">
-                      <td class="totals__td totals__td--name">{{ row.name }}</td>
+                      <td class="totals__td totals__td--name">
+                        <button
+                          type="button"
+                          class="team-open totals__link"
+                          :aria-label="`Команда ${row.name}`"
+                          @click="openTeam({ teamId: row.id, name: row.name })"
+                        >{{ row.name }}</button>
+                      </td>
                       <td class="totals__td">{{ row.totals.games }}</td>
                       <template v-if="isGoalie">
                         <td class="totals__td">{{ dash(row.totals.goalsAgainst) }}</td>
@@ -168,6 +193,9 @@ definePageMeta({
 
 const route = useRoute()
 const id = computed(() => String(route.params.id))
+
+const { openTeam } = useTeamModal()
+const { openPhoto } = useLightbox()
 
 const { data: stats, pending } = await useAsyncData<PlayerStats | null>(
   `player-${String(route.params.id)}`,
@@ -318,6 +346,7 @@ useHead(() => ({
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 32px -16px rgba(37, 99, 235, 0.22);
 }
 .player-card__photo-wrap {
+  position: relative;
   width: 84px;
   height: 84px;
   border-radius: 9999px;
@@ -328,6 +357,30 @@ useHead(() => ({
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+}
+.player-card__photo-wrap--zoom {
+  cursor: zoom-in;
+}
+.player-card__zoom {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.player-card__photo-wrap--zoom:hover .player-card__zoom,
+.player-card__photo-wrap--zoom:focus-visible .player-card__zoom {
+  opacity: 1;
+}
+.player-card__photo-wrap--zoom:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 .player-card__photo {
   width: 100%;
@@ -352,6 +405,9 @@ useHead(() => ({
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-accent);
+}
+.player-card__sep {
+  color: var(--color-text-muted);
 }
 .player-card__facts {
   margin: 0.2rem 0 0;

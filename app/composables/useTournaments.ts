@@ -6,7 +6,7 @@ import { apiUrl } from '~/utils/api'
  * поэтому метаданные турнира берём из списка. Общий ключ useAsyncData —
  * значит один запрос на список и одна SSR-полезная нагрузка на все страницы.
  */
-export function useTournaments() {
+export function useTournaments(options: { immediate?: boolean } = {}) {
   return useAsyncData<Tournament[]>(
     'tournaments',
     async () => {
@@ -17,6 +17,6 @@ export function useTournaments() {
         return []
       }
     },
-    { default: () => [] }
+    { default: () => [], immediate: options.immediate ?? true }
   )
 }

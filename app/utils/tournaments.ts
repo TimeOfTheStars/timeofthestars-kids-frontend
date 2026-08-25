@@ -82,3 +82,11 @@ export function formatGameFormat(t: Tournament): string {
   }
   return parts.join(' · ')
 }
+
+/** Компактная дата для подписей, где длинная не влезает: «23.08.26» */
+export function formatShortDay(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${String(d.getFullYear()).slice(-2)}`
+}

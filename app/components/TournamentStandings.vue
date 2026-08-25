@@ -29,7 +29,12 @@
               <span v-if="medal(row)" class="sr-only">{{ row.place }} место</span>
             </td>
             <td class="standings__td standings__td--team">
-              <div class="standings__team">
+              <button
+                type="button"
+                class="team-open standings__team"
+                :aria-label="`Команда ${row.team.name}`"
+                @click="openTeam({ teamId: row.team.id, name: row.team.name, logo: row.team.logo, tournamentId })"
+              >
                 <img
                   v-if="row.team.logo"
                   :src="row.team.logo"
@@ -39,7 +44,7 @@
                   decoding="async"
                 />
                 <span class="standings__team-name">{{ row.team.name }}</span>
-              </div>
+              </button>
             </td>
             <td class="standings__td">{{ row.games }}</td>
             <td class="standings__td">{{ row.wins }}</td>
@@ -63,7 +68,10 @@ import type { StandingRow } from '~/types'
 
 defineProps<{
   rows: StandingRow[]
+  tournamentId?: string
 }>()
+
+const { openTeam } = useTeamModal()
 
 const MEDALS = ['🥇', '🥈', '🥉']
 
@@ -146,6 +154,7 @@ function medal(row: StandingRow): string {
   display: flex;
   align-items: center;
   gap: 0.55rem;
+  width: 100%;
 }
 .standings__logo {
   width: 26px;

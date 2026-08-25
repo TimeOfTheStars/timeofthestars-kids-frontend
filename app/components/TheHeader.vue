@@ -70,6 +70,12 @@
                     >Турниры</NuxtLink
                 >
                 <NuxtLink
+                    to="/teams"
+                    class="header__link"
+                    @click="menuOpen = false"
+                    >Команды</NuxtLink
+                >
+                <NuxtLink
                     to="/players"
                     class="header__link"
                     @click="menuOpen = false"

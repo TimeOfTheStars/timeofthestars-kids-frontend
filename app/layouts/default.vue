@@ -12,6 +12,8 @@
         </main>
         <TheFooter />
         <ScrollTopButton />
+        <TeamModal />
+        <PhotoLightbox />
     </div>
 </template>
 

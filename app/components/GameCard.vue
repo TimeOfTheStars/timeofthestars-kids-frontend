@@ -1,9 +1,11 @@
 <template>
-  <NuxtLink
-    class="g-card"
-    :class="{ 'g-card--pending': !game.isFinished }"
-    :to="{ path: `/games/${game.id}`, query: tournamentId ? { t: tournamentId } : {} }"
-  >
+  <article class="g-card" :class="{ 'g-card--pending': !game.isFinished }">
+    <NuxtLink
+      class="g-card__overlay"
+      :to="{ path: `/games/${game.id}`, query: tournamentId ? { t: tournamentId } : {} }"
+      :aria-label="`Протокол матча №${game.matchNo}: ${game.teamA.name} — ${game.teamB.name}`"
+    />
+
     <div class="g-card__head">
       <span class="g-card__no">Матч №{{ game.matchNo }}</span>
       <span
@@ -13,7 +15,12 @@
     </div>
 
     <div class="g-card__score-row">
-      <div class="g-card__team g-card__team--a">
+      <button
+        type="button"
+        class="g-card__team"
+        :aria-label="`Команда ${game.teamA.name}`"
+        @click="openTeam({ teamId: game.teamA.id, name: game.teamA.name, logo: game.teamA.logo, tournamentId })"
+      >
         <img
           v-if="game.teamA.logo"
           :src="game.teamA.logo"
@@ -23,7 +30,7 @@
           decoding="async"
         />
         <span class="g-card__team-name">{{ game.teamA.name }}</span>
-      </div>
+      </button>
 
       <div class="g-card__score">
         <span class="g-card__score-value">{{ game.scoreA ?? '—' }}</span>
@@ -31,7 +38,12 @@
         <span class="g-card__score-value">{{ game.scoreB ?? '—' }}</span>
       </div>
 
-      <div class="g-card__team g-card__team--b">
+      <button
+        type="button"
+        class="g-card__team"
+        :aria-label="`Команда ${game.teamB.name}`"
+        @click="openTeam({ teamId: game.teamB.id, name: game.teamB.name, logo: game.teamB.logo, tournamentId })"
+      >
         <img
           v-if="game.teamB.logo"
           :src="game.teamB.logo"
@@ -41,7 +53,7 @@
           decoding="async"
         />
         <span class="g-card__team-name">{{ game.teamB.name }}</span>
-      </div>
+      </button>
     </div>
 
     <ul class="g-card__meta">
@@ -67,7 +79,7 @@
         <Icon name="ph:file-text" /> Скан
       </span>
     </div>
-  </NuxtLink>
+  </article>
 </template>
 
 <script setup lang="ts">
@@ -79,6 +91,8 @@ const props = defineProps<{
   game: GameListItem
   tournamentId?: string
 }>()
+
+const { openTeam } = useTeamModal()
 
 const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB != null)
 </script>
@@ -95,7 +109,6 @@ const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB !
     var(--color-surface);
   border: 1px solid rgba(37, 99, 235, 0.18);
   border-radius: calc(var(--radius) + 4px);
-  text-decoration: none;
   color: var(--color-text);
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 32px -16px rgba(37, 99, 235, 0.22);
@@ -115,9 +128,17 @@ const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB !
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.18), 0 20px 42px -18px rgba(37, 99, 235, 0.42);
   transform: translateY(-3px);
 }
-.g-card:focus-visible {
+.g-card:has(.g-card__overlay:focus-visible) {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* Ссылка-оверлей: карточка кликабельна целиком, а кнопки команд лежат выше */
+.g-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
 }
 .g-card--pending {
   background:
@@ -130,6 +151,8 @@ const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB !
 }
 
 .g-card__head {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -178,11 +201,29 @@ const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB !
   gap: 0.6rem;
 }
 .g-card__team {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 0.4rem;
+  padding: 0.25rem 0.35rem;
+  margin: -0.25rem -0.35rem;
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.g-card__team:hover .g-card__team-name {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.g-card__team:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 .g-card__logo {
   width: 34px;
@@ -200,6 +241,8 @@ const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB !
   hyphens: manual;
 }
 .g-card__score {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: baseline;
   gap: 0.3rem;
@@ -260,6 +303,12 @@ const hasShots = computed(() => props.game.shotsA != null && props.game.shotsB !
 }
 .g-card:hover .g-card__more {
   text-decoration: underline;
+}
+.g-card__more,
+.g-card__tag {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
 }
 .g-card__tag {
   display: inline-flex;

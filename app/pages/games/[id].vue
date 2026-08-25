@@ -30,10 +30,15 @@
             >{{ game.isFinished ? 'Завершён' : 'Не сыгран' }}</span>
 
             <div class="scoreboard__main">
-              <div class="scoreboard__team">
+              <button
+                type="button"
+                class="scoreboard__team"
+                :aria-label="`Команда ${game.teamA.name}`"
+                @click="openTeam({ teamId: game.teamA.id, name: game.teamA.name, logo: game.teamA.logo, tournamentId: tournamentId || null })"
+              >
                 <img v-if="game.teamA.logo" :src="game.teamA.logo" alt="" class="scoreboard__logo" />
                 <span class="scoreboard__team-name">{{ game.teamA.name }}</span>
-              </div>
+              </button>
 
               <div class="scoreboard__score">
                 <span class="scoreboard__score-value">{{ game.scoreA ?? '—' }}</span>
@@ -41,10 +46,15 @@
                 <span class="scoreboard__score-value">{{ game.scoreB ?? '—' }}</span>
               </div>
 
-              <div class="scoreboard__team scoreboard__team--b">
+              <button
+                type="button"
+                class="scoreboard__team scoreboard__team--b"
+                :aria-label="`Команда ${game.teamB.name}`"
+                @click="openTeam({ teamId: game.teamB.id, name: game.teamB.name, logo: game.teamB.logo, tournamentId: tournamentId || null })"
+              >
                 <img v-if="game.teamB.logo" :src="game.teamB.logo" alt="" class="scoreboard__logo" />
                 <span class="scoreboard__team-name">{{ game.teamB.name }}</span>
-              </div>
+              </button>
             </div>
 
             <dl class="scoreboard__facts">
@@ -93,6 +103,7 @@
               :team-a="game.teamA"
               :team-b="game.teamB"
               :periods-count="tournament?.periodsCount ?? null"
+              :tournament-id="tournamentId || null"
             />
             <p v-if="scoreMismatch" class="game-page__note">
               Протокол заполнен частично: хронология голов не совпадает со счётом на табло.
@@ -102,8 +113,15 @@
           <div class="game-page__rosters">
             <div v-for="side in rosterSides" :key="side.team.id" class="game-page__roster">
               <h2 v-reveal class="game-page__block-title">
-                <img v-if="side.team.logo" :src="side.team.logo" alt="" class="game-page__roster-logo" />
-                {{ side.team.name }}
+                <button
+                  type="button"
+                  class="team-open game-page__roster-team"
+                  :aria-label="`Команда ${side.team.name}`"
+                  @click="openTeam({ teamId: side.team.id, name: side.team.name, logo: side.team.logo, tournamentId: tournamentId || null })"
+                >
+                  <img v-if="side.team.logo" :src="side.team.logo" alt="" class="game-page__roster-logo" />
+                  {{ side.team.name }}
+                </button>
               </h2>
               <StatLinesTable
                 v-if="side.goalies.length"
@@ -147,6 +165,8 @@ definePageMeta({
 const route = useRoute()
 const id = computed(() => String(route.params.id))
 const tournamentId = computed(() => (typeof route.query.t === 'string' ? route.query.t : ''))
+
+const { openTeam } = useTeamModal()
 
 const { data: detail, pending } = await useAsyncData<GameDetail | null>(
   `game-${String(route.params.id)}`,
@@ -346,6 +366,23 @@ useHead(() => ({
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
+  background: none;
+  border: 0;
+  padding: 0.25rem 0.4rem;
+  margin: -0.25rem -0.4rem;
+  border-radius: var(--radius);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.scoreboard__team:hover .scoreboard__team-name {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.scoreboard__team:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 .scoreboard__team--b {
   flex-direction: row-reverse;
@@ -453,6 +490,13 @@ useHead(() => ({
   margin: 0;
   font-size: 1.25rem;
   color: var(--color-text);
+}
+.game-page__roster-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font: inherit;
+  color: inherit;
 }
 .game-page__roster-logo {
   width: 30px;

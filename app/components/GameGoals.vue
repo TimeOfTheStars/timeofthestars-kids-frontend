@@ -15,7 +15,13 @@
             :class="isTeamA(goal) ? 'goals__item--a' : 'goals__item--b'"
           >
             <span class="goals__time">{{ goal.time }}</span>
-            <span class="goals__team">
+            <button
+              type="button"
+              class="goals__team"
+              :aria-label="`Команда ${teamOf(goal)?.name ?? ''}`"
+              :disabled="!teamOf(goal)"
+              @click="onTeamClick(goal)"
+            >
               <span class="goals__dot" aria-hidden="true"></span>
               <img
                 v-if="teamOf(goal)?.logo"
@@ -26,7 +32,7 @@
                 decoding="async"
               />
               <span class="goals__team-name">{{ teamOf(goal)?.name ?? '—' }}</span>
-            </span>
+            </button>
             <span class="goals__body">
               <NuxtLink :to="`/players/${goal.scorer.id}`" class="goals__scorer">
                 <span v-if="goal.scorerNumber != null" class="goals__num">{{ goal.scorerNumber }}</span>
@@ -63,7 +69,21 @@ const props = defineProps<{
   teamA: TeamRef
   teamB: TeamRef
   periodsCount?: number | null
+  tournamentId?: string | null
 }>()
+
+const { openTeam } = useTeamModal()
+
+function onTeamClick(goal: GoalEvent) {
+  const team = teamOf(goal)
+  if (!team) return
+  openTeam({
+    teamId: team.id,
+    name: team.name,
+    logo: team.logo,
+    tournamentId: props.tournamentId ?? null
+  })
+}
 
 /** Порядок событий отдаёт сервер — группируем, не пересортировывая */
 const groups = computed(() => {
@@ -157,6 +177,26 @@ function periodLabel(period: number): string {
   align-items: center;
   gap: 0.45rem;
   min-width: 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.goals__team:disabled {
+  cursor: default;
+}
+.goals__team:not(:disabled):hover .goals__team-name,
+.goals__team:focus-visible .goals__team-name {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.goals__team:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 .goals__dot {
   width: 9px;
