@@ -12,7 +12,7 @@
       </p>
 
       <section class="page-surface">
-        <div v-if="pending" class="stats-state"><p>Загружаем команды...</p></div>
+        <HockeyLoader v-if="pending" text="Загружаем команды" />
 
         <div v-else-if="!teams.length" class="stats-state">
           <p>Справочник команд пока пуст.</p>

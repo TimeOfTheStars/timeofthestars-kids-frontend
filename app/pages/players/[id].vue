@@ -13,7 +13,7 @@
       <h1 v-reveal class="page__title">{{ player ? player.fullName : 'Игрок' }}</h1>
 
       <section class="page-surface">
-        <div v-if="pending" class="stats-state"><p>Загружаем статистику...</p></div>
+        <HockeyLoader v-if="pending" text="Загружаем статистику игрока" />
 
         <div v-else-if="!stats" class="stats-state">
           <p>Игрок не найден.</p>

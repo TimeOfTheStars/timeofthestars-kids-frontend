@@ -31,7 +31,7 @@
         </div>
 
         <div class="team-modal__body">
-          <div v-if="loading" class="team-modal__state"><p>Загружаем команду...</p></div>
+          <HockeyLoader v-if="loading" text="Загружаем команду" bare />
 
           <template v-else>
             <section v-if="team" class="team-modal__section">
@@ -77,7 +77,7 @@
                 {{ formatDateRange(selectedTournament.startDate, selectedTournament.endDate) }}
               </p>
 
-              <div v-if="rosterPending" class="team-modal__state"><p>Загружаем состав...</p></div>
+              <HockeyLoader v-if="rosterPending" text="Загружаем состав" bare />
               <ul v-else-if="roster.length" class="roster">
                 <li v-for="row in roster" :key="row.player.id" class="roster__item">
                   <button
@@ -140,7 +140,7 @@
                     <tr v-for="row in tournamentRows" :key="row.id" class="tm-table__row">
                       <td class="tm-table__td tm-table__td--name">
                         <NuxtLink
-                          v-if="row.hasStats"
+                          v-if="row.hasGames"
                           :to="`/tournaments/${row.id}`"
                           class="tm-table__link"
                           @click="closeTeam"
@@ -238,12 +238,31 @@ function entryOf(t: Tournament) {
   })
 }
 
-const tournamentsOfTeam = computed<Tournament[]>(() =>
+/**
+ * Кандидаты: в teams[] турнира нет id, поэтому сопоставляем по имени и логотипу.
+ * Логотип обязателен как различитель — одноимённых команд несколько.
+ */
+const candidateTournaments = computed<Tournament[]>(() =>
   (tournaments.value ?? [])
     .filter(t => entryOf(t))
     .slice()
     .sort((a, b) => b.startDate.localeCompare(a.startDate))
 )
+
+const candidateKey = computed(() => candidateTournaments.value.map(t => t.id).join(','))
+
+/**
+ * У турниров с матчами есть таблица с настоящими id: если нашей команды там нет,
+ * значит совпало только имя — такой турнир выбрасываем.
+ */
+const tournamentsOfTeam = computed<Tournament[]>(() => {
+  const results = resultsQuery.data.value ?? {}
+  const resolved = resultsQuery.status.value === 'success'
+  return candidateTournaments.value.filter(t => {
+    if (!t.hasGames || !resolved) return true
+    return Boolean(results[String(t.id)])
+  })
+})
 
 const tournamentTabs = computed(() =>
   tournamentsOfTeam.value.map(t => ({
@@ -292,10 +311,10 @@ const roster = computed(() =>
 /* --- результаты по всем турнирам команды --- */
 
 const resultsQuery = useAsyncData<Record<string, StandingRow>>(
-  () => `team-results-${teamId.value || 'none'}`,
+  () => `team-results-${teamId.value || 'none'}-${candidateKey.value}`,
   async () => {
     const id = teamId.value
-    const list = tournamentsOfTeam.value.filter(t => t.hasStats)
+    const list = candidateTournaments.value.filter(t => t.hasGames)
     if (!id || !list.length) return {}
     const pairs = await Promise.all(
       list.map(async t => {
@@ -310,7 +329,7 @@ const resultsQuery = useAsyncData<Record<string, StandingRow>>(
     )
     return Object.fromEntries(pairs.filter(Boolean) as [string, StandingRow][])
   },
-  { default: () => ({}), immediate: false, watch: [teamId] }
+  { default: () => ({}), immediate: false }
 )
 
 const tournamentRows = computed(() =>
@@ -320,7 +339,7 @@ const tournamentRows = computed(() =>
       id: String(t.id),
       title: t.title,
       season: t.season,
-      hasStats: t.hasStats === true,
+      hasGames: t.hasGames === true,
       place: own?.place ?? null,
       games: own?.games ?? null,
       wins: own?.wins ?? null,
@@ -359,9 +378,19 @@ watch([target, tournamentsOfTeam], () => {
   selectedTournamentId.value = list.length ? String(list[0]!.id) : ''
 }, { immediate: true })
 
-watch(teamId, id => {
-  if (id && target.value) resultsQuery.execute()
-})
+/*
+ * Запрос уходит, когда известны и команда, и список её турниров: id приходит
+ * из /teams, а турниры — из /tournaments, и порядок ответов не гарантирован.
+ */
+let lastResultsKey = ''
+
+watch([target, teamId, candidateKey], () => {
+  if (!target.value || !teamId.value) return
+  const key = `${teamId.value}|${candidateKey.value}`
+  if (key === lastResultsKey) return
+  lastResultsKey = key
+  resultsQuery.execute()
+}, { immediate: true })
 
 watch(() => route.fullPath, closeTeam)
 

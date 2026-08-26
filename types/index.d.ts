@@ -62,6 +62,9 @@ export interface Tournament {
   gameFormat?: string | null
   periodMinutes?: number | null
   periodsCount?: number | null
+  /** Есть хотя бы один заведённый матч — даже без заполненного счёта */
+  hasGames?: boolean
+  /** Есть хотя бы один матч с заполненным счётом */
   hasStats?: boolean
 }
 

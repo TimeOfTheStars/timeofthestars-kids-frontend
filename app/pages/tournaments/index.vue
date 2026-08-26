@@ -107,16 +107,15 @@
           </div>
         </div>
 
-        <div v-if="loading" class="turniry__state">
-          <p>Загружаем турниры...</p>
-        </div>
+        <HockeyLoader v-if="loading" text="Загружаем турниры" />
 
         <template v-else>
           <div
             v-if="upcomingForSeason.length === 0 && completedForSeason.length === 0"
             class="turniry__state"
           >
-            <p>В этом сезоне турниров пока нет.</p>
+            <p v-if="!tournaments.length">Не удалось загрузить турниры. Попробуйте обновить страницу.</p>
+            <p v-else>В этом сезоне турниров пока нет.</p>
           </div>
 
           <div v-if="upcomingForSeason.length" class="turniry__group">
@@ -144,7 +143,7 @@
                 </div>
                 <h3 class="t-card__title">
                   <NuxtLink
-                    v-if="t.hasStats"
+                    v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__title-link"
                   >{{ t.title }}</NuxtLink>
@@ -215,9 +214,9 @@
                     </li>
                   </ul>
                 </div>
-                <div v-if="t.hasStats || t.url || t.recordingsUrl" class="t-card__links">
+                <div v-if="hasTournamentPage(t) || t.url || t.recordingsUrl" class="t-card__links">
                   <NuxtLink
-                    v-if="t.hasStats"
+                    v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__link t-card__link--stats"
                   >
@@ -267,7 +266,7 @@
                 </div>
                 <h3 class="t-card__title">
                   <NuxtLink
-                    v-if="t.hasStats"
+                    v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__title-link"
                   >{{ t.title }}</NuxtLink>
@@ -338,9 +337,9 @@
                     </li>
                   </ul>
                 </div>
-                <div v-if="t.hasStats || t.url || t.recordingsUrl" class="t-card__links">
+                <div v-if="hasTournamentPage(t) || t.url || t.recordingsUrl" class="t-card__links">
                   <NuxtLink
-                    v-if="t.hasStats"
+                    v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__link t-card__link--stats"
                   >
@@ -633,6 +632,7 @@ import {
   endOf,
   formatDateRange,
   formatGameFormat,
+  hasTournamentPage,
   isInProgress as isInProgressAt,
   startKey,
   startOf,
@@ -653,62 +653,6 @@ useHead({
   ]
 })
 
-const DEMO_TOURNAMENTS: Tournament[] = [
-  {
-    id: 'demo-1',
-    title: 'Кубок «Время Звёзд»',
-    ageCategory: 'U12',
-    birthYear: 2014,
-    startDate: '2026-05-22',
-    endDate: '2026-05-25',
-    location: 'Арена «Локомотив», Ярославль',
-    city: 'Ярославль',
-    season: '2025/2026',
-    description: 'Открытый турнир для команд 2014 г. р. Четыре игровых дня, групповой этап и плей-офф.',
-    teams: [
-      { name: 'Время Звёзд Kids' },
-      { name: 'Локомотив-2014' },
-      { name: 'ЦСКА-2014' },
-      { name: 'Динамо-2014' }
-    ],
-  },
-  {
-    id: 'demo-2',
-    title: 'Весенний турнир Ярославля',
-    ageCategory: 'U10',
-    birthYear: 2016,
-    startDate: '2026-04-18',
-    endDate: '2026-04-21',
-    location: 'Арена-2000, Ярославль',
-    city: 'Ярославль',
-    season: '2025/2026',
-    description: 'Команда Время Звёзд Kids заняла 2-е место среди шести участников.',
-    teams: [
-      { name: 'Время Звёзд Kids' },
-      { name: 'Локомотив-2016' },
-      { name: 'СКА-2016' },
-      { name: 'Полёт-2016' }
-    ]
-  },
-  {
-    id: 'demo-3',
-    title: 'Новогодний турнир «Прорыв»',
-    ageCategory: 'U8',
-    birthYear: 2018,
-    startDate: '2026-01-04',
-    endDate: '2026-01-07',
-    location: 'Арктика, Москва',
-    city: 'Москва',
-    season: '2025/2026',
-    description: 'Дебютное участие младшей команды в выездном турнире.',
-    teams: [
-      { name: 'Время Звёзд Kids' },
-      { name: 'Прорыв-2018' },
-      { name: 'Витязь-2018' }
-    ]
-  }
-]
-
 const nowMs = useState<number>('tournaments-now', () => Date.now())
 const now = computed(() => new Date(nowMs.value))
 
@@ -720,10 +664,7 @@ const { data: apiData, pending } = await useTournaments()
 
 const loading = computed(() => pending.value)
 
-const tournaments = computed<Tournament[]>(() => {
-  const list = apiData.value ?? []
-  return (list.length ? list : DEMO_TOURNAMENTS).map(withSeason)
-})
+const tournaments = computed<Tournament[]>(() => (apiData.value ?? []).map(withSeason))
 
 const seasons = computed(() => {
   const set = new Set<string>()

@@ -17,7 +17,7 @@ function sumNullable(a: number | null | undefined, b: number | null | undefined)
  * Сводный список игроков.
  *
  * Публичной ручки «все игроки» в API нет, поэтому собираем заявки турниров,
- * у которых есть статистика (`hasStats`), и складываем показатели по игроку.
+ * у которых есть заведённые матчи (`hasGames`), и складываем показатели по игроку.
  * Команда и номер берутся из самого свежего турнира.
  */
 export function useAllPlayers() {
@@ -34,7 +34,7 @@ export function useAllPlayers() {
 
       // от старых к новым: последняя запись перетирает команду и номер
       const withStats = tournaments
-        .filter(t => t.hasStats)
+        .filter(t => t.hasGames)
         .sort((a, b) => a.startDate.localeCompare(b.startDate))
 
       const rosters = await Promise.all(

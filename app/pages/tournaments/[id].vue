@@ -34,13 +34,12 @@
       </ul>
 
       <section class="page-surface">
-        <div v-if="!ready" class="stats-state">
-          <p v-if="pending">Загружаем турнир...</p>
-          <template v-else>
-            <p v-if="!tournament">Турнир не найден.</p>
-            <p v-else>Статистика по этому турниру не публиковалась.</p>
-            <NuxtLink to="/tournaments" class="btn stats-state__btn">Все турниры</NuxtLink>
-          </template>
+        <HockeyLoader v-if="pending" text="Загружаем турнир" />
+
+        <div v-else-if="!ready" class="stats-state">
+          <p v-if="!tournament">Турнир не найден.</p>
+          <p v-else>По этому турниру пока нет ни матчей, ни статистики.</p>
+          <NuxtLink to="/tournaments" class="btn stats-state__btn">Все турниры</NuxtLink>
         </div>
 
         <template v-else>
@@ -53,13 +52,13 @@
           />
 
           <div v-if="tab === 'standings'" class="t-page__section">
-            <div v-if="standings.pending.value" class="stats-state"><p>Загружаем таблицу...</p></div>
+            <HockeyLoader v-if="standings.pending.value" text="Загружаем таблицу" />
             <div v-else-if="!standings.data.value.length" class="stats-state"><p>Таблица пока пуста.</p></div>
             <TournamentStandings v-else v-reveal :rows="standings.data.value" :tournament-id="id" />
           </div>
 
           <div v-else-if="tab === 'games'" class="t-page__section">
-            <div v-if="games.pending.value" class="stats-state"><p>Загружаем матчи...</p></div>
+            <HockeyLoader v-if="games.pending.value" text="Загружаем матчи" />
             <div v-else-if="!games.data.value.length" class="stats-state"><p>Матчи ещё не добавлены.</p></div>
             <div v-else class="t-page__games">
               <GameCard
@@ -73,7 +72,7 @@
           </div>
 
           <div v-else-if="tab === 'players'" class="t-page__section">
-            <div v-if="players.pending.value" class="stats-state"><p>Загружаем игроков...</p></div>
+            <HockeyLoader v-if="players.pending.value" text="Загружаем игроков" />
             <div v-else-if="!players.data.value.length" class="stats-state"><p>Заявка ещё не опубликована.</p></div>
             <template v-else>
               <label v-if="teamOptions.length > 1" class="t-page__filter">
@@ -105,7 +104,7 @@
           </div>
 
           <div v-else class="t-page__section">
-            <div v-if="best.pending.value" class="stats-state"><p>Загружаем бомбардиров...</p></div>
+            <HockeyLoader v-if="best.pending.value" text="Загружаем бомбардиров" />
             <StatLinesTable
               v-else
               v-reveal
@@ -127,7 +126,7 @@
 import { computed, ref, watch } from 'vue'
 import type { GameListItem, StandingRow, StatLine, Tournament } from '~/types'
 import { apiUrl } from '~/utils/api'
-import { formatDateRange, formatGameFormat, withSeason } from '~/utils/tournaments'
+import { formatDateRange, formatGameFormat, hasTournamentPage, withSeason } from '~/utils/tournaments'
 
 definePageMeta({
   key: route => route.path
@@ -151,8 +150,8 @@ const tournament = computed<Tournament | null>(() => {
   return found ? withSeason(found) : null
 })
 
-/** hasStats — единственный признак, по которому стоит запрашивать статистику */
-const ready = computed(() => tournament.value?.hasStats === true)
+/** Матчи заведены — страницу открываем, даже если счёт ещё не заполнен */
+const ready = computed(() => (tournament.value ? hasTournamentPage(tournament.value) : false))
 
 const arenaLabel = computed(() => tournament.value?.arena?.name || tournament.value?.location || '')
 const formatLabel = computed(() => (tournament.value ? formatGameFormat(tournament.value) : ''))

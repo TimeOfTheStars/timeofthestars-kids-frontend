@@ -15,7 +15,7 @@
       </p>
 
       <section class="page-surface">
-        <div v-if="pending" class="stats-state"><p>Загружаем протокол...</p></div>
+        <HockeyLoader v-if="pending" text="Загружаем протокол матча" />
 
         <div v-else-if="!game" class="stats-state">
           <p>Матч не найден.</p>

@@ -90,3 +90,14 @@ export function formatShortDay(iso: string): string {
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${String(d.getFullYear()).slice(-2)}`
 }
+
+/**
+ * Показывать ли страницу турнира и кнопку на карточке.
+ *
+ * `hasGames` — матчи заведены, счёт может быть ещё не заполнен: календарь
+ * и заявку уже есть смысл показать. `hasStats` — поле прежнего контура API,
+ * оставлено на случай отката бэкенда.
+ */
+export function hasTournamentPage(t: Tournament): boolean {
+  return t.hasGames === true || t.hasStats === true
+}
