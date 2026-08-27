@@ -182,8 +182,8 @@ const route = useRoute()
 
 /* --- данные подтягиваем только когда модалку открыли --- */
 
-const teamsQuery = useTeams({ immediate: false })
-const tournamentsQuery = useTournaments({ immediate: false })
+const teamsQuery = useTeams({ immediate: false, key: 'team-modal-teams' })
+const tournamentsQuery = useTournaments({ immediate: false, key: 'team-modal-tournaments' })
 
 let teamsRequested = false
 let tournamentsRequested = false

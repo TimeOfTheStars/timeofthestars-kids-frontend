@@ -23,6 +23,17 @@
       </div>
 
       <section class="turniry__section">
+        <SectionTabs
+          v-reveal
+          class="section-tabs"
+          aria-label="Разделы турниров"
+          :items="[
+            { label: 'Турниры', to: '/tournaments' },
+            { label: 'Команды', to: '/teams' },
+            { label: 'Игроки', to: '/players' }
+          ]"
+        />
+
         <div v-if="seasons.length > 1" v-reveal class="turniry__seasons" role="tablist" aria-label="Сезоны">
           <button
             v-for="s in seasons"
@@ -1118,6 +1129,11 @@ async function submitApply() {
   width: 100vw;
   background: var(--color-bg);
   z-index: 0;
+}
+.section-tabs {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1.5rem;
 }
 .turniry__seasons,
 .turniry__filters,

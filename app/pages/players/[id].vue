@@ -4,6 +4,7 @@
       <div v-reveal class="player-page__breadcrumbs-wrap">
         <Breadcrumbs
           :items="[
+            { title: 'Турниры', to: '/tournaments' },
             { title: 'Игроки', to: '/players' },
             { title: player ? player.fullName : 'Игрок' }
           ]"

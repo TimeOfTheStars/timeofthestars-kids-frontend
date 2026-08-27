@@ -2,14 +2,17 @@ import type { Team } from '~/types'
 import { apiUrl } from '~/utils/api'
 
 /**
- * Справочник команд с общей статистикой. Один запрос под общим ключом:
- * им пользуются и раздел «Команды», и модалка команды.
+ * Справочник команд с общей статистикой.
+ *
+ * `key` — для «ленивых» потребителей: см. пояснение в useTournaments,
+ * общий ключ с ленивой регистрацией оставляет страницу без данных.
  */
-export function useTeams(options: { immediate?: boolean } = {}) {
-  const failed = useApiFailure('teams')
+export function useTeams(options: { immediate?: boolean; key?: string } = {}) {
+  const key = options.key ?? 'teams'
+  const failed = useApiFailure(key)
 
   const query = useAsyncData<Team[]>(
-    'teams',
+    key,
     async () => {
       try {
         const res = await $fetch<Team[]>(apiUrl('/teams?limit=500'))
@@ -23,7 +26,7 @@ export function useTeams(options: { immediate?: boolean } = {}) {
     { default: () => [], immediate: options.immediate ?? true }
   )
 
-  const { retryDone } = useRetryOnFail('teams', query)
+  const { retryDone } = useRetryOnFail(key, query)
 
   return Object.assign(query, { failed, retryDone })
 }

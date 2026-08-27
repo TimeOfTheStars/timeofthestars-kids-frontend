@@ -34,3 +34,4 @@ export function useRetryOnFail(name: string, query: { refresh: () => Promise<unk
 
   return { failed, retryDone }
 }
+

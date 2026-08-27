@@ -36,8 +36,6 @@
                     <NuxtLink to="/coaches">Тренеры</NuxtLink>
                     <NuxtLink to="/camps">Сборы</NuxtLink>
                     <NuxtLink to="/tournaments">Турниры</NuxtLink>
-                    <NuxtLink to="/teams">Команды</NuxtLink>
-                    <NuxtLink to="/players">Игроки</NuxtLink>
                     <NuxtLink to="/contacts">Контакты</NuxtLink>
                 </nav>
             </div>

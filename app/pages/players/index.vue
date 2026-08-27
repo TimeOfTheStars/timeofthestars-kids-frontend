@@ -2,7 +2,7 @@
   <div class="page players-page">
     <div class="container">
       <div v-reveal class="players-page__breadcrumbs-wrap">
-        <Breadcrumbs :items="[{ title: 'Игроки' }]" />
+        <Breadcrumbs :items="[{ title: 'Турниры', to: '/tournaments' }, { title: 'Игроки' }]" />
       </div>
 
       <h1 v-reveal class="page__title">Игроки</h1>
@@ -12,6 +12,17 @@
       </p>
 
       <section class="page-surface">
+        <SectionTabs
+          v-reveal
+          class="section-tabs"
+          aria-label="Разделы турниров"
+          :items="[
+            { label: 'Турниры', to: '/tournaments' },
+            { label: 'Команды', to: '/teams' },
+            { label: 'Игроки', to: '/players' }
+          ]"
+        />
+
         <HockeyLoader v-if="pending" text="Загружаем игроков" :immediate="failed" />
 
         <div v-else-if="loadFailed" class="stats-state">
@@ -194,6 +205,9 @@ const goaliePlayers = computed(() =>
   z-index: 1;
 }
 
+.section-tabs {
+  margin-bottom: 1.75rem;
+}
 .stats-state {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
