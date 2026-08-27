@@ -18,20 +18,28 @@ const props = withDefaults(
     text?: string
     /** Не мигаем на быстрых ответах: показываемся, только если загрузка затянулась */
     delay?: number
+    /**
+     * Показаться сразу, без задержки. Нужно, когда запрос уже заведомо не удался
+     * и идёт повторная попытка: таймеры на сервере не работают, а разметка
+     * должна приехать уже с лоадером — иначе на месте контента пустота.
+     */
+    immediate?: boolean
     /** Без рамки и фона — для случаев, когда лоадер уже внутри карточки */
     bare?: boolean
   }>(),
   {
     text: 'Загружаем данные',
     delay: 300,
+    immediate: false,
     bare: false
   }
 )
 
-const visible = ref(false)
+const visible = ref(props.immediate)
 let timer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {
+  if (visible.value) return
   timer = setTimeout(() => {
     visible.value = true
   }, props.delay)

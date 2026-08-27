@@ -12,7 +12,14 @@
       </p>
 
       <section class="page-surface">
-        <HockeyLoader v-if="pending" text="Загружаем игроков" />
+        <HockeyLoader v-if="pending" text="Загружаем игроков" :immediate="failed" />
+
+        <div v-else-if="loadFailed" class="stats-state">
+          <p>Не удалось загрузить игроков.</p>
+          <button type="button" class="btn stats-state__btn" :disabled="fetching" @click="refresh()">
+            Попробовать снова
+          </button>
+        </div>
 
         <div v-else-if="!players.length" class="stats-state">
           <p>Статистика игроков пока не опубликована.</p>
@@ -104,7 +111,12 @@ useHead({
   ]
 })
 
-const { data: players, pending } = await useAllPlayers()
+const playersQuery = useAllPlayers()
+await playersQuery
+const { data: players, pending: fetching, failed, retryDone, refresh } = playersQuery
+
+const pending = computed(() => fetching.value || (failed.value && !retryDone.value))
+const loadFailed = computed(() => failed.value && retryDone.value && !(players.value ?? []).length)
 
 const query = ref('')
 const selectedTeam = ref('')

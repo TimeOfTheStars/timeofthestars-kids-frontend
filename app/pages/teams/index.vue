@@ -12,7 +12,14 @@
       </p>
 
       <section class="page-surface">
-        <HockeyLoader v-if="pending" text="Загружаем команды" />
+        <HockeyLoader v-if="pending" text="Загружаем команды" :immediate="failed" />
+
+        <div v-else-if="loadFailed" class="stats-state">
+          <p>Не удалось загрузить команды.</p>
+          <button type="button" class="btn stats-state__btn" :disabled="pending" @click="refresh()">
+            Попробовать снова
+          </button>
+        </div>
 
         <div v-else-if="!teams.length" class="stats-state">
           <p>Справочник команд пока пуст.</p>
@@ -131,7 +138,12 @@ useHead({
   ]
 })
 
-const { data: teamsData, pending } = await useTeams()
+const teamsQuery = useTeams()
+await teamsQuery
+const { data: teamsData, pending: fetching, failed, retryDone, refresh } = teamsQuery
+
+const pending = computed(() => fetching.value || (failed.value && !retryDone.value))
+const loadFailed = computed(() => failed.value && retryDone.value && !(teamsData.value ?? []).length)
 const { openTeam } = useTeamModal()
 
 /** Сначала играющие команды, потом остальные с нулями */

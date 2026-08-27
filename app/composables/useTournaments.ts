@@ -1,4 +1,3 @@
-import { onMounted } from 'vue'
 import type { Tournament } from '~/types'
 import { apiUrl } from '~/utils/api'
 
@@ -6,12 +5,9 @@ import { apiUrl } from '~/utils/api'
  * Единый источник списка турниров: отдельной ручки GET /tournaments/{id} нет,
  * поэтому метаданные турнира берём из списка. Общий ключ useAsyncData —
  * значит один запрос на список и одна SSR-полезная нагрузка на все страницы.
- *
- * Если запрос упал на сервере, повторяем его на клиенте: иначе страница
- * оставалась бы пустой до ручного обновления.
  */
 export function useTournaments(options: { immediate?: boolean } = {}) {
-  const failed = useState('tournaments-failed', () => false)
+  const failed = useApiFailure('tournaments')
 
   const query = useAsyncData<Tournament[]>(
     'tournaments',
@@ -28,13 +24,7 @@ export function useTournaments(options: { immediate?: boolean } = {}) {
     { default: () => [], immediate: options.immediate ?? true }
   )
 
-  if (import.meta.client) {
-    onMounted(() => {
-      if (!failed.value) return
-      failed.value = false
-      query.refresh()
-    })
-  }
+  const { retryDone } = useRetryOnFail('tournaments', query)
 
-  return query
+  return Object.assign(query, { failed, retryDone })
 }

@@ -1,4 +1,3 @@
-import { onMounted } from 'vue'
 import type { Team } from '~/types'
 import { apiUrl } from '~/utils/api'
 
@@ -7,7 +6,7 @@ import { apiUrl } from '~/utils/api'
  * им пользуются и раздел «Команды», и модалка команды.
  */
 export function useTeams(options: { immediate?: boolean } = {}) {
-  const failed = useState('teams-failed', () => false)
+  const failed = useApiFailure('teams')
 
   const query = useAsyncData<Team[]>(
     'teams',
@@ -24,16 +23,9 @@ export function useTeams(options: { immediate?: boolean } = {}) {
     { default: () => [], immediate: options.immediate ?? true }
   )
 
-  // упавший на сервере запрос повторяем на клиенте
-  if (import.meta.client) {
-    onMounted(() => {
-      if (!failed.value) return
-      failed.value = false
-      query.refresh()
-    })
-  }
+  const { retryDone } = useRetryOnFail('teams', query)
 
-  return query
+  return Object.assign(query, { failed, retryDone })
 }
 
 /**

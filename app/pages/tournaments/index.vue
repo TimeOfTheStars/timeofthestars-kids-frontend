@@ -107,15 +107,21 @@
           </div>
         </div>
 
-        <HockeyLoader v-if="loading" text="Загружаем турниры" />
+        <HockeyLoader v-if="loading" text="Загружаем турниры" :immediate="failed" />
+
+        <div v-else-if="loadFailed" class="turniry__state">
+          <p>Не удалось загрузить турниры.</p>
+          <button type="button" class="btn turniry__retry" :disabled="pending" @click="refresh()">
+            Попробовать снова
+          </button>
+        </div>
 
         <template v-else>
           <div
             v-if="upcomingForSeason.length === 0 && completedForSeason.length === 0"
             class="turniry__state"
           >
-            <p v-if="!tournaments.length">Не удалось загрузить турниры. Попробуйте обновить страницу.</p>
-            <p v-else>В этом сезоне турниров пока нет.</p>
+            <p>В этом сезоне турниров пока нет.</p>
           </div>
 
           <div v-if="upcomingForSeason.length" class="turniry__group">
@@ -660,9 +666,17 @@ onMounted(() => {
   nowMs.value = Date.now()
 })
 
-const { data: apiData, pending } = await useTournaments()
+/*
+  * Ждём запрос, но поля берём из самого объекта: useAsyncData возвращает промис
+  * с копией полей, а await отдаёт уже другой объект — своих полей в нём нет.
+  */
+const tournamentsQuery = useTournaments()
+await tournamentsQuery
+const { data: apiData, pending, failed, retryDone, refresh } = tournamentsQuery
 
-const loading = computed(() => pending.value)
+/** Пока не отработала повторная попытка на клиенте — это ещё загрузка, а не ошибка */
+const loading = computed(() => pending.value || (failed.value && !retryDone.value))
+const loadFailed = computed(() => failed.value && retryDone.value && !tournaments.value.length)
 
 const tournaments = computed<Tournament[]>(() => (apiData.value ?? []).map(withSeason))
 
@@ -1221,6 +1235,10 @@ async function submitApply() {
   color: #fff;
 }
 
+.turniry__retry {
+  align-self: center;
+  margin-top: 1rem;
+}
 .turniry__state {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

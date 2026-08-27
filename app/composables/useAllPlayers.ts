@@ -21,14 +21,18 @@ function sumNullable(a: number | null | undefined, b: number | null | undefined)
  * Команда и номер берутся из самого свежего турнира.
  */
 export function useAllPlayers() {
-  return useAsyncData<AggregatedPlayer[]>(
+  const failed = useApiFailure('all-players')
+
+  const query = useAsyncData<AggregatedPlayer[]>(
     'all-players',
     async () => {
       let tournaments: Tournament[] = []
       try {
         const res = await $fetch<Tournament[] | { tournaments?: Tournament[] }>(apiUrl('/tournaments'))
         tournaments = Array.isArray(res) ? res : (res?.tournaments ?? [])
+        failed.value = false
       } catch {
+        failed.value = true
         return []
       }
 
@@ -95,4 +99,8 @@ export function useAllPlayers() {
     },
     { default: () => [] }
   )
+
+  const { retryDone } = useRetryOnFail('all-players', query)
+
+  return Object.assign(query, { failed, retryDone })
 }
