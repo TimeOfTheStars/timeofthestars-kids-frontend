@@ -500,8 +500,8 @@ onUnmounted(() => {
   min-width: 0;
 }
 .team-modal__logo {
-  width: 52px;
-  height: 52px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -600,7 +600,9 @@ onUnmounted(() => {
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: 45vh;
+  /* Ограничение только по высоте: ширину снимок добирает сам, сохраняя пропорции.
+     width: 100% здесь нельзя — вместе с max-height это растянет картинку. */
+  max-height: 62vh;
 }
 .team-photo__zoom {
   position: absolute;
@@ -814,8 +816,8 @@ onUnmounted(() => {
     padding: 1.15rem 2rem 0.95rem;
   }
   .team-modal__logo {
-    width: 62px;
-    height: 62px;
+    width: 80px;
+    height: 80px;
   }
   .team-modal__title {
     font-size: 1.45rem;
@@ -839,14 +841,14 @@ onUnmounted(() => {
     padding: 0.85rem 1rem 0.7rem;
   }
   .team-modal__logo {
-    width: 42px;
-    height: 42px;
+    width: 50px;
+    height: 50px;
   }
   .team-modal__title {
     font-size: 1.1rem;
   }
   .team-photo__img {
-    max-height: 38vh;
+    max-height: 50vh;
   }
   .roster {
     grid-template-columns: 1fr;
