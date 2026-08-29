@@ -103,7 +103,7 @@
             </template>
           </div>
 
-          <div v-else class="t-page__section">
+          <div v-else-if="tab === 'best'" class="t-page__section">
             <HockeyLoader v-if="best.pending.value" text="Загружаем бомбардиров" />
             <StatLinesTable
               v-else
@@ -114,6 +114,34 @@
               show-team
               :tournament-id="id"
               empty-text="Пока никто не набрал очков."
+            />
+          </div>
+
+          <div v-else-if="tab === 'snipers'" class="t-page__section">
+            <HockeyLoader v-if="players.pending.value" text="Загружаем снайперов" />
+            <StatLinesTable
+              v-else
+              v-reveal
+              title="Лучшие снайперы"
+              :rows="snipers"
+              show-rank
+              show-team
+              :tournament-id="id"
+              empty-text="Пока никто не забивал."
+            />
+          </div>
+
+          <div v-else class="t-page__section">
+            <HockeyLoader v-if="players.pending.value" text="Загружаем ассистентов" />
+            <StatLinesTable
+              v-else
+              v-reveal
+              title="Лучшие ассистенты"
+              :rows="assistants"
+              show-rank
+              show-team
+              :tournament-id="id"
+              empty-text="Пока никто не отдавал передач."
             />
           </div>
         </template>
@@ -136,8 +164,13 @@ const TABS = [
   { key: 'standings', label: 'Таблица' },
   { key: 'games', label: 'Матчи' },
   { key: 'players', label: 'Игроки' },
-  { key: 'best', label: 'Бомбардиры' }
+  { key: 'best', label: 'Бомбардиры' },
+  { key: 'snipers', label: 'Снайперы' },
+  { key: 'assistants', label: 'Ассистенты' }
 ]
+
+/** Снайперы и ассистенты считаются из заявки турнира — отдельной ручки под них нет */
+const LEADERS_LIMIT = 10
 
 const route = useRoute()
 const router = useRouter()
@@ -162,6 +195,9 @@ const tab = ref(typeof route.query.tab === 'string' && TABS.some(t => t.key === 
 
 /** Таб из ссылки рендерим на сервере, остальные — при первом открытии */
 const initialTab = tab.value
+
+/** Табы, которым нужна заявка турнира */
+const PLAYERS_TABS = ['players', 'snipers', 'assistants']
 
 watch(tab, value => {
   const query = { ...route.query }
@@ -203,7 +239,7 @@ const players = useAsyncData<StatLine[]>(
       return []
     }
   },
-  { default: () => [], immediate: ready.value && initialTab === 'players' }
+  { default: () => [], immediate: ready.value && PLAYERS_TABS.includes(initialTab) }
 )
 
 const best = useAsyncData<StatLine[]>(
@@ -220,22 +256,33 @@ const best = useAsyncData<StatLine[]>(
 
 const LOADERS = { standings, games, players, best }
 
+/** Какой загрузчик обслуживает таб: снайперы и ассистенты живут на данных «Игроков» */
+const TAB_LOADER: Record<string, keyof typeof LOADERS> = {
+  standings: 'standings',
+  games: 'games',
+  players: 'players',
+  best: 'best',
+  snipers: 'players',
+  assistants: 'players'
+}
+
 /**
- * Табы, данные которых уже запрошены. Начальный таб приходит с сервера,
- * остальные догружаются при первом открытии.
+ * Что уже запрошено. Учёт по загрузчику, а не по табу: у «Игроков»,
+ * «Снайперов» и «Ассистентов» источник один, и переключение между ними
+ * не должно дёргать API заново.
  *
  * Считать «загружено ли» по status нельзя: во время SSR ленивые useAsyncData
  * попадают в payload со значением по умолчанию, и после гидрации их статус —
  * 'success', а не 'idle'. Поэтому ведём учёт сами.
  */
-const loadedTabs = new Set<string>(ready.value ? [initialTab] : [])
+const loaded = new Set<string>(ready.value ? [TAB_LOADER[initialTab] ?? ''] : [])
 
 watch([tab, ready], ([value, isReady]) => {
-  if (!isReady || loadedTabs.has(value)) return
-  const loader = LOADERS[value as keyof typeof LOADERS]
-  if (!loader) return
-  loadedTabs.add(value)
-  loader.execute()
+  if (!isReady) return
+  const name = TAB_LOADER[value]
+  if (!name || loaded.has(name)) return
+  loaded.add(name)
+  LOADERS[name].execute()
 }, { immediate: true })
 
 const selectedTeam = ref('')
@@ -268,6 +315,32 @@ const goaliePlayers = computed(() =>
     .filter(row => row.isGoalie)
     .slice()
     .sort((a, b) => a.player.fullName.localeCompare(b.player.fullName, 'ru'))
+)
+
+/** Лучшие по голам: чистая результативность, без учёта передач */
+const snipers = computed(() =>
+  (players.data.value ?? [])
+    .filter(row => row.goals > 0)
+    .slice()
+    .sort((a, b) =>
+      b.goals - a.goals ||
+      b.assists - a.assists ||
+      a.player.fullName.localeCompare(b.player.fullName, 'ru')
+    )
+    .slice(0, LEADERS_LIMIT)
+)
+
+/** Лучшие по передачам */
+const assistants = computed(() =>
+  (players.data.value ?? [])
+    .filter(row => row.assists > 0)
+    .slice()
+    .sort((a, b) =>
+      b.assists - a.assists ||
+      b.goals - a.goals ||
+      a.player.fullName.localeCompare(b.player.fullName, 'ru')
+    )
+    .slice(0, LEADERS_LIMIT)
 )
 
 useHead(() => ({

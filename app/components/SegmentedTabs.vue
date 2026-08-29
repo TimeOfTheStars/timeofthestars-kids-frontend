@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs" role="tablist" :aria-label="ariaLabel">
+  <div ref="root" class="tabs" role="tablist" :aria-label="ariaLabel">
     <button
       v-for="tab in tabs"
       :key="tab.key"
@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, onMounted, ref, watch } from 'vue'
+
 export interface SegmentedTab {
   key: string
   label: string
@@ -29,6 +31,25 @@ defineProps<{
 }>()
 
 const model = defineModel<string>({ required: true })
+
+const root = ref<HTMLElement | null>(null)
+
+/*
+ * Табов может быть больше, чем влезает: на телефоне они скроллятся, и активный
+ * запросто оказывается за краем — например при заходе по ссылке ?tab=snipers.
+ * Подкручиваем ленту так, чтобы он был виден.
+ */
+function scrollActiveIntoView(smooth: boolean) {
+  const container = root.value
+  const active = container?.querySelector<HTMLElement>('.tabs__item--active')
+  if (!container || !active) return
+  if (container.scrollWidth <= container.clientWidth) return
+  const left = active.offsetLeft - (container.clientWidth - active.offsetWidth) / 2
+  container.scrollTo({ left: Math.max(0, left), behavior: smooth ? 'smooth' : 'auto' })
+}
+
+onMounted(() => nextTick(() => scrollActiveIntoView(false)))
+watch(model, () => nextTick(() => scrollActiveIntoView(true)))
 </script>
 
 <style scoped>

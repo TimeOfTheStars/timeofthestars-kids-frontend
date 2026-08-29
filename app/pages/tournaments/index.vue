@@ -163,6 +163,9 @@
                     v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__title-link"
+                    @mouseenter="warmTournament(t)"
+                    @focus="warmTournament(t)"
+                    @touchstart.passive="warmTournament(t)"
                   >{{ t.title }}</NuxtLink>
                   <template v-else>{{ t.title }}</template>
                 </h3>
@@ -236,6 +239,9 @@
                     v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__link t-card__link--stats"
+                    @mouseenter="warmTournament(t)"
+                    @focus="warmTournament(t)"
+                    @touchstart.passive="warmTournament(t)"
                   >
                     Статистика
                     <Icon name="ph:chart-bar" />
@@ -286,6 +292,9 @@
                     v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__title-link"
+                    @mouseenter="warmTournament(t)"
+                    @focus="warmTournament(t)"
+                    @touchstart.passive="warmTournament(t)"
                   >{{ t.title }}</NuxtLink>
                   <template v-else>{{ t.title }}</template>
                 </h3>
@@ -359,6 +368,9 @@
                     v-if="hasTournamentPage(t)"
                     :to="`/tournaments/${t.id}`"
                     class="t-card__link t-card__link--stats"
+                    @mouseenter="warmTournament(t)"
+                    @focus="warmTournament(t)"
+                    @touchstart.passive="warmTournament(t)"
                   >
                     Статистика
                     <Icon name="ph:chart-bar" />
@@ -644,7 +656,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import type { Tournament, TournamentArena } from '~/types'
-import { postJson } from '~/utils/api'
+import { apiUrl, postJson } from '~/utils/api'
 import {
   endOf,
   formatDateRange,
@@ -765,6 +777,42 @@ function medalForTeam(t: Tournament, idx: number): string {
 const statusInfoOpen = ref(false)
 
 const { openTeam } = useTeamModal()
+
+/*
+ * Прогрев таблицы турнира.
+ *
+ * При переходе со списка страница турнира грузит таблицу уже на клиенте, и на
+ * медленной связи это заметная пауза с лоадером. Запрашиваем её заранее — по
+ * наведению или касанию, то есть когда намерение открыть уже видно. Ответ
+ * кладётся в кеш браузера (у API Cache-Control: 300s), и настоящий запрос
+ * страницы попадает в него.
+ */
+const warmed = new Set<string>()
+
+function warmTournament(t: Tournament) {
+  if (!import.meta.client) return
+  const id = String(t.id)
+  if (warmed.has(id)) return
+  warmed.add(id)
+  $fetch(apiUrl(`/tournaments/${id}/standings`)).catch(() => {
+    warmed.delete(id)
+  })
+}
+
+/*
+ * На телефоне наведения нет, а касание опережает переход всего на пару сотен
+ * миллисекунд. Поэтому таблицы турниров текущего сезона греем сами, когда
+ * страница уже отрисовалась: ответ маленький (около 1 КБ), а таких турниров
+ * в сезоне единицы — их видно по кнопке на карточке.
+ */
+onMounted(() => {
+  setTimeout(() => {
+    const list = [...upcomingForSeason.value, ...completedForSeason.value]
+      .filter(hasTournamentPage)
+      .slice(0, 3)
+    for (const t of list) warmTournament(t)
+  }, 900)
+})
 
 const tournamentsJsonLd = computed(() => {
   const combined = [
