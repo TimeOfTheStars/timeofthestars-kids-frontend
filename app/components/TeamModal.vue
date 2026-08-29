@@ -39,6 +39,21 @@
               <StatTiles :items="statTiles" />
             </section>
 
+            <section v-if="tournamentsOfTeam.length" class="team-modal__section">
+              <h4 class="team-modal__section-title">Турнир</h4>
+              <SegmentedTabs
+                v-if="tournamentTabs.length > 1"
+                v-model="selectedTournamentId"
+                class="team-modal__tabs"
+                aria-label="Турниры команды"
+                :tabs="tournamentTabs"
+              />
+              <p v-if="selectedTournament" class="team-modal__hint">
+                {{ selectedTournament.title }} ·
+                {{ formatDateRange(selectedTournament.startDate, selectedTournament.endDate) }}
+              </p>
+            </section>
+
             <section v-if="teamPhoto" class="team-modal__section">
               <h4 class="team-modal__section-title">Общая фотография</h4>
               <div class="team-photo">
@@ -64,18 +79,6 @@
 
             <section class="team-modal__section">
               <h4 class="team-modal__section-title">Состав</h4>
-
-              <SegmentedTabs
-                v-if="tournamentTabs.length > 1"
-                v-model="selectedTournamentId"
-                class="team-modal__tabs"
-                aria-label="Турниры команды"
-                :tabs="tournamentTabs"
-              />
-              <p v-if="selectedTournament" class="team-modal__hint">
-                {{ selectedTournament.title }} ·
-                {{ formatDateRange(selectedTournament.startDate, selectedTournament.endDate) }}
-              </p>
 
               <HockeyLoader v-if="rosterPending" text="Загружаем состав" bare />
               <ul v-else-if="roster.length" class="roster">
