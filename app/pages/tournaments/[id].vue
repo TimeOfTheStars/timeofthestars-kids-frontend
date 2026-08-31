@@ -117,7 +117,7 @@
             />
           </div>
 
-          <div v-else-if="tab === 'snipers'" class="t-page__section">
+          <div v-else class="t-page__section">
             <HockeyLoader v-if="players.pending.value" text="Загружаем снайперов" />
             <StatLinesTable
               v-else
@@ -128,20 +128,6 @@
               show-team
               :tournament-id="id"
               empty-text="Пока никто не забивал."
-            />
-          </div>
-
-          <div v-else class="t-page__section">
-            <HockeyLoader v-if="players.pending.value" text="Загружаем ассистентов" />
-            <StatLinesTable
-              v-else
-              v-reveal
-              title="Лучшие ассистенты"
-              :rows="assistants"
-              show-rank
-              show-team
-              :tournament-id="id"
-              empty-text="Пока никто не отдавал передач."
             />
           </div>
         </template>
@@ -165,8 +151,7 @@ const TABS = [
   { key: 'games', label: 'Матчи' },
   { key: 'players', label: 'Игроки' },
   { key: 'best', label: 'Бомбардиры' },
-  { key: 'snipers', label: 'Снайперы' },
-  { key: 'assistants', label: 'Ассистенты' }
+  { key: 'snipers', label: 'Снайперы' }
 ]
 
 /** Снайперы и ассистенты считаются из заявки турнира — отдельной ручки под них нет */
@@ -197,7 +182,7 @@ const tab = ref(typeof route.query.tab === 'string' && TABS.some(t => t.key === 
 const initialTab = tab.value
 
 /** Табы, которым нужна заявка турнира */
-const PLAYERS_TABS = ['players', 'snipers', 'assistants']
+const PLAYERS_TABS = ['players', 'snipers']
 
 watch(tab, value => {
   const query = { ...route.query }
@@ -262,14 +247,13 @@ const TAB_LOADER: Record<string, keyof typeof LOADERS> = {
   games: 'games',
   players: 'players',
   best: 'best',
-  snipers: 'players',
-  assistants: 'players'
+  snipers: 'players'
 }
 
 /**
- * Что уже запрошено. Учёт по загрузчику, а не по табу: у «Игроков»,
- * «Снайперов» и «Ассистентов» источник один, и переключение между ними
- * не должно дёргать API заново.
+ * Что уже запрошено. Учёт по загрузчику, а не по табу: у «Игроков»
+ * и «Снайперов» источник один, и переключение между ними не должно
+ * дёргать API заново.
  *
  * Считать «загружено ли» по status нельзя: во время SSR ленивые useAsyncData
  * попадают в payload со значением по умолчанию, и после гидрации их статус —
@@ -325,19 +309,6 @@ const snipers = computed(() =>
     .sort((a, b) =>
       b.goals - a.goals ||
       b.assists - a.assists ||
-      a.player.fullName.localeCompare(b.player.fullName, 'ru')
-    )
-    .slice(0, LEADERS_LIMIT)
-)
-
-/** Лучшие по передачам */
-const assistants = computed(() =>
-  (players.data.value ?? [])
-    .filter(row => row.assists > 0)
-    .slice()
-    .sort((a, b) =>
-      b.assists - a.assists ||
-      b.goals - a.goals ||
       a.player.fullName.localeCompare(b.player.fullName, 'ru')
     )
     .slice(0, LEADERS_LIMIT)
