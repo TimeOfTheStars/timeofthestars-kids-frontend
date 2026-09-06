@@ -38,6 +38,14 @@
         </div>
 
         <template v-else>
+          <SegmentedTabs
+            v-model="mode"
+            v-reveal
+            class="players-page__modes"
+            aria-label="Что показывать"
+            :tabs="MODES"
+          />
+
           <div v-reveal class="players-page__filters">
             <label class="players-page__filter players-page__filter--search">
               <span class="players-page__filter-label">Поиск по фамилии или имени</span>
@@ -78,11 +86,9 @@
             </button>
           </div>
 
-          <p v-reveal class="players-page__count">
-            Найдено: {{ filtered.length }} из {{ players.length }}
-          </p>
+          <p v-reveal class="players-page__count">{{ countLabel }}</p>
 
-          <div class="players-page__tables">
+          <div v-if="mode === 'all'" class="players-page__tables">
             <StatLinesTable
               v-reveal
               title="Полевые игроки"
@@ -99,6 +105,26 @@
               empty-text="По этому запросу вратарей нет."
             />
           </div>
+
+          <StatLinesTable
+            v-else-if="mode === 'best'"
+            v-reveal
+            title="Лучшие бомбардиры"
+            :rows="bestPlayers"
+            show-rank
+            show-team
+            empty-text="По этому запросу никто не набирал очков."
+          />
+
+          <StatLinesTable
+            v-else
+            v-reveal
+            title="Лучшие снайперы"
+            :rows="snipers"
+            show-rank
+            show-team
+            empty-text="По этому запросу никто не забивал."
+          />
         </template>
       </section>
     </div>
@@ -106,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 useHead({
   title: 'Игроки детских хоккейных турниров — «Время Звёзд KIDS»',
@@ -128,6 +154,32 @@ const { data: players, pending: fetching, failed, retryDone, refresh } = players
 
 const pending = computed(() => fetching.value || (failed.value && !retryDone.value))
 const loadFailed = computed(() => failed.value && retryDone.value && !(players.value ?? []).length)
+
+const MODES = [
+  { key: 'all', label: 'Все игроки' },
+  { key: 'best', label: 'Бомбардиры' },
+  { key: 'snipers', label: 'Снайперы' }
+]
+
+/** Сколько строк в списках лучших — как во вкладках турнира */
+const LEADERS_LIMIT = 10
+
+const route = useRoute()
+const router = useRouter()
+
+const mode = ref(
+  typeof route.query.mode === 'string' && MODES.some(m => m.key === route.query.mode)
+    ? route.query.mode
+    : 'all'
+)
+
+/** Режим держим в адресе: ссылку на список лучших можно отправить и открыть заново */
+watch(mode, value => {
+  const q = { ...route.query }
+  if (value === 'all') delete q.mode
+  else q.mode = value
+  router.replace({ path: route.path, query: q })
+})
 
 const query = ref('')
 const selectedTeam = ref('')
@@ -166,6 +218,38 @@ const goaliePlayers = computed(() =>
     .slice()
     .sort((a, b) => a.player.fullName.localeCompare(b.player.fullName, 'ru'))
 )
+
+/** Бомбардиры: по сумме очков, то есть голы плюс передачи */
+const bestPlayers = computed(() =>
+  filtered.value
+    .filter(row => row.points > 0)
+    .slice()
+    .sort((a, b) =>
+      b.points - a.points ||
+      b.goals - a.goals ||
+      a.player.fullName.localeCompare(b.player.fullName, 'ru')
+    )
+    .slice(0, LEADERS_LIMIT)
+)
+
+/** Снайперы: только голы */
+const snipers = computed(() =>
+  filtered.value
+    .filter(row => row.goals > 0)
+    .slice()
+    .sort((a, b) =>
+      b.goals - a.goals ||
+      b.assists - a.assists ||
+      a.player.fullName.localeCompare(b.player.fullName, 'ru')
+    )
+    .slice(0, LEADERS_LIMIT)
+)
+
+const countLabel = computed(() => {
+  if (mode.value === 'best') return `Топ-${bestPlayers.value.length} по очкам за всё время`
+  if (mode.value === 'snipers') return `Топ-${snipers.value.length} по голам за всё время`
+  return `Найдено: ${filtered.value.length} из ${players.value.length}`
+})
 </script>
 
 <style scoped>
@@ -227,6 +311,9 @@ const goaliePlayers = computed(() =>
   text-decoration: none;
 }
 
+.players-page__modes {
+  margin-bottom: 1.25rem;
+}
 .players-page__filters {
   display: flex;
   flex-wrap: wrap;
