@@ -94,6 +94,7 @@
               title="Полевые игроки"
               :rows="fieldPlayers"
               show-team
+              show-avatar
               empty-text="По этому запросу полевых игроков нет."
             />
             <StatLinesTable
@@ -102,6 +103,7 @@
               variant="goalie"
               :rows="goaliePlayers"
               show-team
+              show-avatar
               empty-text="По этому запросу вратарей нет."
             />
           </div>
@@ -113,6 +115,7 @@
             :rows="bestPlayers"
             show-rank
             show-team
+            show-avatar
             empty-text="По этому запросу никто не набирал очков."
           />
 
@@ -123,6 +126,7 @@
             :rows="snipers"
             show-rank
             show-team
+            show-avatar
             empty-text="По этому запросу никто не забивал."
           />
         </template>

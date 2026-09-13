@@ -40,27 +40,42 @@
               </td>
               <td class="slt__td slt__td--num">{{ row.number ?? '—' }}</td>
               <td class="slt__td slt__td--player">
-                <NuxtLink :to="`/players/${row.player.id}`" class="slt__player">
-                  <span class="slt__player-name">{{ row.player.fullName }}</span>
-                  <span v-if="row.player.position" class="slt__player-pos">{{ row.player.position }}</span>
-                </NuxtLink>
-                <button
-                  v-if="showTeam && row.team?.name"
-                  type="button"
-                  class="team-open slt__team"
-                  :aria-label="`Команда ${row.team.name}`"
-                  @click="openTeam({ teamId: row.team.id, name: row.team.name, logo: row.team.logo, tournamentId })"
-                >
-                  <img
-                    v-if="row.team.logo"
-                    :src="row.team.logo"
-                    alt=""
-                    class="slt__team-logo"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span>{{ row.team.name }}</span>
-                </button>
+                <div class="slt__person">
+                  <span v-if="showAvatar" class="slt__avatar" aria-hidden="true">
+                    <img
+                      v-if="row.player.photo"
+                      :src="row.player.photo"
+                      alt=""
+                      class="slt__avatar-photo"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span v-else class="slt__avatar-initials">{{ initials(row.player.fullName) }}</span>
+                  </span>
+                  <span class="slt__person-body">
+                    <NuxtLink :to="`/players/${row.player.id}`" class="slt__player">
+                      <span class="slt__player-name">{{ row.player.fullName }}</span>
+                      <span v-if="row.player.position" class="slt__player-pos">{{ row.player.position }}</span>
+                    </NuxtLink>
+                    <button
+                      v-if="showTeam && row.team?.name"
+                      type="button"
+                      class="team-open slt__team"
+                      :aria-label="`Команда ${row.team.name}`"
+                      @click="openTeam({ teamId: row.team.id, name: row.team.name, logo: row.team.logo, tournamentId })"
+                    >
+                      <img
+                        v-if="row.team.logo"
+                        :src="row.team.logo"
+                        alt=""
+                        class="slt__team-logo"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span>{{ row.team.name }}</span>
+                    </button>
+                  </span>
+                </div>
               </td>
               <td v-if="showGames" class="slt__td">{{ row.games }}</td>
               <template v-if="variant === 'goalie'">
@@ -99,6 +114,7 @@ withDefaults(
     showRank?: boolean
     showGames?: boolean
     showNote?: boolean
+    showAvatar?: boolean
     tournamentId?: string
     emptyText?: string
   }>(),
@@ -108,6 +124,7 @@ withDefaults(
     showRank: false,
     showGames: true,
     showNote: true,
+    showAvatar: false,
     emptyText: 'Пока нет данных.'
   }
 )
@@ -115,6 +132,16 @@ withDefaults(
 const { openTeam } = useTeamModal()
 
 const MEDALS = ['🥇', '🥈', '🥉']
+
+/** Заглушка вместо фото: инициалы. Фото есть у меньшинства игроков */
+function initials(fullName: string): string {
+  return fullName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? '')
+    .join('')
+}
 
 function dash(value: number | null | undefined): string {
   return value == null ? '—' : String(value)
@@ -230,6 +257,40 @@ function savePct(row: StatLine): string {
   padding-left: 0.9rem;
   white-space: normal;
 }
+.slt__person {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.slt__avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.slt__avatar-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.slt__avatar-initials {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
+}
+.slt__person-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
 .slt__player {
   display: flex;
   flex-direction: column;
@@ -295,8 +356,18 @@ function savePct(row: StatLine): string {
   }
   .slt__th--player,
   .slt__td--player {
-    padding-left: 0.55rem;
+    padding-left: 0.5rem;
     min-width: 118px;
+  }
+  .slt__person {
+    gap: 0.4rem;
+  }
+  .slt__avatar {
+    width: 28px;
+    height: 28px;
+  }
+  .slt__avatar-initials {
+    font-size: 0.66rem;
   }
   .slt__th--rank {
     width: 32px;
