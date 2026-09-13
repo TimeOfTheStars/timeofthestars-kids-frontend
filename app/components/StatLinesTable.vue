@@ -2,7 +2,7 @@
   <div class="slt">
     <h3 v-if="title" class="slt__title">
       {{ title }}
-      <span class="slt__title-count">{{ rows.length }}</span>
+      <span class="slt__title-count">{{ total ?? rows.length }}</span>
     </h3>
 
     <div v-if="!rows.length" class="slt__empty">
@@ -115,6 +115,8 @@ withDefaults(
     showGames?: boolean
     showNote?: boolean
     showAvatar?: boolean
+    /** Всего строк в списке: при постраничном выводе rows — только текущая страница */
+    total?: number
     tournamentId?: string
     emptyText?: string
   }>(),

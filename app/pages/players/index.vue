@@ -88,24 +88,41 @@
 
           <p v-reveal class="players-page__count">{{ countLabel }}</p>
 
-          <div v-if="mode === 'all'" class="players-page__tables">
-            <StatLinesTable
-              v-reveal
-              title="Полевые игроки"
-              :rows="fieldPlayers"
-              show-team
-              show-avatar
-              empty-text="По этому запросу полевых игроков нет."
-            />
-            <StatLinesTable
-              v-reveal
-              title="Вратари"
-              variant="goalie"
-              :rows="goaliePlayers"
-              show-team
-              show-avatar
-              empty-text="По этому запросу вратарей нет."
-            />
+          <div v-if="mode === 'all'" ref="tablesEl" class="players-page__tables">
+            <div class="players-page__block">
+              <StatLinesTable
+                v-reveal
+                title="Полевые игроки"
+                :rows="fieldPage"
+                :total="fieldPlayers.length"
+                show-team
+                show-avatar
+                empty-text="По этому запросу полевых игроков нет."
+              />
+              <Pagination
+                v-model="fieldPageNo"
+                :total-pages="fieldTotalPages"
+                aria-label="Страницы полевых игроков"
+              />
+            </div>
+
+            <div class="players-page__block">
+              <StatLinesTable
+                v-reveal
+                title="Вратари"
+                variant="goalie"
+                :rows="goaliePage"
+                :total="goaliePlayers.length"
+                show-team
+                show-avatar
+                empty-text="По этому запросу вратарей нет."
+              />
+              <Pagination
+                v-model="goaliePageNo"
+                :total-pages="goalieTotalPages"
+                aria-label="Страницы вратарей"
+              />
+            </div>
           </div>
 
           <StatLinesTable
@@ -167,6 +184,9 @@ const MODES = [
 
 /** Сколько строк в списках лучших — как во вкладках турнира */
 const LEADERS_LIMIT = 10
+
+/** Игроков на странице в общем списке */
+const PAGE_SIZE = 50
 
 const route = useRoute()
 const router = useRouter()
@@ -248,6 +268,46 @@ const snipers = computed(() =>
     )
     .slice(0, LEADERS_LIMIT)
 )
+
+/* --- постраничный вывод общего списка --- */
+
+const fieldPageNo = ref(1)
+const goaliePageNo = ref(1)
+const tablesEl = ref<HTMLElement | null>(null)
+
+const fieldTotalPages = computed(() => Math.max(1, Math.ceil(fieldPlayers.value.length / PAGE_SIZE)))
+const goalieTotalPages = computed(() => Math.max(1, Math.ceil(goaliePlayers.value.length / PAGE_SIZE)))
+
+const fieldPage = computed(() =>
+  fieldPlayers.value.slice((fieldPageNo.value - 1) * PAGE_SIZE, fieldPageNo.value * PAGE_SIZE)
+)
+const goaliePage = computed(() =>
+  goaliePlayers.value.slice((goaliePageNo.value - 1) * PAGE_SIZE, goaliePageNo.value * PAGE_SIZE)
+)
+
+/** Сменили поиск, команду или режим — список другой, страницу начинаем сначала */
+watch([query, selectedTeam, mode], () => {
+  fieldPageNo.value = 1
+  goaliePageNo.value = 1
+})
+
+/** Если строк стало меньше, текущая страница может выйти за границы */
+watch(fieldTotalPages, total => {
+  if (fieldPageNo.value > total) fieldPageNo.value = total
+})
+watch(goalieTotalPages, total => {
+  if (goaliePageNo.value > total) goaliePageNo.value = total
+})
+
+/** После смены страницы показываем её начало, а не середину предыдущей */
+watch([fieldPageNo, goaliePageNo], () => {
+  if (!import.meta.client) return
+  const el = tablesEl.value
+  if (!el) return
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const top = el.getBoundingClientRect().top + window.scrollY - 90
+  window.scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' })
+})
 
 const countLabel = computed(() => {
   if (mode.value === 'best') return `Топ-${bestPlayers.value.length} по очкам за всё время`
@@ -436,6 +496,11 @@ const countLabel = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
+}
+.players-page__block {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 @media (max-width: 600px) {
