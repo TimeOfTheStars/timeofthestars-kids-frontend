@@ -88,64 +88,26 @@
 
           <p v-reveal class="players-page__count">{{ countLabel }}</p>
 
-          <div v-if="mode === 'all'" ref="tablesEl" class="players-page__tables">
-            <div class="players-page__block">
-              <StatLinesTable
-                v-reveal
-                title="Полевые игроки"
-                :rows="fieldPage"
-                :total="fieldPlayers.length"
-                show-team
-                show-avatar
-                empty-text="По этому запросу полевых игроков нет."
-              />
-              <Pagination
-                v-model="fieldPageNo"
-                :total-pages="fieldTotalPages"
-                aria-label="Страницы полевых игроков"
-              />
-            </div>
-
-            <div class="players-page__block">
-              <StatLinesTable
-                v-reveal
-                title="Вратари"
-                variant="goalie"
-                :rows="goaliePage"
-                :total="goaliePlayers.length"
-                show-team
-                show-avatar
-                empty-text="По этому запросу вратарей нет."
-              />
-              <Pagination
-                v-model="goaliePageNo"
-                :total-pages="goalieTotalPages"
-                aria-label="Страницы вратарей"
-              />
-            </div>
+          <div ref="tablesEl" class="players-page__list">
+            <StatLinesTable
+              :key="mode"
+              v-reveal
+              :title="listTitle"
+              :variant="mode === 'goalies' ? 'goalie' : 'field'"
+              :rows="pageRows"
+              :total="listRows.length"
+              :show-rank="mode === 'best' || mode === 'snipers'"
+              show-team
+              show-avatar
+              :empty-text="emptyText"
+            />
+            <Pagination
+              v-model="pageNo"
+              :total-pages="totalPages"
+              aria-label="Страницы списка"
+            />
           </div>
 
-          <StatLinesTable
-            v-else-if="mode === 'best'"
-            v-reveal
-            title="Лучшие бомбардиры"
-            :rows="bestPlayers"
-            show-rank
-            show-team
-            show-avatar
-            empty-text="По этому запросу никто не набирал очков."
-          />
-
-          <StatLinesTable
-            v-else
-            v-reveal
-            title="Лучшие снайперы"
-            :rows="snipers"
-            show-rank
-            show-team
-            show-avatar
-            empty-text="По этому запросу никто не забивал."
-          />
         </template>
       </section>
     </div>
@@ -178,6 +140,7 @@ const loadFailed = computed(() => failed.value && retryDone.value && !(players.v
 
 const MODES = [
   { key: 'all', label: 'Все игроки' },
+  { key: 'goalies', label: 'Вратари' },
   { key: 'best', label: 'Бомбардиры' },
   { key: 'snipers', label: 'Снайперы' }
 ]
@@ -225,9 +188,9 @@ const filtered = computed(() => {
   })
 })
 
-const fieldPlayers = computed(() =>
+/** Общий список: все, включая вратарей — у них своя кнопка со своими колонками */
+const allPlayers = computed(() =>
   filtered.value
-    .filter(row => !row.isGoalie)
     .slice()
     .sort((a, b) =>
       b.points - a.points ||
@@ -269,39 +232,51 @@ const snipers = computed(() =>
     .slice(0, LEADERS_LIMIT)
 )
 
-/* --- постраничный вывод общего списка --- */
+/* --- активный список и постраничный вывод --- */
 
-const fieldPageNo = ref(1)
-const goaliePageNo = ref(1)
+const listRows = computed(() => {
+  if (mode.value === 'goalies') return goaliePlayers.value
+  if (mode.value === 'best') return bestPlayers.value
+  if (mode.value === 'snipers') return snipers.value
+  return allPlayers.value
+})
+
+const listTitle = computed(() => {
+  if (mode.value === 'goalies') return 'Вратари'
+  if (mode.value === 'best') return 'Лучшие бомбардиры'
+  if (mode.value === 'snipers') return 'Лучшие снайперы'
+  return 'Все игроки'
+})
+
+const emptyText = computed(() => {
+  if (mode.value === 'goalies') return 'По этому запросу вратарей нет.'
+  if (mode.value === 'best') return 'По этому запросу никто не набирал очков.'
+  if (mode.value === 'snipers') return 'По этому запросу никто не забивал.'
+  return 'По этому запросу игроков нет.'
+})
+
+const pageNo = ref(1)
 const tablesEl = ref<HTMLElement | null>(null)
 
-const fieldTotalPages = computed(() => Math.max(1, Math.ceil(fieldPlayers.value.length / PAGE_SIZE)))
-const goalieTotalPages = computed(() => Math.max(1, Math.ceil(goaliePlayers.value.length / PAGE_SIZE)))
+const totalPages = computed(() => Math.max(1, Math.ceil(listRows.value.length / PAGE_SIZE)))
 
-const fieldPage = computed(() =>
-  fieldPlayers.value.slice((fieldPageNo.value - 1) * PAGE_SIZE, fieldPageNo.value * PAGE_SIZE)
-)
-const goaliePage = computed(() =>
-  goaliePlayers.value.slice((goaliePageNo.value - 1) * PAGE_SIZE, goaliePageNo.value * PAGE_SIZE)
+const pageRows = computed(() =>
+  listRows.value.slice((pageNo.value - 1) * PAGE_SIZE, pageNo.value * PAGE_SIZE)
 )
 
-/** Сменили поиск, команду или режим — список другой, страницу начинаем сначала */
+/** Сменили режим, поиск или команду — список другой, страницу начинаем сначала */
 watch([query, selectedTeam, mode], () => {
-  fieldPageNo.value = 1
-  goaliePageNo.value = 1
+  pageNo.value = 1
 })
 
 /** Если строк стало меньше, текущая страница может выйти за границы */
-watch(fieldTotalPages, total => {
-  if (fieldPageNo.value > total) fieldPageNo.value = total
-})
-watch(goalieTotalPages, total => {
-  if (goaliePageNo.value > total) goaliePageNo.value = total
+watch(totalPages, total => {
+  if (pageNo.value > total) pageNo.value = total
 })
 
 /** После смены страницы показываем её начало, а не середину предыдущей */
-watch([fieldPageNo, goaliePageNo], () => {
-  if (!import.meta.client) return
+watch(pageNo, (next, prev) => {
+  if (!import.meta.client || next === prev) return
   const el = tablesEl.value
   if (!el) return
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -312,7 +287,8 @@ watch([fieldPageNo, goaliePageNo], () => {
 const countLabel = computed(() => {
   if (mode.value === 'best') return `Топ-${bestPlayers.value.length} по очкам за всё время`
   if (mode.value === 'snipers') return `Топ-${snipers.value.length} по голам за всё время`
-  return `Найдено: ${filtered.value.length} из ${players.value.length}`
+  if (mode.value === 'goalies') return `Вратарей: ${goaliePlayers.value.length}`
+  return `Найдено: ${listRows.value.length} из ${players.value.length}`
 })
 </script>
 
@@ -492,15 +468,10 @@ const countLabel = computed(() => {
   font-size: 0.88rem;
   color: var(--color-text-muted);
 }
-.players-page__tables {
+.players-page__list {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
-}
-.players-page__block {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 @media (max-width: 600px) {
