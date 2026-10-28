@@ -157,13 +157,18 @@ const pending = computed(() => fetching.value || (failed.value && !retryDone.val
 const loadFailed = computed(() => failed.value && retryDone.value && !(teamsData.value ?? []).length)
 const { openTeam } = useTeamModal()
 
-/** Сначала играющие команды, потом остальные с нулями */
+/**
+ * По очкам, при равенстве — разница шайб и забитые. Игры в конце цепочки,
+ * чтобы сыгравшие команды без очков стояли выше тех, кто ещё не играл.
+ */
 const teams = computed(() =>
   (teamsData.value ?? [])
     .slice()
     .sort((a, b) =>
+      b.stats.points - a.stats.points ||
+      b.stats.goalDiff - a.stats.goalDiff ||
+      b.stats.goalsFor - a.stats.goalsFor ||
       b.stats.games - a.stats.games ||
-      b.stats.wins - a.stats.wins ||
       a.name.localeCompare(b.name, 'ru')
     )
 )
