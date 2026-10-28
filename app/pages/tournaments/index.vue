@@ -400,6 +400,31 @@
             </div>
           </div>
         </template>
+
+        <div v-reveal class="turniry__subscribe">
+          <Icon name="ph:calendar-plus" class="turniry__subscribe-icon" />
+          <div class="turniry__subscribe-body">
+            <h2 class="turniry__subscribe-title">Календарь турниров</h2>
+            <p class="turniry__subscribe-text">
+              Подпишитесь один раз — новые турниры и изменения дат будут сами появляться в вашем календаре.
+            </p>
+          </div>
+          <div class="turniry__subscribe-actions">
+            <a :href="CALENDAR_FEED_URL" class="btn">
+              <Icon name="ph:apple-logo" />
+              Apple Календарь
+            </a>
+            <a
+              :href="googleSubscribeUrl()"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn"
+            >
+              <Icon name="ph:google-logo" />
+              Google Календарь
+            </a>
+          </div>
+        </div>
       </section>
     </div>
 
@@ -658,13 +683,20 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import type { Tournament, TournamentArena } from '~/types'
 import { apiUrl, postJson } from '~/utils/api'
 import {
+  buildCalendar,
+  CALENDAR_FEED_URL,
+  googleCalendarUrl,
+  googleSubscribeUrl,
+  toIcsUtc,
+  tournamentVevent
+} from '~/utils/calendar'
+import {
   endOf,
   formatDateRange,
   formatGameFormat,
   hasTournamentPage,
   isInProgress as isInProgressAt,
   startKey,
-  startOf,
   withSeason
 } from '~/utils/tournaments'
 
@@ -882,60 +914,8 @@ function closeCalendar() {
   calendarTournament.value = null
 }
 
-function pad(n: number): string {
-  return n.toString().padStart(2, '0')
-}
-
-function toIcsUtc(d: Date): string {
-  return `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`
-}
-
-function icsEscape(s: string): string {
-  return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n')
-}
-
-function calendarLocation(t: Tournament): string {
-  if (t.arena) {
-    return [t.arena.name, t.arena.address, t.arena.city].filter(Boolean).join(', ')
-  }
-  return t.location ?? ''
-}
-
-function googleCalendarUrl(t: Tournament): string {
-  const start = toIcsUtc(startOf(t))
-  const end = toIcsUtc(endOf(t))
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: t.title,
-    dates: `${start}/${end}`,
-    details: t.description ?? '',
-    location: calendarLocation(t)
-  })
-  return `https://calendar.google.com/calendar/render?${params.toString()}`
-}
-
 function downloadIcs(t: Tournament) {
-  const start = toIcsUtc(startOf(t))
-  const end = toIcsUtc(endOf(t))
-  const stamp = toIcsUtc(new Date())
-  const location = calendarLocation(t)
-  const lines = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Time of the Stars KIDS//Tournaments//RU',
-    'CALSCALE:GREGORIAN',
-    'BEGIN:VEVENT',
-    `UID:tournament-${t.id}@timeofthestars-kids.ru`,
-    `DTSTAMP:${stamp}`,
-    `DTSTART:${start}`,
-    `DTEND:${end}`,
-    `SUMMARY:${icsEscape(t.title)}`,
-    t.description ? `DESCRIPTION:${icsEscape(t.description)}` : '',
-    location ? `LOCATION:${icsEscape(location)}` : '',
-    t.url ? `URL:${t.url}` : '',
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].filter(Boolean).join('\r\n')
+  const lines = buildCalendar([tournamentVevent(t, toIcsUtc(new Date()))])
 
   const blob = new Blob([lines], { type: 'text/calendar;charset=utf-8' })
   const href = URL.createObjectURL(blob)
@@ -1186,9 +1166,68 @@ async function submitApply() {
 .turniry__seasons,
 .turniry__filters,
 .turniry__group,
-.turniry__state {
+.turniry__state,
+.turniry__subscribe {
   position: relative;
   z-index: 1;
+}
+
+.turniry__subscribe {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  margin-top: 2.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 32px -18px rgba(37, 99, 235, 0.22);
+}
+.turniry__subscribe-icon {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-accent);
+}
+.turniry__subscribe-body {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.turniry__subscribe-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+.turniry__subscribe-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+.turniry__subscribe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.turniry__subscribe-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .turniry__subscribe {
+    padding: 1.1rem;
+  }
+  .turniry__subscribe-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .turniry__subscribe-actions .btn {
+    width: 100%;
+  }
 }
 
 .turniry__filters {
