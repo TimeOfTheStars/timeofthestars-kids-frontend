@@ -1,5 +1,7 @@
-import type { Tournament } from '~/types'
-import { endOf, startOf } from '~/utils/tournaments'
+import type { GameListItem, Tournament } from '~/types'
+import { endOf, formatDay, hasTournamentPage, startOf } from '~/utils/tournaments'
+
+const SITE_URL = 'https://timeofthestars-kids.ru'
 
 /** Фид со всеми турнирами отдаёт server/routes/tournaments.ics.ts */
 export const CALENDAR_FEED_URL = 'webcal://timeofthestars-kids.ru/tournaments.ics'
@@ -43,8 +45,52 @@ export function calendarLocation(t: Tournament): string {
   return t.location ?? ''
 }
 
-export function tournamentVevent(t: Tournament, stamp: string): string[] {
+/** Своя страница турнира, если она есть, иначе внешняя ссылка из API */
+function tournamentLink(t: Tournament): string {
+  return hasTournamentPage(t) ? `${SITE_URL}/tournaments/${t.id}` : (t.url ?? '')
+}
+
+function gameLine(g: GameListItem): string {
+  const score = g.isFinished && g.scoreA != null && g.scoreB != null
+    ? ` ${g.scoreA}:${g.scoreB} `
+    : ' — '
+  return [`№${g.matchNo}`, g.time, `${g.teamA.name}${score}${g.teamB.name}`].filter(Boolean).join(' · ')
+}
+
+/** Расписание матчей; если турнир идёт несколько дней — с заголовком на каждый день */
+function gamesBlock(games: GameListItem[]): string {
+  const sorted = games.slice().sort((a, b) =>
+    a.date.localeCompare(b.date) ||
+    (a.time ?? '').localeCompare(b.time ?? '') ||
+    a.matchNo - b.matchNo
+  )
+  const days = new Set(sorted.map(g => g.date))
+  const lines = ['Матчи:']
+  let day = ''
+  for (const g of sorted) {
+    if (days.size > 1 && g.date !== day) {
+      day = g.date
+      lines.push('', `${formatDay(g.date)}:`)
+    }
+    lines.push(gameLine(g))
+  }
+  return lines.join('\n')
+}
+
+/** Google не показывает поле URL, поэтому ссылку дублируем в описание */
+function calendarDescription(t: Tournament, games?: GameListItem[]): string {
+  const link = tournamentLink(t)
+  return [
+    t.description,
+    games?.length ? gamesBlock(games) : '',
+    link ? `Подробнее: ${link}` : ''
+  ].filter(Boolean).join('\n\n')
+}
+
+export function tournamentVevent(t: Tournament, stamp: string, games?: GameListItem[]): string[] {
   const location = calendarLocation(t)
+  const description = calendarDescription(t, games)
+  const link = tournamentLink(t)
   return [
     'BEGIN:VEVENT',
     `UID:tournament-${t.id}@timeofthestars-kids.ru`,
@@ -52,9 +98,9 @@ export function tournamentVevent(t: Tournament, stamp: string): string[] {
     `DTSTART:${toIcsUtc(startOf(t))}`,
     `DTEND:${toIcsUtc(endOf(t))}`,
     `SUMMARY:${icsEscape(t.title)}`,
-    t.description ? `DESCRIPTION:${icsEscape(t.description)}` : '',
+    description ? `DESCRIPTION:${icsEscape(description)}` : '',
     location ? `LOCATION:${icsEscape(location)}` : '',
-    t.url ? `URL:${t.url}` : '',
+    link ? `URL:${link}` : '',
     'END:VEVENT'
   ].filter(Boolean)
 }
@@ -76,7 +122,7 @@ export function googleCalendarUrl(t: Tournament): string {
     action: 'TEMPLATE',
     text: t.title,
     dates: `${toIcsUtc(startOf(t))}/${toIcsUtc(endOf(t))}`,
-    details: t.description ?? '',
+    details: calendarDescription(t),
     location: calendarLocation(t)
   })
   return `https://calendar.google.com/calendar/render?${params.toString()}`
